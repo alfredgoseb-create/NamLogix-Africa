@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  basePath: '/NamLogix-Africa', // Updated to match your new repo name
+  basePath: '/NamLogix-Africa', 
   images: {
     unoptimized: true,
   },
