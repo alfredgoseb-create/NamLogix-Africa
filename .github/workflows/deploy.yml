@@ -21,7 +21,6 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # THIS IS THE CRITICAL CHANGE:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       - name: Upload artifact
