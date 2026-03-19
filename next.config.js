@@ -5,7 +5,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // This ensures that links to /warehouse become /NamLogix-Africa/warehouse
   trailingSlash: true, 
 }
 
