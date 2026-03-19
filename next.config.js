@@ -2,9 +2,6 @@
 const nextConfig = {
   output: 'export',
   basePath: '/NamLogix-Africa', 
-  images: {
-    unoptimized: true,
-  },
+  images: { unoptimized: true },
 }
-
 module.exports = nextConfig
