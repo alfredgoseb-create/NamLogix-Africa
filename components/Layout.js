@@ -12,7 +12,6 @@ export default function Layout({ children }) {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
       <div className="w-64 bg-slate-900 text-white flex flex-col">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-blue-400">NamLogix</h1>
@@ -23,24 +22,17 @@ export default function Layout({ children }) {
           {navItems.map((item) => (
             <Link key={item.name} href={item.href}>
               <div className={`p-3 rounded-lg cursor-pointer transition ${
-                router.pathname === item.href ? 'bg-blue-600' : 'hover:bg-slate-800'
+                router.pathname === item.href || router.asPath === item.href 
+                  ? 'bg-blue-600' 
+                  : 'hover:bg-slate-800'
               }`}>
                 {item.name}
               </div>
             </Link>
           ))}
         </nav>
-
-        <div className="p-4">
-          <Link href="/add-product">
-            <button className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-bold transition">
-              + New Product
-            </button>
-          </Link>
-        </div>
       </div>
 
-      {/* Main Content */}
       <main className="flex-1 p-8">
         {children}
       </main>
