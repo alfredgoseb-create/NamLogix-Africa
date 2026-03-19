@@ -8,26 +8,40 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Fetch data when the page loads
   useEffect(() => {
     fetchInventory();
   }, []);
 
   async function fetchInventory() {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (!error) setInventory(data);
-    setLoading(false);
+    try {
+      // Build-time safety: check if supabase exists before calling
+      if (!supabase) {
+        console.warn("Supabase client not initialized.");
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) {
+        setInventory(data);
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  // Handle Delete with confirmation
   async function handleDelete(id) {
     if (!confirm('Are you sure you want to delete this item?')) return;
     
+    if (!supabase) return;
     const { error } = await supabase.from('products').delete().eq('id', id);
+    
     if (!error) {
       setInventory(inventory.filter(item => item.id !== id));
     } else {
@@ -35,83 +49,93 @@ export default function Home() {
     }
   }
 
-  // Filter inventory based on search input
   const filteredItems = inventory.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <Layout>
-      {/* Header Section with Search and Profile */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="relative w-96">
+      {/* Search and User Profile Bar */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div className="relative w-full md:w-96">
           <input
             type="text"
             placeholder="Search inventory..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <span className="absolute left-3 top-2.5 text-slate-400">🔍</span>
         </div>
-        <div className="flex space-x-4">
-          <div className="text-right">
+        <div className="flex items-center space-x-4">
+          <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-slate-900">Alfred Goseb</p>
             <p className="text-xs text-slate-500">Administrator</p>
           </div>
-          <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">AG</div>
+          <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+            AG
+          </div>
         </div>
       </div>
 
-      {/* Stats Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-slate-500 text-sm font-semibold uppercase">Total Items</p>
-          <p className="text-3xl font-bold text-slate-900">{inventory.length}</p>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Items</p>
+          <p className="text-3xl font-black text-slate-900">{inventory.length}</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-slate-500 text-sm font-semibold uppercase">Warehouses</p>
-          <p className="text-3xl font-bold text-slate-900">3</p>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Active Warehouses</p>
+          <p className="text-3xl font-black text-slate-900">3</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-slate-500 text-sm font-semibold uppercase">Shipments</p>
-          <p className="text-3xl font-bold text-slate-900">12</p>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Pending Shipments</p>
+          <p className="text-3xl font-black text-slate-900">12</p>
         </div>
       </div>
 
-      {/* Main Inventory Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <h2 className="text-lg font-bold text-slate-800 mb-4">Inventory List</h2>
-        <div className="space-y-4">
+      {/* Main Inventory List */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-50 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-slate-800">Inventory Status</h2>
+          <Link href="/add-product">
+            <button className="text-sm bg-blue-50 text-blue-600 font-bold px-4 py-2 rounded-lg hover:bg-blue-100 transition">
+              + Quick Add
+            </button>
+          </Link>
+        </div>
+        
+        <div className="divide-y divide-slate-50">
           {loading ? (
-            <p className="text-slate-500">Loading your stock...</p>
+            <div className="p-10 text-center text-slate-400 animate-pulse">Synchronizing with database...</div>
           ) : filteredItems.length > 0 ? (
             filteredItems.map((item) => (
-              <div key={item.id} className="flex justify-between items-center p-4 hover:bg-slate-50 rounded-xl border border-transparent hover:border-slate-100 transition">
-                <div>
-                  <p className="font-bold text-slate-900">{item.name}</p>
-                  <p className="text-sm text-slate-500">ID: {item.id.substring(0, 8)}</p>
+              <div key={item.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 hover:bg-slate-50 transition">
+                <div className="mb-4 sm:mb-0">
+                  <p className="font-bold text-slate-900 text-lg">{item.name}</p>
+                  <p className="text-xs font-mono text-slate-400 uppercase">REF: {item.id.substring(0, 8)}</p>
                 </div>
-                <div className="flex items-center space-x-6">
-                  <p className="text-lg font-mono font-bold text-blue-600">{item.quantity} Units</p>
-                  <div className="flex space-x-3">
-                    {/* Link to the Edit page we created */}
+                <div className="flex items-center w-full sm:w-auto justify-between sm:justify-end space-x-8">
+                  <p className="text-xl font-mono font-black text-blue-600">{item.quantity} <span className="text-xs text-slate-400 uppercase">Units</span></p>
+                  <div className="flex space-x-4">
                     <Link href={`/edit-product/${item.id}`}>
-                      <button className="text-blue-500 hover:text-blue-700 font-bold text-sm">
-                        Edit
+                      <button className="text-slate-400 hover:text-blue-600 transition p-1">
+                        ✏️ <span className="text-xs font-bold ml-1">Edit</span>
                       </button>
                     </Link>
                     <button 
                       onClick={() => handleDelete(item.id)}
-                      className="text-red-400 hover:text-red-600 font-bold text-sm"
+                      className="text-slate-400 hover:text-red-500 transition p-1"
                     >
-                      Delete
+                      🗑️ <span className="text-xs font-bold ml-1">Delete</span>
                     </button>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-center text-slate-400 py-10">No items found matching your search.</p>
+            <div className="p-20 text-center">
+              <p className="text-slate-400 italic">No products found in the database.</p>
+            </div>
           )}
         </div>
       </div>
