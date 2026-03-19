@@ -22,9 +22,7 @@ export default function Layout({ children }) {
           {navItems.map((item) => (
             <Link key={item.name} href={item.href}>
               <div className={`p-3 rounded-lg cursor-pointer transition ${
-                router.pathname === item.href || router.asPath === item.href 
-                  ? 'bg-blue-600' 
-                  : 'hover:bg-slate-800'
+                router.pathname === item.href ? 'bg-blue-600' : 'hover:bg-slate-800'
               }`}>
                 {item.name}
               </div>
