@@ -5,6 +5,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // We are making these match your repository name exactly
   basePath: '/NamLogix-Africa',
   assetPrefix: '/NamLogix-Africa/',
   trailingSlash: true,
