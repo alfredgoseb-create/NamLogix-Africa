@@ -19,20 +19,20 @@ export default function AddProduct() {
   };
 
   return (
-    <div style={{ padding: '60px 20px', maxWidth: '500px', margin: '0 auto' }}>
-      <Link href="/" style={{ color: '#64748b', textDecoration: 'none', fontSize: '14px' }}>← Back to Dashboard</Link>
-      <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#0f172a', margin: '20px 0' }}>New Inventory Entry</h1>
-      <form onSubmit={handleSubmit} style={{ background: 'white', padding: '30px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+    <div className="container" style={{ maxWidth: '500px' }}>
+      <Link href="/" style={{ color: '#64748b', textDecoration: 'none' }}>← Back to Dashboard</Link>
+      <h1 style={{ margin: '20px 0', fontWeight: '900' }}>New Stock Entry</h1>
+      <form onSubmit={handleSubmit} style={{ background: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#64748b', marginBottom: '8px' }}>Product Name</label>
+          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>Product Name</label>
           <input required style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1' }} value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div style={{ marginBottom: '30px' }}>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#64748b', marginBottom: '8px' }}>Quantity</label>
+          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>Quantity</label>
           <input required type="number" style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1' }} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
         </div>
-        <button disabled={loading} style={{ width: '100%', backgroundColor: '#0f172a', color: 'white', padding: '14px', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
-          {loading ? 'Processing...' : 'Add to Stock'}
+        <button disabled={loading} style={{ width: '100%', backgroundColor: '#0f172a', color: 'white', padding: '15px', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+          {loading ? 'Syncing...' : 'Add to Inventory'}
         </button>
       </form>
     </div>
