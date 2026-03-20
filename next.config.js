@@ -4,9 +4,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Matches your GitHub repo name exactly
   basePath: '/NamLogix-Africa',
   assetPrefix: '/NamLogix-Africa',
+  trailingSlash: true,
 }
 
 module.exports = nextConfig
