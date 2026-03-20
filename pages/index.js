@@ -18,25 +18,41 @@ export default function Home() {
     fetchInventory();
   }
 
+  const exportToCSV = () => {
+    const headers = ['Product Name, Quantity, Last Updated\n'];
+    const rows = inventory.map(i => `${i.name}, ${i.quantity}, ${i.created_at}\n`);
+    const blob = new Blob([headers + rows.join('')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `NamLogix_Inventory_${new Date().toLocaleDateString()}.csv`;
+    a.click();
+  };
+
   useEffect(() => { fetchInventory(); }, []);
 
   const filtered = inventory.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className="container" style={{ paddingTop: '40px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', gap: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', gap: '15px', flexWrap: 'wrap' }}>
         <input 
           placeholder="Search products..." 
-          style={{ flexGrow: 1, padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}
+          style={{ flex: '1', minWidth: '250px', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Link href="/add-product" style={{ background: '#2563eb', color: 'white', padding: '12px 20px', borderRadius: '12px', textDecoration: 'none', fontWeight: 'bold' }}>
-          + Add Stock
-        </Link>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={exportToCSV} style={{ background: '#f1f5f9', color: '#475569', padding: '12px 20px', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+            Download CSV
+          </button>
+          <Link href="/add-product" style={{ background: '#2563eb', color: 'white', padding: '12px 20px', borderRadius: '12px', textDecoration: 'none', fontWeight: 'bold' }}>
+            + Add Stock
+          </Link>
+        </div>
       </div>
 
-      <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', overflowX: 'auto', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
           <thead style={{ background: '#f8fafc' }}>
             <tr>
               <th style={{ padding: '20px', textAlign: 'left' }}>Product</th>
@@ -59,9 +75,10 @@ export default function Home() {
                     fontWeight: 'bold',
                     background: item.quantity <= 5 ? '#fee2e2' : '#dcfce7',
                     padding: '4px 12px',
-                    borderRadius: '20px'
+                    borderRadius: '20px',
+                    fontSize: '13px'
                   }}>
-                    {item.quantity <= 5 ? 'Low Stock' : 'Healthy'}
+                    {item.quantity <= 0 ? 'Out of Stock' : item.quantity <= 5 ? 'Low Stock' : 'Healthy'}
                   </span>
                 </td>
               </tr>

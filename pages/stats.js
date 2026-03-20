@@ -21,18 +21,18 @@ export default function Stats() {
 
   return (
     <div className="container" style={{ paddingTop: '40px' }}>
-      <h1 style={{ fontWeight: '900', fontSize: '32px' }}>Warehouse Report</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginTop: '30px' }}>
+      <h1 style={{ fontWeight: '900', fontSize: '32px', color: '#0f172a' }}>Warehouse Report</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginTop: '30px' }}>
         <div style={{ background: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
-          <p style={{ margin: 0, color: '#64748b', fontWeight: 'bold' }}>Total Products</p>
+          <p style={{ margin: 0, color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase', fontSize: '12px' }}>Total SKUs</p>
           <p style={{ fontSize: '42px', fontWeight: '900', margin: '10px 0 0 0' }}>{report.total}</p>
         </div>
         <div style={{ background: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
-          <p style={{ margin: 0, color: '#f59e0b', fontWeight: 'bold' }}>Low Stock Items</p>
+          <p style={{ margin: 0, color: '#f59e0b', fontWeight: 'bold', textTransform: 'uppercase', fontSize: '12px' }}>Low Stock</p>
           <p style={{ fontSize: '42px', fontWeight: '900', margin: '10px 0 0 0', color: '#f59e0b' }}>{report.alerts}</p>
         </div>
-        <div style={{ background: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
-          <p style={{ margin: 0, color: '#ef4444', fontWeight: 'bold' }}>Out of Stock</p>
+        <div style={{ background: '#fef2f2', padding: '30px', borderRadius: '24px', border: '1px solid #fee2e2' }}>
+          <p style={{ margin: 0, color: '#ef4444', fontWeight: 'bold', textTransform: 'uppercase', fontSize: '12px' }}>Out of Stock</p>
           <p style={{ fontSize: '42px', fontWeight: '900', margin: '10px 0 0 0', color: '#ef4444' }}>{report.outOfStock}</p>
         </div>
       </div>
