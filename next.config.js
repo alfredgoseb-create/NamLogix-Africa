@@ -6,7 +6,7 @@ const nextConfig = {
     unoptimized: true,
   },
   basePath: '/NamLogix-Africa',
-  assetPrefix: '/NamLogix-Africa',
+  assetPrefix: '/NamLogix-Africa/',
   trailingSlash: true,
 }
 
