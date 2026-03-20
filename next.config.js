@@ -4,7 +4,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // CRITICAL: This matches your GitHub repository name
+  // Matches your GitHub repo name exactly
   basePath: '/NamLogix-Africa',
   assetPrefix: '/NamLogix-Africa',
 }
