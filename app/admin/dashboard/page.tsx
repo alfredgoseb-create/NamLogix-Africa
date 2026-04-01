@@ -275,7 +275,7 @@ export default function Dashboard() {
                     ) : (
                       <>
                         <p className="font-semibold text-lg">
-                          N${product.price.toFixed(2)}
+                          N${product.price != null ? product.price.toFixed(2) : "0.00"}
                         </p>
                         <p className="text-sm text-gray-500">Stock: {product.stock}</p>
                         <div className="flex gap-2">
