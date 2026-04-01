@@ -4,4 +4,4 @@ const nextConfig = {
   // Do NOT include `output: 'export'`
 }
 
-module.exports = nextConfig
+module.exports = nextConfig// Force rebuild
