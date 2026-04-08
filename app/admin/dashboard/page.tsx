@@ -119,6 +119,7 @@ export default function Dashboard() {
             <div className="space-y-4">
               {products.map((product) => (
                 <div key={product.id} className="border rounded-xl p-4 flex gap-4 items-start">
+                  {/* Image preview */}
                   {product.image_url ? (
                     <img src={product.image_url} alt={product.name} className="h-24 w-24 object-cover rounded-lg flex-shrink-0 shadow-sm" />
                   ) : (
