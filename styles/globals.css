@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #0f3b5c;
+    --primary-dark: #0a2a40;
+    --secondary: #e67e22;
+    --secondary-light: #f39c12;
+    --gray-bg: #f8fafc;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-800 antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 rounded-full hover:bg-gray-500;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, #0f3b5c 0%, #1a5d7a 100%);
+  }
+  .gradient-hero {
+    background: linear-gradient(135deg, #0f3b5c 0%, #2c7da0 100%);
+  }
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
+  .input {
+    @apply w-full rounded-xl border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20;
+  }
+  .btn-primary {
+    @apply rounded-xl bg-blue-700 px-5 py-2.5 font-medium text-white shadow-md transition-all hover:bg-blue-800 hover:shadow-lg;
+  }
+  .btn-secondary {
+    @apply rounded-xl border border-gray-300 bg-white px-5 py-2.5 font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50;
+  }
+}

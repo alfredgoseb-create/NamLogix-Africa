@@ -1,27 +1,35 @@
-// app/components/Navbar.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
 
-  // TRADING-FOCUSED NAVIGATION GROUPS
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const navGroups = {
     Marketplace: [
       { label: "📦 Find Cargo", href: "/cargo-requests" },
       { label: "🚛 Find Trips", href: "/trip-offers" },
       { label: "💰 Bids", href: "/bids" },
       { label: "📊 Trade Routes", href: "/trade-routes" },
+      { label: "✈️ Aviation Services", href: "/aviation" },
     ],
     "My Activity": [
-      { label: "My Cargo Requests", href: "/my/cargo-requests" },
-      { label: "My Trip Offers", href: "/my/trip-offers" },
+      { label: "My Cargo", href: "/my/cargo-requests" },
+      { label: "My Trips", href: "/my/trip-offers" },
       { label: "My Bookings", href: "/my/bookings" },
       { label: "My Bids", href: "/my/bids" },
     ],
@@ -29,22 +37,11 @@ export default function Navbar() {
       { label: "🏭 Warehouses", href: "/warehouses" },
       { label: "🚚 Vehicles", href: "/vehicles" },
       { label: "📍 Stock Locations", href: "/stock-locations" },
-      { label: "📦 Stock Transactions", href: "/stock-transactions" },
-    ],
-    Tools: [
-      { label: "📄 Customs Docs", href: "/customs-documents" },
-      { label: "🔍 Barcode Scanner", href: "/barcode-scanner" },
-      { label: "🛍️ Store", href: "/store" },
     ],
     Admin: [
-      { label: "📈 Dashboard", href: "/admin/dashboard" },
+      { label: "📈 Admin", href: "/admin/dashboard" },
       { label: "👥 Users", href: "/admin/users" },
-      { label: "🚛 Shipments (admin)", href: "/admin/shipments" },
-      { label: "📋 Inquiries", href: "/admin/inquiries" },
-      { label: "📦 Orders", href: "/admin/orders" },
-      { label: "📊 Analytics", href: "/admin/analytics" },
-      { label: "🏭 Warehouse Admin", href: "/admin/warehouses" },
-      { label: "🚚 Vehicle Admin", href: "/admin/vehicles" },
+      { label: "🚛 Shipments", href: "/admin/shipments" },
     ],
   };
 
@@ -52,132 +49,121 @@ export default function Navbar() {
     setOpenDropdown(openDropdown === name ? null : name);
   }
 
-  function handleNavigation(href: string) {
-    router.push(href);
-    setMobileMenuOpen(false);
-    setOpenDropdown(null);
-  }
-
   async function handleLogout() {
     await supabase.auth.signOut();
     router.push("/login");
   }
 
-  const renderDesktopNav = () => (
-    <div className="hidden md:flex items-center gap-2">
-      {Object.entries(navGroups).map(([groupName, items]) => (
-        <div key={groupName} className="relative">
-          <button
-            onClick={() => toggleDropdown(groupName)}
-            className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-sm font-medium flex items-center gap-1"
-          >
-            {groupName}
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          {openDropdown === groupName && (
-            <div className="absolute left-0 mt-1 w-56 bg-white rounded-lg shadow-lg border z-20 py-1">
-              {items.map((item) => (
-                <button
-                  key={item.href}
-                  onClick={() => handleNavigation(item.href)}
-                  className={`block w-full text-left px-4 py-2 text-sm ${
-                    pathname === item.href
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
+  return (
+    <>
+      <nav
+        className={cn(
+          "fixed top-0 z-50 w-full transition-all duration-300",
+          scrolled ? "bg-white/95 shadow-md backdrop-blur-sm" : "bg-white shadow-sm"
+        )}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="rounded-md p-2 text-gray-600 hover:bg-gray-100 md:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <Link href="/" className="text-2xl font-bold">
+              NamLogix <span className="text-blue-700">AFRICA</span>
+            </Link>
+          </div>
 
-  const renderMobileMenu = () => (
-    <div
-      className={`fixed inset-0 z-50 transform ${
-        mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      } transition-transform duration-300 ease-in-out md:hidden`}
-    >
-      <div className="relative w-64 bg-white h-full shadow-xl border-r">
-        <div className="p-4 border-b flex justify-between items-center">
-          <Link href="/" className="font-bold text-lg" onClick={() => setMobileMenuOpen(false)}>
-            NamLogix AFRICA
-          </Link>
-          <button onClick={() => setMobileMenuOpen(false)} className="text-gray-500">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="overflow-y-auto h-full pb-20">
-          {Object.entries(navGroups).map(([groupName, items]) => (
-            <div key={groupName} className="border-b">
-              <div className="px-4 py-2 font-semibold text-gray-500 text-xs uppercase tracking-wider">
-                {groupName}
+          {/* Desktop menus */}
+          <div className="hidden items-center gap-1 md:flex">
+            {Object.entries(navGroups).map(([groupName, items]) => (
+              <div key={groupName} className="relative">
+                <button
+                  onClick={() => toggleDropdown(groupName)}
+                  className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  {groupName}
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+                {openDropdown === groupName && (
+                  <div className="absolute left-0 mt-1 w-56 rounded-xl border border-gray-100 bg-white py-2 shadow-lg">
+                    {items.map((item) => (
+                      <button
+                        key={item.href}
+                        onClick={() => {
+                          router.push(item.href);
+                          setOpenDropdown(null);
+                        }}
+                        className={cn(
+                          "block w-full px-4 py-2 text-left text-sm",
+                          pathname === item.href ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"
+                        )}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
+            ))}
+          </div>
+
+          <div className="hidden items-center gap-3 md:flex">
+            <span className="text-sm text-gray-500">Trader</span>
+            <button
+              onClick={handleLogout}
+              className="rounded-lg border border-red-200 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile drawer */}
+      <div
+        className={cn(
+          "fixed inset-0 z-50 transform bg-black/50 transition-transform duration-300 md:hidden",
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        <div className="h-full w-64 bg-white p-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-end">
+            <button onClick={() => setMobileMenuOpen(false)} className="text-gray-500">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          {Object.entries(navGroups).map(([groupName, items]) => (
+            <div key={groupName} className="mt-4">
+              <div className="text-xs font-semibold uppercase text-gray-400">{groupName}</div>
               {items.map((item) => (
                 <button
                   key={item.href}
-                  onClick={() => handleNavigation(item.href)}
-                  className={`block w-full text-left px-4 py-2 text-sm ${
-                    pathname === item.href
-                      ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
+                  onClick={() => {
+                    router.push(item.href);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={cn(
+                    "mt-1 block w-full rounded-lg px-3 py-2 text-left text-sm",
+                    pathname === item.href ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100"
+                  )}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
           ))}
-          <div className="p-4">
-            <button
-              onClick={handleLogout}
-              className="w-full px-4 py-2 rounded-lg border border-red-200 text-red-600 text-sm hover:bg-red-50"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className="absolute inset-0 bg-black bg-opacity-50 -z-10" onClick={() => setMobileMenuOpen(false)} />
-    </div>
-  );
-
-  return (
-    <>
-      <nav className="bg-white border-b px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <Link href="/" className="font-bold text-xl">
-            NamLogix <span className="text-blue-600">AFRICA</span>
-          </Link>
-        </div>
-        {renderDesktopNav()}
-        <div className="hidden md:flex items-center gap-3">
-          <span className="text-sm text-gray-500">Trader</span>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 rounded-lg border border-red-200 text-red-600 text-sm hover:bg-red-50"
+            className="mt-6 w-full rounded-lg border border-red-200 px-4 py-2 text-red-600 hover:bg-red-50"
           >
             Logout
           </button>
         </div>
-      </nav>
-      {renderMobileMenu()}
+      </div>
+      <div className="h-16" /> {/* spacer for fixed navbar */}
     </>
   );
 }
