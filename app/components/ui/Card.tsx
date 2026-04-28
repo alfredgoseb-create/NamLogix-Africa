@@ -1,29 +1,7 @@
-import { cn } from '@/lib/utils'
-
-interface CardProps {
-  children: React.ReactNode
-  className?: string
-  hover?: boolean
-  padding?: 'sm' | 'md' | 'lg' | 'none'
-}
-
-export function Card({ children, className, hover = true, padding = 'md' }: CardProps) {
-  const paddings = {
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8',
-    none: 'p-0',
-  }
+export function Card({ children, className = "", hover = false }: { children: React.ReactNode; className?: string; hover?: boolean }) {
   return (
-    <div
-      className={cn(
-        'rounded-2xl border border-gray-100 bg-white shadow-sm',
-        paddings[padding],
-        hover && 'card-hover',
-        className
-      )}
-    >
+    <div className={`bg-white rounded-xl shadow p-6 ${hover ? "hover:shadow-lg transition cursor-pointer" : ""} ${className}`}>
       {children}
     </div>
-  )
+  );
 }
