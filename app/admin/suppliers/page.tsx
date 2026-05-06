@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import PageHero from "@/app/components/PageHero";
 
 const emptyForm = {
   name: "",
@@ -76,9 +76,7 @@ export default function SuppliersPage() {
         return;
       }
     } else {
-      const { error } = await supabase
-        .from("suppliers")
-        .insert([cleanForm]);
+      const { error } = await supabase.from("suppliers").insert([cleanForm]);
 
       if (error) {
         alert("Failed to add supplier: " + error.message);
@@ -94,10 +92,7 @@ export default function SuppliersPage() {
   async function handleDelete(id) {
     if (!confirm("Delete this supplier?")) return;
 
-    const { error } = await supabase
-      .from("suppliers")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("suppliers").delete().eq("id", id);
 
     if (error) {
       alert("Failed to delete supplier: " + error.message);
@@ -128,254 +123,34 @@ export default function SuppliersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - same style as homepage */}
-      <div
-        style={{
-          background: "#0a1628",
-          color: "#fff",
-          borderRadius: "0 0 24px 24px",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ padding: "3rem 2.5rem 2rem", position: "relative" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              background: "rgba(59,130,246,0.15)",
-              border: "1px solid rgba(59,130,246,0.3)",
-              color: "#93c5fd",
-              fontSize: "12px",
-              fontWeight: 500,
-              padding: "4px 12px",
-              borderRadius: "100px",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <span
-              style={{
-                width: "6px",
-                height: "6px",
-                background: "#3b82f6",
-                borderRadius: "50%",
-                display: "inline-block",
-              }}
-            />
-            Supplier Network
-          </div>
+      <PageHero
+        badge="Supplier Network"
+        titleTop="NamLogix"
+        titleHighlight="AFRICA"
+        titleBottom="Supplier Intelligence"
+        description="Manage trusted suppliers for inventory, warehouses, cargo movement, aviation support, and Southern African trade operations."
+        actions={[
+          { label: "👥 Add Supplier", href: "#supplier-form", primary: true },
+          { label: "📈 Dashboard", href: "/admin/dashboard" },
+          { label: "🛒 Store", href: "/store" },
+          { label: "🏭 Warehouses", href: "/warehouses" },
+        ]}
+        stats={[
+          { value: totalSuppliers, label: "Total suppliers" },
+          { value: suppliersWithEmail, label: "With email" },
+          { value: suppliersWithPhone, label: "With phone" },
+          { value: activeCategories, label: "Categories" },
+        ]}
+        infoCards={[
+          { title: "Procurement", text: "Supplier database" },
+          { title: "Inventory", text: "Stock partners" },
+          { title: "Logistics", text: "Trade support" },
+          { title: "SADC", text: "Regional network" },
+        ]}
+      />
 
-          <h1
-            style={{
-              fontSize: "clamp(32px, 5vw, 48px)",
-              fontWeight: 800,
-              lineHeight: 1.1,
-              margin: "0 0 1rem",
-            }}
-          >
-            NamLogix{" "}
-            <span style={{ color: "#f97316" }}>AFRICA</span>
-            <br />
-            Supplier Intelligence
-          </h1>
-
-          <p
-            style={{
-              fontSize: "16px",
-              color: "#94a3b8",
-              lineHeight: 1.7,
-              maxWidth: "560px",
-              margin: "0 0 2rem",
-            }}
-          >
-            Manage trusted suppliers for inventory, warehouses, cargo movement,
-            aviation support, and Southern African trade operations.
-          </p>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              flexWrap: "wrap",
-              marginBottom: "2.5rem",
-            }}
-          >
-            <a
-              href="#supplier-form"
-              style={{
-                background: "#f97316",
-                color: "#fff",
-                padding: "12px 24px",
-                borderRadius: "100px",
-                fontSize: "14px",
-                fontWeight: 500,
-                textDecoration: "none",
-              }}
-            >
-              👥 Add Supplier
-            </a>
-
-            <Link
-              href="/admin/dashboard"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.3)",
-                padding: "12px 24px",
-                borderRadius: "100px",
-                fontSize: "14px",
-                textDecoration: "none",
-              }}
-            >
-              📈 Dashboard
-            </Link>
-
-            <Link
-              href="/store"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.3)",
-                padding: "12px 24px",
-                borderRadius: "100px",
-                fontSize: "14px",
-                textDecoration: "none",
-              }}
-            >
-              🛒 Store
-            </Link>
-
-            <Link
-              href="/warehouses"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.3)",
-                padding: "12px 24px",
-                borderRadius: "100px",
-                fontSize: "14px",
-                textDecoration: "none",
-              }}
-            >
-              🏭 Warehouses
-            </Link>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "2rem",
-              flexWrap: "wrap",
-              paddingTop: "1.5rem",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            {[
-              [totalSuppliers, "Total suppliers"],
-              [suppliersWithEmail, "With email"],
-              [suppliersWithPhone, "With phone"],
-              [activeCategories, "Categories"],
-            ].map(([num, label]) => (
-              <div key={label}>
-                <div style={{ fontSize: "24px", fontWeight: 700 }}>{num}</div>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#64748b",
-                    marginTop: "2px",
-                  }}
-                >
-                  {label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "#0f1f38",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-            padding: "1.5rem 2rem 2rem",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              marginBottom: "1rem",
-            }}
-          >
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "14px",
-                flexShrink: 0,
-              }}
-            >
-              ✦
-            </div>
-
-            <span
-              style={{
-                fontSize: "14px",
-                fontWeight: 500,
-                color: "#e2e8f0",
-              }}
-            >
-              Supplier Control Center
-            </span>
-
-            <span style={{ fontSize: "12px", color: "#64748b" }}>
-              Manage procurement, contacts, and trade partners
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="rounded-xl border border-white/10 bg-[#0a1628] p-4">
-              <p className="text-xs text-slate-500">Procurement</p>
-              <p className="text-sm text-slate-200 mt-1">
-                Supplier database
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-[#0a1628] p-4">
-              <p className="text-xs text-slate-500">Inventory</p>
-              <p className="text-sm text-slate-200 mt-1">
-                Stock partners
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-[#0a1628] p-4">
-              <p className="text-xs text-slate-500">Logistics</p>
-              <p className="text-sm text-slate-200 mt-1">
-                Trade support
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-[#0a1628] p-4">
-              <p className="text-xs text-slate-500">SADC</p>
-              <p className="text-sm text-slate-200 mt-1">
-                Regional network
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Page Content */}
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <div
-          id="supplier-form"
-          className="bg-white rounded-xl shadow p-6 mb-8"
-        >
+        <div id="supplier-form" className="bg-white rounded-xl shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-2">
             {editingId ? "Edit Supplier" : "Add New Supplier"}
           </h2>
