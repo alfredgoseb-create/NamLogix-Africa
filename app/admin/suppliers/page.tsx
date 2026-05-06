@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const emptyForm = {
   name: "",
@@ -124,56 +125,99 @@ export default function SuppliersPage() {
   const totalSuppliers = suppliers.length;
   const suppliersWithEmail = suppliers.filter((s) => s.email).length;
   const suppliersWithPhone = suppliers.filter((s) => s.phone).length;
+  const activeCategories = new Set(
+    suppliers.map((s) => s.category).filter(Boolean)
+  ).size;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Suppliers</h1>
-            <p className="text-gray-600">
-              Manage supplier contacts for inventory, logistics, and trade.
+      {/* HERO SECTION */}
+      <section className="relative overflow-hidden bg-[#0a1628] text-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-[#0a1628] to-orange-900/40" />
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-orange-500/20 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-6 py-20">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-2 text-sm text-blue-200 mb-6">
+              <span className="h-2 w-2 rounded-full bg-blue-400" />
+              Supplier Network Control
+            </div>
+
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
+              Manage Trusted{" "}
+              <span className="text-orange-400">Suppliers</span>
+              <br />
+              Across Southern Africa
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-lg text-slate-300 leading-8">
+              Build a reliable supplier database for inventory, trade,
+              warehouses, cargo movement, and regional logistics operations.
             </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <a
+                href="#supplier-form"
+                className="rounded-full bg-orange-500 px-7 py-3 font-semibold text-white hover:bg-orange-600 transition"
+              >
+                + Add Supplier
+              </a>
+
+              <Link
+                href="/admin/dashboard"
+                className="rounded-full border border-white/20 px-7 py-3 font-semibold text-white hover:bg-white/10 transition"
+              >
+                View Dashboard
+              </Link>
+            </div>
           </div>
 
-          <button
-            onClick={() => router.push("/admin/dashboard")}
-            className="bg-gray-100 px-5 py-2 rounded-lg hover:bg-gray-200"
-          >
-            ← Dashboard
-          </button>
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md p-5">
+              <p className="text-sm text-slate-300">Total Suppliers</p>
+              <h2 className="text-3xl font-bold mt-2">{totalSuppliers}</h2>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md p-5">
+              <p className="text-sm text-slate-300">With Email</p>
+              <h2 className="text-3xl font-bold mt-2">{suppliersWithEmail}</h2>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md p-5">
+              <p className="text-sm text-slate-300">With Phone</p>
+              <h2 className="text-3xl font-bold mt-2">{suppliersWithPhone}</h2>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md p-5">
+              <p className="text-sm text-slate-300">Categories</p>
+              <h2 className="text-3xl font-bold mt-2">{activeCategories}</h2>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <p className="text-sm text-gray-500">Total Suppliers</p>
-            <h2 className="text-3xl font-bold mt-2">{totalSuppliers}</h2>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <p className="text-sm text-gray-500">With Email</p>
-            <h2 className="text-3xl font-bold mt-2">{suppliersWithEmail}</h2>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <p className="text-sm text-gray-500">With Phone</p>
-            <h2 className="text-3xl font-bold mt-2">{suppliersWithPhone}</h2>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">
+      {/* PAGE CONTENT */}
+      <div className="max-w-6xl mx-auto p-6 -mt-8 relative z-10">
+        <div
+          id="supplier-form"
+          className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 mb-8"
+        >
+          <h2 className="text-xl font-semibold mb-2">
             {editingId ? "Edit Supplier" : "Add New Supplier"}
           </h2>
+
+          <p className="text-gray-500 mb-5">
+            Add supplier information for procurement, stock planning, and
+            logistics coordination.
+          </p>
 
           <form onSubmit={handleSave} className="grid md:grid-cols-2 gap-4">
             <input
               type="text"
               placeholder="Supplier Name *"
               value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="border rounded-lg px-3 py-2 md:col-span-2"
             />
 
@@ -191,9 +235,7 @@ export default function SuppliersPage() {
               type="text"
               placeholder="Category"
               value={form.category}
-              onChange={(e) =>
-                setForm({ ...form, category: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
               className="border rounded-lg px-3 py-2"
             />
 
@@ -201,9 +243,7 @@ export default function SuppliersPage() {
               type="email"
               placeholder="Email"
               value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="border rounded-lg px-3 py-2"
             />
 
@@ -211,9 +251,7 @@ export default function SuppliersPage() {
               type="text"
               placeholder="Phone"
               value={form.phone}
-              onChange={(e) =>
-                setForm({ ...form, phone: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="border rounded-lg px-3 py-2"
             />
 
@@ -243,9 +281,12 @@ export default function SuppliersPage() {
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">
-              All Suppliers
-            </h2>
+            <div>
+              <h2 className="text-xl font-semibold">All Suppliers</h2>
+              <p className="text-sm text-gray-500">
+                Supplier records connected to your trade infrastructure.
+              </p>
+            </div>
 
             <button
               onClick={fetchSuppliers}
@@ -258,20 +299,20 @@ export default function SuppliersPage() {
           {loading ? (
             <p>Loading suppliers...</p>
           ) : suppliers.length === 0 ? (
-            <p className="text-gray-500">
-              No suppliers yet. Add your first supplier above.
-            </p>
+            <div className="rounded-xl border border-dashed border-gray-300 p-8 text-center">
+              <p className="text-gray-500">
+                No suppliers yet. Add your first supplier above.
+              </p>
+            </div>
           ) : (
             <div className="space-y-4">
               {suppliers.map((supplier) => (
                 <div
                   key={supplier.id}
-                  className="border rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                  className="border rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 hover:shadow-md transition"
                 >
                   <div>
-                    <h3 className="text-lg font-semibold">
-                      {supplier.name}
-                    </h3>
+                    <h3 className="text-lg font-semibold">{supplier.name}</h3>
 
                     <p className="text-sm text-gray-500 mt-1">
                       {supplier.contact_name || "No contact person"}
