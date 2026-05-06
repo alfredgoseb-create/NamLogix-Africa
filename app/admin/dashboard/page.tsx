@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import PageHero from "@/app/components/PageHero";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -162,206 +162,33 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - same homepage style */}
-      <div
-        style={{
-          background: "#0a1628",
-          color: "#fff",
-          borderRadius: "0 0 24px 24px",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ padding: "3rem 2.5rem 2rem", position: "relative" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              background: "rgba(59,130,246,0.15)",
-              border: "1px solid rgba(59,130,246,0.3)",
-              color: "#93c5fd",
-              fontSize: "12px",
-              fontWeight: 500,
-              padding: "4px 12px",
-              borderRadius: "100px",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <span
-              style={{
-                width: "6px",
-                height: "6px",
-                background: "#3b82f6",
-                borderRadius: "50%",
-                display: "inline-block",
-              }}
-            />
-            Inventory Control Center
-          </div>
+      <PageHero
+        badge="Inventory Control Center"
+        titleTop="NamLogix"
+        titleHighlight="AFRICA"
+        titleBottom="Inventory Intelligence"
+        description="Manage products, stock levels, suppliers, warehouse readiness, and trade operations from one central dashboard."
+        actions={[
+          { label: "📦 Add Product", href: "#add-product", primary: true },
+          { label: "👥 Suppliers", href: "/admin/suppliers" },
+          { label: "🛒 Store", href: "/store" },
+          { label: "🏭 Warehouses", href: "/warehouses" },
+        ]}
+        stats={[
+          { value: products.length, label: "Products listed" },
+          { value: totalStock, label: "Total stock" },
+          { value: activeProducts, label: "Active products" },
+          { value: outOfStock, label: "Out of stock" },
+        ]}
+        infoCards={[
+          { title: "Inventory", text: "Stock control" },
+          { title: "Procurement", text: "Supplier ready" },
+          { title: "Alerts", text: `${lowStockProducts.length} low stock` },
+          { title: "Platform", text: "Admin only" },
+        ]}
+      />
 
-          <h1
-            style={{
-              fontSize: "clamp(32px, 5vw, 48px)",
-              fontWeight: 800,
-              lineHeight: 1.1,
-              margin: "0 0 1rem",
-            }}
-          >
-            NamLogix{" "}
-            <span style={{ color: "#f97316" }}>AFRICA</span>
-            <br />
-            Inventory Intelligence
-          </h1>
-
-          <p
-            style={{
-              fontSize: "16px",
-              color: "#94a3b8",
-              lineHeight: 1.7,
-              maxWidth: "560px",
-              margin: "0 0 2rem",
-            }}
-          >
-            Manage products, stock levels, suppliers, warehouse readiness, and
-            trade operations from one central dashboard.
-          </p>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              flexWrap: "wrap",
-              marginBottom: "2.5rem",
-            }}
-          >
-            <a
-              href="#add-product"
-              style={{
-                background: "#f97316",
-                color: "#fff",
-                padding: "12px 24px",
-                borderRadius: "100px",
-                fontSize: "14px",
-                fontWeight: 500,
-                textDecoration: "none",
-              }}
-            >
-              📦 Add Product
-            </a>
-
-            <Link
-              href="/admin/suppliers"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.3)",
-                padding: "12px 24px",
-                borderRadius: "100px",
-                fontSize: "14px",
-                textDecoration: "none",
-              }}
-            >
-              👥 Suppliers
-            </Link>
-
-            <Link
-              href="/store"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.3)",
-                padding: "12px 24px",
-                borderRadius: "100px",
-                fontSize: "14px",
-                textDecoration: "none",
-              }}
-            >
-              🛒 Store
-            </Link>
-
-            <Link
-              href="/warehouses"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.3)",
-                padding: "12px 24px",
-                borderRadius: "100px",
-                fontSize: "14px",
-                textDecoration: "none",
-              }}
-            >
-              🏭 Warehouses
-            </Link>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "2rem",
-              flexWrap: "wrap",
-              paddingTop: "1.5rem",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            {[
-              [products.length, "Products listed"],
-              [totalStock, "Total stock"],
-              [activeProducts, "Active products"],
-              [outOfStock, "Out of stock"],
-            ].map(([num, label]) => (
-              <div key={label}>
-                <div style={{ fontSize: "24px", fontWeight: 700 }}>{num}</div>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#64748b",
-                    marginTop: "2px",
-                  }}
-                >
-                  {label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "#0f1f38",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-            padding: "1.5rem 2rem 2rem",
-          }}
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="rounded-xl border border-white/10 bg-[#0a1628] p-4">
-              <p className="text-xs text-slate-500">Inventory</p>
-              <p className="text-sm text-slate-200 mt-1">Stock control</p>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-[#0a1628] p-4">
-              <p className="text-xs text-slate-500">Procurement</p>
-              <p className="text-sm text-slate-200 mt-1">Supplier ready</p>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-[#0a1628] p-4">
-              <p className="text-xs text-slate-500">Alerts</p>
-              <p className="text-sm text-slate-200 mt-1">
-                {lowStockProducts.length} low stock
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-[#0a1628] p-4">
-              <p className="text-xs text-slate-500">Platform</p>
-              <p className="text-sm text-slate-200 mt-1">Admin only</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Page Content */}
       <div className="max-w-7xl mx-auto px-6 py-10">
-        {/* Add Product Form */}
         <div id="add-product" className="bg-white rounded-xl shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-2">Add New Product</h2>
 
@@ -484,7 +311,6 @@ export default function Dashboard() {
           </form>
         </div>
 
-        {/* Low Stock */}
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">⚠️ Low Stock Monitor</h2>
 
@@ -507,7 +333,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Product List */}
         <div className="bg-white rounded-xl shadow p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
