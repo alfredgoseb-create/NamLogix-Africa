@@ -1,223 +1,233 @@
 "use client";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import Link from "next/link";
 
-type Product = {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  unit: string;
-  stock_level: number;
-  status: string;
-  image_url: string;
-  supplier: string;
-};
+import PageHero from "@/app/components/PageHero";
+import DashboardCard from "@/app/components/DashboardCard";
+import SectionHeader from "@/app/components/SectionHeader";
+import EmptyState from "@/app/components/EmptyState";
+import AppCard from "@/app/components/AppCard";
+import Button from "@/app/components/Button";
+
+const categories = [
+  {
+    title: "Construction",
+    desc: "Building materials, cement, steel, and industrial products.",
+    icon: "🏗️",
+  },
+  {
+    title: "Agriculture",
+    desc: "Farm supplies, seeds, tools, and agricultural logistics.",
+    icon: "🌾",
+  },
+  {
+    title: "Mining",
+    desc: "Mining equipment, machinery, and industrial support products.",
+    icon: "⛏️",
+  },
+  {
+    title: "Automotive",
+    desc: "Vehicle parts, transport accessories, and fleet supplies.",
+    icon: "🚛",
+  },
+  {
+    title: "Retail",
+    desc: "Consumer products, electronics, and general merchandise.",
+    icon: "🛒",
+  },
+  {
+    title: "Warehouse Goods",
+    desc: "Products stored inside logistics and warehouse facilities.",
+    icon: "🏭",
+  },
+];
 
 export default function StorePage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [stockFilter, setStockFilter] = useState("all");
-  const [categories, setCategories] = useState<string[]>([]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  async function fetchProducts() {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .eq("status", "active")
-      .order("created_at", { ascending: false });
-    if (error) {
-      console.error(error);
-      alert("Failed to load products");
-    } else {
-      setProducts(data || []);
-      const uniqueCategories = [...new Set((data || []).map(p => p.category).filter(Boolean))];
-      setCategories(uniqueCategories);
-    }
-    setLoading(false);
-  }
-
-  const filteredProducts = products.filter(product => {
-    if (selectedCategory !== "all" && product.category !== selectedCategory) return false;
-    if (searchQuery.trim() !== "") {
-      const query = searchQuery.toLowerCase();
-      const nameMatch = product.name.toLowerCase().includes(query);
-      const descMatch = product.description?.toLowerCase().includes(query);
-      if (!nameMatch && !descMatch) return false;
-    }
-    if (stockFilter === "inStock" && Number(product.stock_level) <= 0) return false;
-    if (stockFilter === "outOfStock" && Number(product.stock_level) > 0) return false;
-    return true;
-  });
-
-  const clearFilters = () => {
-    setSelectedCategory("all");
-    setSearchQuery("");
-    setStockFilter("all");
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center flex-wrap gap-4">
-          <h1 className="text-2xl font-bold">
-            NamLogix <span className="text-blue-600">AFRICA</span>
-          </h1>
-          <div className="flex gap-4">
-            <Link href="/request-cargo" className="text-sm text-gray-600 hover:text-gray-900">
-              Request Cargo
-            </Link>
-            <Link href="/cargo-bids" className="text-sm text-gray-600 hover:text-gray-900">
-              Place Bid
-            </Link>
-            <Link href="/trip-offers" className="text-sm text-gray-600 hover:text-gray-900">
-              Find a Ride
-            </Link>
-            <Link href="/routes" className="text-sm text-gray-600 hover:text-gray-900">
-              Trade Routes
-            </Link>
-            <Link href="/order-status" className="text-sm text-gray-600 hover:text-gray-900">
-              Track Order
-            </Link>
-            <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
-              Admin Login
-            </Link>
+      <PageHero
+        badge="Marketplace Store"
+        titleTop="NamLogix"
+        titleHighlight="AFRICA"
+        titleBottom="Trade Marketplace"
+        description="Buy, sell, and manage products across Namibia and Southern Africa using the NamLogix marketplace infrastructure."
+        actions={[
+          {
+            label: "🛒 Browse Products",
+            href: "#products",
+            primary: true,
+          },
+          {
+            label: "🏭 Warehouses",
+            href: "/admin/warehouses",
+          },
+          {
+            label: "📦 Post Cargo",
+            href: "/request-cargo",
+          },
+          {
+            label: "🚚 Cargo Requests",
+            href: "/cargo-requests",
+          },
+        ]}
+        stats={[
+          {
+            value: "B2B",
+            label: "Marketplace model",
+          },
+          {
+            value: "SADC",
+            label: "Regional reach",
+          },
+          {
+            value: "NAD",
+            label: "Currency support",
+          },
+          {
+            value: "Live",
+            label: "Store foundation",
+          },
+        ]}
+        infoCards={[
+          {
+            title: "Warehouses",
+            text: "Inventory management",
+          },
+          {
+            title: "Suppliers",
+            text: "Regional businesses",
+          },
+          {
+            title: "Trade",
+            text: "Cross-border commerce",
+          },
+          {
+            title: "Logistics",
+            text: "Delivery integration",
+          },
+        ]}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        {/* ANALYTICS */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <DashboardCard
+            title="Marketplace"
+            value="B2B"
+            subtitle="Business trade network"
+            color="blue"
+          />
+
+          <DashboardCard
+            title="Suppliers"
+            value={0}
+            subtitle="Future verified vendors"
+            color="green"
+          />
+
+          <DashboardCard
+            title="Products"
+            value={0}
+            subtitle="Marketplace inventory"
+            color="orange"
+          />
+
+          <DashboardCard
+            title="Status"
+            value="Ready"
+            subtitle="Store infrastructure"
+            color="red"
+          />
+        </div>
+
+        {/* QUICK ACTIONS */}
+        <AppCard className="mb-8">
+          <SectionHeader
+            title="⚡ Marketplace Actions"
+            subtitle="Move between products, logistics, and trade services."
+          />
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button href="/request-cargo" variant="primary" fullWidth>
+              📦 Post Cargo
+            </Button>
+
+            <Button href="/cargo-requests" variant="secondary" fullWidth>
+              🚚 Cargo Requests
+            </Button>
+
+            <Button href="/trade-routes" variant="outline" fullWidth>
+              🛣️ Trade Routes
+            </Button>
+
+            <Button href="/trip-offers" variant="outline" fullWidth>
+              🚛 Trip Offers
+            </Button>
           </div>
-        </div>
-      </header>
+        </AppCard>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">Our Products</h2>
-          <p className="text-gray-600">Explore our inventory – quality products for Southern Africa</p>
-        </div>
+        {/* CATEGORIES */}
+        <AppCard id="products" className="mb-8">
+          <SectionHeader
+            title="🛒 Marketplace Categories"
+            subtitle="The NamLogix store can support multiple industries and trade sectors."
+          />
 
-        {/* Search and Filter Bar */}
-        <div className="bg-white rounded-lg shadow p-4 mb-8">
-          <div className="grid md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
-              <input
-                type="text"
-                placeholder="Search by name or description..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Stock Status</label>
-              <select
-                value={stockFilter}
-                onChange={(e) => setStockFilter(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2"
-              >
-                <option value="all">All Products</option>
-                <option value="inStock">In Stock Only</option>
-                <option value="outOfStock">Out of Stock Only</option>
-              </select>
-            </div>
-            <div className="flex items-end">
-              <button
-                onClick={clearFilters}
-                className="w-full bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition"
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
-        </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map((item) => (
+              <AppCard key={item.title} hover>
+                <div className="text-4xl mb-4">{item.icon}</div>
 
-        {/* Category Filter Buttons */}
-        {categories.length > 0 && (
-          <div className="mb-8 flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`px-4 py-2 rounded-full text-sm ${
-                selectedCategory === "all"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              All Categories
-            </button>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm ${
-                  selectedCategory === cat
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                {cat}
-              </button>
+                <h3 className="font-semibold text-lg">
+                  {item.title}
+                </h3>
+
+                <p className="text-sm text-gray-500 mt-2 leading-6">
+                  {item.desc}
+                </p>
+              </AppCard>
             ))}
           </div>
-        )}
+        </AppCard>
 
-        {/* Product Count */}
-        <div className="mb-4 text-sm text-gray-500">
-          Showing {filteredProducts.length} of {products.length} products
-        </div>
+        {/* FUTURE STORE */}
+        <AppCard>
+          <SectionHeader
+            title="🏭 Future Marketplace Features"
+            subtitle="The NamLogix marketplace can become a full African trade infrastructure platform."
+          />
 
-        {/* Product Grid */}
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">No products match your filters.</div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <Link key={product.id} href={`/store/${product.id}`}>
-                <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer">
-                  <div className="h-48 bg-gray-100 relative">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">No image</div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-lg mb-1">{product.name}</h3>
-                    {product.category && (
-                      <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{product.category}</span>
-                    )}
-                    <p className="text-gray-500 text-sm mt-2 line-clamp-2">{product.description}</p>
-                    <div className="mt-3 flex justify-between items-center">
-                      <div>
-                        {product.unit && <span className="text-xs text-gray-500">Unit: {product.unit}</span>}
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className={`text-sm font-medium ${Number(product.stock_level) > 0 ? "text-green-600" : "text-red-600"}`}>
-                            {Number(product.stock_level) > 0 ? `In Stock (${product.stock_level})` : "Out of Stock"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              "Supplier dashboards",
+              "Warehouse inventory",
+              "Product images",
+              "Order management",
+              "Shipment tracking",
+              "Transport bidding",
+              "Cross-border trade",
+              "Regional pricing",
+              "Customs documents",
+            ].map((feature) => (
+              <div
+                key={feature}
+                className="bg-gray-50 border rounded-xl p-4"
+              >
+                <p className="font-medium text-gray-700">
+                  ✅ {feature}
+                </p>
+              </div>
             ))}
           </div>
-        )}
-      </main>
+        </AppCard>
 
-      <footer className="bg-white border-t mt-12 py-6">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-          © {new Date().getFullYear()} NamLogix Africa – Connecting Southern African Trade
+        {/* EMPTY STATE */}
+        <div className="mt-8">
+          <EmptyState
+            icon="🛒"
+            title="Marketplace products coming soon"
+            message="Suppliers, warehouses, and traders will be able to upload products, manage inventory, and connect logistics directly into the NamLogix platform."
+          />
         </div>
-      </footer>
+      </div>
     </div>
   );
 }
