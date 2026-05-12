@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 const links = [
   { label: "Dashboard", href: "/admin/dashboard", icon: "📊" },
   { label: "Analytics", href: "/admin/analytics", icon: "📈" },
+  { label: "Reports", href: "/admin/reports", icon: "📑" },
   { label: "Suppliers", href: "/admin/suppliers", icon: "👥" },
   { label: "Warehouses", href: "/admin/warehouses", icon: "🏭" },
   { label: "Stock Locations", href: "/admin/stock-locations", icon: "📍" },
@@ -19,6 +20,7 @@ const links = [
   { label: "Customs Docs", href: "/admin/customs-documents", icon: "📄" },
   { label: "Inquiries", href: "/admin/inquiries", icon: "📩" },
   { label: "Users", href: "/admin/users", icon: "👤" },
+  { label: "Settings", href: "/admin/settings", icon: "⚙️" },
 ];
 
 export default function AdminLayout({
