@@ -6,7 +6,7 @@ type ButtonProps = {
   href?: string;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
-  variant?: "primary" | "secondary" | "danger" | "success";
+  variant?: "primary" | "secondary" | "danger" | "success" | "outline";
   fullWidth?: boolean;
   disabled?: boolean;
 };
@@ -28,6 +28,7 @@ export default function Button({
     secondary: "bg-gray-100 text-gray-800 hover:bg-gray-200",
     danger: "bg-red-50 text-red-600 hover:bg-red-100",
     success: "bg-green-600 text-white hover:bg-green-700",
+    outline: "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50",
   };
 
   const widthClass = fullWidth ? "w-full" : "";
