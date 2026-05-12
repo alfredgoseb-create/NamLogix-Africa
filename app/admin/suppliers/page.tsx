@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import PageHero from "@/app/components/PageHero";
+import DashboardCard from "@/app/components/DashboardCard";
+import SectionHeader from "@/app/components/SectionHeader";
+import EmptyState from "@/app/components/EmptyState";
 
 const emptyForm = {
   name: "",
@@ -29,7 +32,10 @@ export default function SuppliersPage() {
 
   async function checkUser() {
     const { data } = await supabase.auth.getUser();
-    if (!data.user) router.push("/login");
+
+    if (!data.user) {
+      router.push("/login");
+    }
   }
 
   async function fetchSuppliers() {
@@ -76,7 +82,9 @@ export default function SuppliersPage() {
         return;
       }
     } else {
-      const { error } = await supabase.from("suppliers").insert([cleanForm]);
+      const { error } = await supabase
+        .from("suppliers")
+        .insert([cleanForm]);
 
       if (error) {
         alert("Failed to add supplier: " + error.message);
@@ -92,7 +100,10 @@ export default function SuppliersPage() {
   async function handleDelete(id) {
     if (!confirm("Delete this supplier?")) return;
 
-    const { error } = await supabase.from("suppliers").delete().eq("id", id);
+    const { error } = await supabase
+      .from("suppliers")
+      .delete()
+      .eq("id", id);
 
     if (error) {
       alert("Failed to delete supplier: " + error.message);
@@ -130,42 +141,120 @@ export default function SuppliersPage() {
         titleBottom="Supplier Intelligence"
         description="Manage trusted suppliers for inventory, warehouses, cargo movement, aviation support, and Southern African trade operations."
         actions={[
-          { label: "👥 Add Supplier", href: "#supplier-form", primary: true },
-          { label: "📈 Dashboard", href: "/admin/dashboard" },
-          { label: "🛒 Store", href: "/store" },
-          { label: "🏭 Warehouses", href: "/warehouses" },
+          {
+            label: "👥 Add Supplier",
+            href: "#supplier-form",
+            primary: true,
+          },
+          {
+            label: "📈 Dashboard",
+            href: "/admin/dashboard",
+          },
+          {
+            label: "🛒 Store",
+            href: "/store",
+          },
+          {
+            label: "🏭 Warehouses",
+            href: "/warehouses",
+          },
         ]}
         stats={[
-          { value: totalSuppliers, label: "Total suppliers" },
-          { value: suppliersWithEmail, label: "With email" },
-          { value: suppliersWithPhone, label: "With phone" },
-          { value: activeCategories, label: "Categories" },
+          {
+            value: totalSuppliers,
+            label: "Total suppliers",
+          },
+          {
+            value: suppliersWithEmail,
+            label: "With email",
+          },
+          {
+            value: suppliersWithPhone,
+            label: "With phone",
+          },
+          {
+            value: activeCategories,
+            label: "Categories",
+          },
         ]}
         infoCards={[
-          { title: "Procurement", text: "Supplier database" },
-          { title: "Inventory", text: "Stock partners" },
-          { title: "Logistics", text: "Trade support" },
-          { title: "SADC", text: "Regional network" },
+          {
+            title: "Procurement",
+            text: "Supplier database",
+          },
+          {
+            title: "Inventory",
+            text: "Stock partners",
+          },
+          {
+            title: "Logistics",
+            text: "Trade support",
+          },
+          {
+            title: "SADC",
+            text: "Regional network",
+          },
         ]}
       />
 
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <div id="supplier-form" className="bg-white rounded-xl shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-2">
-            {editingId ? "Edit Supplier" : "Add New Supplier"}
-          </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <DashboardCard
+            title="Suppliers"
+            value={totalSuppliers}
+            subtitle="Registered supplier partners"
+            color="blue"
+          />
 
-          <p className="text-gray-500 mb-5">
-            Add suppliers that support your inventory, store, logistics, and
-            procurement operations.
-          </p>
+          <DashboardCard
+            title="With Email"
+            value={suppliersWithEmail}
+            subtitle="Reachable by email"
+            color="green"
+          />
 
-          <form onSubmit={handleSave} className="grid md:grid-cols-2 gap-4">
+          <DashboardCard
+            title="With Phone"
+            value={suppliersWithPhone}
+            subtitle="Reachable by phone"
+            color="orange"
+          />
+
+          <DashboardCard
+            title="Categories"
+            value={activeCategories}
+            subtitle="Supplier business groups"
+            color="red"
+          />
+        </div>
+
+        <div
+          id="supplier-form"
+          className="bg-white rounded-xl shadow p-6 mb-8"
+        >
+          <SectionHeader
+            title={
+              editingId
+                ? "✏️ Edit Supplier"
+                : "👥 Add New Supplier"
+            }
+            subtitle="Add suppliers that support your inventory, store, logistics, and procurement operations."
+          />
+
+          <form
+            onSubmit={handleSave}
+            className="grid md:grid-cols-2 gap-4"
+          >
             <input
               type="text"
               placeholder="Supplier Name *"
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  name: e.target.value,
+                })
+              }
               className="border rounded-lg px-3 py-2 md:col-span-2"
             />
 
@@ -174,7 +263,10 @@ export default function SuppliersPage() {
               placeholder="Contact Person"
               value={form.contact_name}
               onChange={(e) =>
-                setForm({ ...form, contact_name: e.target.value })
+                setForm({
+                  ...form,
+                  contact_name: e.target.value,
+                })
               }
               className="border rounded-lg px-3 py-2"
             />
@@ -183,7 +275,12 @@ export default function SuppliersPage() {
               type="text"
               placeholder="Category"
               value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  category: e.target.value,
+                })
+              }
               className="border rounded-lg px-3 py-2"
             />
 
@@ -191,7 +288,12 @@ export default function SuppliersPage() {
               type="email"
               placeholder="Email"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  email: e.target.value,
+                })
+              }
               className="border rounded-lg px-3 py-2"
             />
 
@@ -199,7 +301,12 @@ export default function SuppliersPage() {
               type="text"
               placeholder="Phone"
               value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  phone: e.target.value,
+                })
+              }
               className="border rounded-lg px-3 py-2"
             />
 
@@ -228,28 +335,27 @@ export default function SuppliersPage() {
         </div>
 
         <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold">👥 Supplier Directory</h2>
-              <p className="text-sm text-gray-500">
-                All registered suppliers and trade partners.
-              </p>
-            </div>
-
-            <button
-              onClick={fetchSuppliers}
-              className="bg-gray-100 px-5 py-2 rounded-lg hover:bg-gray-200"
-            >
-              Refresh
-            </button>
-          </div>
+          <SectionHeader
+            title="👥 Supplier Directory"
+            subtitle="All registered suppliers and trade partners."
+            action={
+              <button
+                onClick={fetchSuppliers}
+                className="bg-gray-100 px-5 py-2 rounded-lg hover:bg-gray-200"
+              >
+                Refresh
+              </button>
+            }
+          />
 
           {loading ? (
             <p>Loading suppliers...</p>
           ) : suppliers.length === 0 ? (
-            <div className="text-center text-gray-500 border border-dashed rounded-xl p-8">
-              No suppliers yet. Add your first supplier above.
-            </div>
+            <EmptyState
+              icon="👥"
+              title="No suppliers yet"
+              message="Add your first supplier to start building your procurement and trade partner network."
+            />
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {suppliers.map((supplier) => (
@@ -257,7 +363,9 @@ export default function SuppliersPage() {
                   key={supplier.id}
                   className="bg-white border rounded-xl shadow-sm p-5 hover:shadow-lg transition"
                 >
-                  <div className="font-semibold text-lg">{supplier.name}</div>
+                  <div className="font-semibold text-lg">
+                    {supplier.name}
+                  </div>
 
                   <div className="text-sm text-gray-500 mt-1">
                     {supplier.contact_name || "No contact person"}
