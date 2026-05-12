@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 type Stat = {
   value: string | number;
   label: string;
@@ -110,7 +108,7 @@ export default function PageHero({
             }}
           >
             {actions.map((action) => (
-              <Link
+              <a
                 key={action.href + action.label}
                 href={action.href}
                 style={{
@@ -127,7 +125,7 @@ export default function PageHero({
                 }}
               >
                 {action.label}
-              </Link>
+              </a>
             ))}
           </div>
         )}
@@ -147,6 +145,7 @@ export default function PageHero({
                 <div style={{ fontSize: "24px", fontWeight: 700 }}>
                   {stat.value}
                 </div>
+
                 <div
                   style={{
                     fontSize: "12px",
