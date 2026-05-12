@@ -10,16 +10,21 @@ export default function EmptyState({
   icon = "📭",
 }: EmptyStateProps) {
   return (
-    <div className="text-center border border-dashed border-gray-300 rounded-xl p-10 bg-gray-50">
-      <div className="text-4xl mb-3">{icon}</div>
+    <div className="relative overflow-hidden text-center border border-dashed border-blue-200 rounded-2xl p-10 bg-gradient-to-br from-blue-50 via-white to-orange-50">
+      <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-orange-200/40 blur-2xl" />
+      <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-blue-200/40 blur-2xl" />
 
-      <h3 className="text-lg font-semibold text-gray-800">
-        {title}
-      </h3>
+      <div className="relative">
+        <div className="text-5xl mb-4">{icon}</div>
 
-      <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
-        {message}
-      </p>
+        <h3 className="text-xl font-bold text-gray-900">
+          {title}
+        </h3>
+
+        <p className="text-sm text-gray-500 mt-3 max-w-md mx-auto leading-6">
+          {message}
+        </p>
+      </div>
     </div>
   );
 }

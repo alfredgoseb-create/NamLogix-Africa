@@ -2,7 +2,7 @@ type DashboardCardProps = {
   title: string;
   value: string | number;
   subtitle?: string;
-  color?: "blue" | "green" | "orange" | "red";
+  color?: "blue" | "green" | "orange" | "red" | "purple";
 };
 
 export default function DashboardCard({
@@ -13,27 +13,33 @@ export default function DashboardCard({
 }: DashboardCardProps) {
   const colors = {
     blue: {
-      bg: "bg-blue-50",
-      text: "text-blue-700",
-      border: "border-blue-100",
+      bg: "from-blue-600 to-blue-800",
+      ring: "ring-blue-100",
+      icon: "bg-blue-100 text-blue-700",
     },
 
     green: {
-      bg: "bg-green-50",
-      text: "text-green-700",
-      border: "border-green-100",
+      bg: "from-emerald-600 to-green-800",
+      ring: "ring-green-100",
+      icon: "bg-green-100 text-green-700",
     },
 
     orange: {
-      bg: "bg-orange-50",
-      text: "text-orange-700",
-      border: "border-orange-100",
+      bg: "from-orange-500 to-orange-700",
+      ring: "ring-orange-100",
+      icon: "bg-orange-100 text-orange-700",
     },
 
     red: {
-      bg: "bg-red-50",
-      text: "text-red-700",
-      border: "border-red-100",
+      bg: "from-red-500 to-red-700",
+      ring: "ring-red-100",
+      icon: "bg-red-100 text-red-700",
+    },
+
+    purple: {
+      bg: "from-purple-600 to-indigo-800",
+      ring: "ring-purple-100",
+      icon: "bg-purple-100 text-purple-700",
     },
   };
 
@@ -41,19 +47,27 @@ export default function DashboardCard({
 
   return (
     <div
-      className={`rounded-2xl border ${c.border} ${c.bg} p-6`}
+      className={`
+        relative overflow-hidden rounded-2xl p-6 text-white shadow-lg ring-1 ${c.ring}
+        bg-gradient-to-br ${c.bg}
+      `}
     >
-      <p className="text-sm text-gray-500">{title}</p>
+      <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10" />
+      <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-black/10" />
 
-      <h2 className={`text-3xl font-bold mt-2 ${c.text}`}>
-        {value}
-      </h2>
+      <div className="relative">
+        <p className="text-sm text-white/75">{title}</p>
 
-      {subtitle && (
-        <p className="text-xs text-gray-400 mt-2">
-          {subtitle}
-        </p>
-      )}
+        <h2 className="text-3xl font-extrabold mt-2">
+          {value}
+        </h2>
+
+        {subtitle && (
+          <p className="text-xs text-white/70 mt-2">
+            {subtitle}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
