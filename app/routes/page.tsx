@@ -1,128 +1,243 @@
-// app/routes/page.tsx
 "use client";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import Link from "next/link";
 
-type TradeRoute = {
-  id: string;
-  origin: string;
-  destination: string;
-  carrier: string;
-  estimated_days: number;
-  cost: number;
-  distance_km: number;
-  description: string;
-  is_active: boolean;
-};
+import PageHero from "@/app/components/PageHero";
+import DashboardCard from "@/app/components/DashboardCard";
+import SectionHeader from "@/app/components/SectionHeader";
+import AppCard from "@/app/components/AppCard";
+import Button from "@/app/components/Button";
+
+const logisticsRoutes = [
+  {
+    route: "Walvis Bay → Windhoek",
+    type: "Port Logistics",
+    distance: "390 km",
+    description:
+      "Main cargo corridor connecting Namibia’s largest port to the capital city and warehouse infrastructure.",
+  },
+  {
+    route: "Windhoek → Johannesburg",
+    type: "Regional Trade",
+    distance: "1,400 km",
+    description:
+      "High-volume Southern African trade lane supporting industrial and retail movement.",
+  },
+  {
+    route: "Windhoek → Cape Town",
+    type: "Cross-Border",
+    distance: "1,500 km",
+    description:
+      "Important transport route for retail goods, exports, and logistics operations.",
+  },
+  {
+    route: "Walvis Bay → Botswana",
+    type: "Transit Corridor",
+    distance: "Regional",
+    description:
+      "Strategic inland trade route supporting regional imports and exports.",
+  },
+  {
+    route: "Namibia → Zambia",
+    type: "Mining Logistics",
+    distance: "Regional",
+    description:
+      "Supports mining, agricultural, and industrial cargo movement across borders.",
+  },
+  {
+    route: "Namibia → Angola",
+    type: "Northern Corridor",
+    distance: "Regional",
+    description:
+      "Fast-growing trade route supporting construction and retail supply chains.",
+  },
+];
 
 export default function RoutesPage() {
-  const [routes, setRoutes] = useState<TradeRoute[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchOrigin, setSearchOrigin] = useState("");
-  const [searchDest, setSearchDest] = useState("");
-
-  useEffect(() => {
-    fetchRoutes();
-  }, []);
-
-  async function fetchRoutes() {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("trade_routes")
-      .select("*")
-      .eq("is_active", true)
-      .order("origin", { ascending: true });
-    if (error) {
-      console.error(error);
-      alert("Failed to fetch routes: " + error.message);
-    } else {
-      setRoutes(data || []);
-    }
-    setLoading(false);
-  }
-
-  const filteredRoutes = routes.filter(route => {
-    if (searchOrigin && !route.origin.toLowerCase().includes(searchOrigin.toLowerCase())) return false;
-    if (searchDest && !route.destination.toLowerCase().includes(searchDest.toLowerCase())) return false;
-    return true;
-  });
-
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">
-            NamLogix <span className="text-blue-600">AFRICA</span>
-          </h1>
-          <div className="flex gap-4">
-            <Link href="/routes" className="text-sm text-blue-600 hover:underline">
-              Trade Routes
-            </Link>
-            <Link href="/store" className="text-sm text-gray-600 hover:text-gray-900">
-              Store
-            </Link>
-            <Link href="/order-status" className="text-sm text-gray-600 hover:text-gray-900">
-              Track Order
-            </Link>
+      <PageHero
+        badge="Regional Logistics"
+        titleTop="NamLogix"
+        titleHighlight="AFRICA"
+        titleBottom="Transport Routes"
+        description="Explore logistics corridors, cargo movement lanes, transport routes, and regional trade infrastructure across Southern Africa."
+        actions={[
+          {
+            label: "🛣️ Explore Routes",
+            href: "#routes",
+            primary: true,
+          },
+          {
+            label: "📦 Request Cargo",
+            href: "/request-cargo",
+          },
+          {
+            label: "🚛 Trip Offers",
+            href: "/trip-offers",
+          },
+          {
+            label: "💰 Cargo Bids",
+            href: "/bids",
+          },
+        ]}
+        stats={[
+          {
+            value: "SADC",
+            label: "Regional reach",
+          },
+          {
+            value: "Cross-border",
+            label: "Trade lanes",
+          },
+          {
+            value: "Cargo",
+            label: "Logistics support",
+          },
+          {
+            value: "Live",
+            label: "Infrastructure",
+          },
+        ]}
+        infoCards={[
+          {
+            title: "Ports",
+            text: "Walvis Bay gateway",
+          },
+          {
+            title: "Road",
+            text: "Regional corridors",
+          },
+          {
+            title: "Cargo",
+            text: "Trade movement",
+          },
+          {
+            title: "Transport",
+            text: "Connected routes",
+          },
+        ]}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        {/* STATS */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <DashboardCard
+            title="Trade Region"
+            value="SADC"
+            subtitle="Southern Africa"
+            color="blue"
+          />
+
+          <DashboardCard
+            title="Gateway"
+            value="Walvis Bay"
+            subtitle="Port logistics"
+            color="green"
+          />
+
+          <DashboardCard
+            title="Transport"
+            value="Routes"
+            subtitle="Connected corridors"
+            color="orange"
+          />
+
+          <DashboardCard
+            title="Status"
+            value="Growing"
+            subtitle="Regional expansion"
+            color="red"
+          />
+        </div>
+
+        {/* QUICK ACTIONS */}
+        <AppCard className="mb-8">
+          <SectionHeader
+            title="⚡ Logistics Actions"
+            subtitle="Navigate through the NamLogix transport ecosystem."
+          />
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button href="/request-cargo" variant="primary" fullWidth>
+              📦 Request Cargo
+            </Button>
+
+            <Button href="/cargo-requests" variant="secondary" fullWidth>
+              🚚 Cargo Requests
+            </Button>
+
+            <Button href="/trip-offers" variant="outline" fullWidth>
+              🚛 Trip Offers
+            </Button>
+
+            <Button href="/store" variant="outline" fullWidth>
+              🛒 Marketplace
+            </Button>
           </div>
-        </div>
-      </header>
+        </AppCard>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Trade Routes</h1>
-        <p className="text-gray-600 mb-6">Explore shipping routes across Southern Africa.</p>
-
-        <div className="bg-white rounded-xl shadow p-4 mb-8 flex flex-col sm:flex-row gap-4">
-          <input
-            type="text"
-            placeholder="From (origin)"
-            value={searchOrigin}
-            onChange={(e) => setSearchOrigin(e.target.value)}
-            className="flex-1 border rounded-lg px-3 py-2"
+        {/* ROUTES */}
+        <AppCard id="routes" className="mb-8">
+          <SectionHeader
+            title="🛣️ Logistics Corridors"
+            subtitle="Major transport and cargo routes across Namibia and Southern Africa."
           />
-          <input
-            type="text"
-            placeholder="To (destination)"
-            value={searchDest}
-            onChange={(e) => setSearchDest(e.target.value)}
-            className="flex-1 border rounded-lg px-3 py-2"
-          />
-          <button
-            onClick={() => { setSearchOrigin(""); setSearchDest(""); }}
-            className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
-          >
-            Clear
-          </button>
-        </div>
 
-        {loading ? (
-          <p>Loading routes...</p>
-        ) : filteredRoutes.length === 0 ? (
-          <p className="text-gray-500">No routes match your criteria.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredRoutes.map((route) => (
-              <div key={route.id} className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
-                <h3 className="text-xl font-bold">{route.origin} → {route.destination}</h3>
-                {route.carrier && <p className="text-sm text-gray-600 mt-1">Carrier: {route.carrier}</p>}
-                <div className="mt-4 space-y-2 text-sm">
-                  {route.estimated_days && <p>⏱️ Estimated transit: {route.estimated_days} days</p>}
-                  {route.distance_km && <p>📏 Distance: {route.distance_km.toLocaleString()} km</p>}
-                  {route.cost && <p className="font-semibold text-lg text-green-600">N${route.cost.toLocaleString()}</p>}
-                  {route.description && <p className="text-gray-500 text-xs mt-2">{route.description}</p>}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {logisticsRoutes.map((item) => (
+              <AppCard key={item.route} hover>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+                    {item.type}
+                  </span>
+
+                  <span className="text-xs text-gray-500">
+                    {item.distance}
+                  </span>
                 </div>
+
+                <h3 className="font-semibold text-lg">
+                  {item.route}
+                </h3>
+
+                <p className="text-sm text-gray-500 mt-3 leading-6">
+                  {item.description}
+                </p>
+              </AppCard>
+            ))}
+          </div>
+        </AppCard>
+
+        {/* FUTURE FEATURES */}
+        <AppCard>
+          <SectionHeader
+            title="🌍 Future Route Intelligence"
+            subtitle="NamLogix can become a real-time African logistics infrastructure platform."
+          />
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              "Live vehicle tracking",
+              "Real-time traffic updates",
+              "Border crossing intelligence",
+              "Fuel station network",
+              "Customs clearance support",
+              "AI logistics optimization",
+              "Cargo availability mapping",
+              "Warehouse route integration",
+              "Regional trade analytics",
+            ].map((feature) => (
+              <div
+                key={feature}
+                className="bg-gray-50 border rounded-xl p-4"
+              >
+                <p className="font-medium text-gray-700">
+                  🚀 {feature}
+                </p>
               </div>
             ))}
           </div>
-        )}
-      </main>
-
-      <footer className="bg-white border-t mt-12 py-6">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-          © {new Date().getFullYear()} NamLogix Africa – Connecting Southern African Trade
-        </div>
-      </footer>
+        </AppCard>
+      </div>
     </div>
   );
 }
