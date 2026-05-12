@@ -9,13 +9,15 @@ const links = [
   { label: "Analytics", href: "/admin/analytics", icon: "📈" },
   { label: "Suppliers", href: "/admin/suppliers", icon: "👥" },
   { label: "Warehouses", href: "/admin/warehouses", icon: "🏭" },
+  { label: "Stock Locations", href: "/admin/stock-locations", icon: "📍" },
+  { label: "Stock Transactions", href: "/admin/stock-transactions", icon: "🔄" },
+  { label: "Barcode Scanner", href: "/admin/barcode-scanner", icon: "📷" },
   { label: "Orders", href: "/admin/orders", icon: "📦" },
   { label: "Shipments", href: "/admin/shipments", icon: "🚚" },
   { label: "Trade Routes", href: "/admin/trade-routes", icon: "🛣️" },
   { label: "Vehicles", href: "/admin/vehicles", icon: "🚛" },
   { label: "Customs Docs", href: "/admin/customs-documents", icon: "📄" },
   { label: "Inquiries", href: "/admin/inquiries", icon: "📩" },
-  { label: "Barcode Scanner", href: "/admin/barcode-scanner", icon: "📷" },
   { label: "Users", href: "/admin/users", icon: "👤" },
 ];
 

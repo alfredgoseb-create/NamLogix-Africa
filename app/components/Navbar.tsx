@@ -20,6 +20,8 @@ import {
   ScanLine,
   BarChart3,
   Map,
+  MapPin,
+  Repeat,
 } from "lucide-react";
 
 function cn(...classes: string[]) {
@@ -101,6 +103,16 @@ export default function Navbar() {
         icon: Users,
       },
       {
+        label: "Stock Locations",
+        href: "/admin/stock-locations",
+        icon: MapPin,
+      },
+      {
+        label: "Stock Transactions",
+        href: "/admin/stock-transactions",
+        icon: Repeat,
+      },
+      {
         label: "Customs Documents",
         href: "/admin/customs-documents",
         icon: FileText,
@@ -174,7 +186,7 @@ export default function Navbar() {
                 </button>
 
                 {openDropdown === groupName && (
-                  <div className="absolute left-0 mt-2 w-64 rounded-2xl border border-gray-100 bg-white shadow-xl overflow-hidden">
+                  <div className="absolute left-0 mt-2 w-72 rounded-2xl border border-gray-100 bg-white shadow-xl overflow-hidden">
                     {items.map((item) => {
                       const Icon = item.icon;
 
