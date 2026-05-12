@@ -1,77 +1,146 @@
-// app/admin/inquiries/page.tsx
 "use client";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { useRouter } from "next/navigation";
-import Navbar from "@/app/components/Navbar";
 
-type Inquiry = {
-  id: string;
-  product_id: string;
-  product_name: string;
-  name: string;
-  email: string;
-  message: string;
-  created_at: string;
-};
+import PageHero from "@/app/components/PageHero";
+import DashboardCard from "@/app/components/DashboardCard";
+import SectionHeader from "@/app/components/SectionHeader";
+import EmptyState from "@/app/components/EmptyState";
+import AppCard from "@/app/components/AppCard";
+import Button from "@/app/components/Button";
 
 export default function InquiriesPage() {
-  const router = useRouter();
-  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    checkUser();
-    fetchInquiries();
-  }, []);
-
-  async function checkUser() {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) router.push("/login");
-  }
-
-  async function fetchInquiries() {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("inquiries")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) alert("Failed to fetch: " + error.message);
-    else setInquiries(data || []);
-    setLoading(false);
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Customer Inquiries</h1>
-          <p className="text-gray-600">Messages from the storefront contact forms.</p>
+      <PageHero
+        badge="Customer Inquiries"
+        titleTop="NamLogix"
+        titleHighlight="AFRICA"
+        titleBottom="Inquiry Center"
+        description="Manage customer questions, supplier requests, cargo inquiries, product questions, and logistics service messages."
+        actions={[
+          {
+            label: "📩 View Inquiries",
+            href: "#inquiries",
+            primary: true,
+          },
+          {
+            label: "📦 Orders",
+            href: "/admin/orders",
+          },
+          {
+            label: "👥 Suppliers",
+            href: "/admin/suppliers",
+          },
+          {
+            label: "📊 Dashboard",
+            href: "/admin/dashboard",
+          },
+        ]}
+        stats={[
+          {
+            value: 0,
+            label: "Inquiries",
+          },
+          {
+            value: 0,
+            label: "Open",
+          },
+          {
+            value: 0,
+            label: "Resolved",
+          },
+          {
+            value: 0,
+            label: "Urgent",
+          },
+        ]}
+        infoCards={[
+          {
+            title: "Customers",
+            text: "Service requests",
+          },
+          {
+            title: "Suppliers",
+            text: "Partner messages",
+          },
+          {
+            title: "Cargo",
+            text: "Transport questions",
+          },
+          {
+            title: "Store",
+            text: "Product support",
+          },
+        ]}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <DashboardCard
+            title="Inquiries"
+            value={0}
+            subtitle="Total messages"
+            color="blue"
+          />
+
+          <DashboardCard
+            title="Open"
+            value={0}
+            subtitle="Needs response"
+            color="orange"
+          />
+
+          <DashboardCard
+            title="Resolved"
+            value={0}
+            subtitle="Completed support"
+            color="green"
+          />
+
+          <DashboardCard
+            title="Urgent"
+            value={0}
+            subtitle="High priority"
+            color="red"
+          />
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          {loading ? (
-            <p>Loading...</p>
-          ) : inquiries.length === 0 ? (
-            <p className="text-gray-500">No inquiries yet.</p>
-          ) : (
-            <div className="space-y-4">
-              {inquiries.map((inq) => (
-                <div key={inq.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold">{inq.product_name || "General Inquiry"}</h3>
-                      <p className="text-sm text-gray-600">From: {inq.name} ({inq.email})</p>
-                      <p className="text-xs text-gray-400">{new Date(inq.created_at).toLocaleString()}</p>
-                    </div>
-                  </div>
-                  <p className="mt-2 text-gray-700">{inq.message}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <AppCard className="mb-8">
+          <SectionHeader
+            title="⚡ Inquiry Actions"
+            subtitle="Manage communication across the trade platform."
+          />
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button href="/admin/orders" variant="primary" fullWidth>
+              📦 Orders
+            </Button>
+
+            <Button href="/admin/suppliers" variant="secondary" fullWidth>
+              👥 Suppliers
+            </Button>
+
+            <Button href="/cargo-requests" variant="outline" fullWidth>
+              🚚 Cargo Requests
+            </Button>
+
+            <Button href="/store" variant="outline" fullWidth>
+              🛒 Store
+            </Button>
+          </div>
+        </AppCard>
+
+        <AppCard id="inquiries">
+          <SectionHeader
+            title="📩 Inquiry Inbox"
+            subtitle="Customer and business inquiries will appear here."
+          />
+
+          <EmptyState
+            icon="📩"
+            title="No inquiries yet"
+            message="Messages from customers, suppliers, cargo owners, and traders will appear here once inquiry forms are connected."
+          />
+        </AppCard>
       </div>
     </div>
   );
