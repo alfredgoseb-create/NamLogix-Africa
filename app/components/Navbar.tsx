@@ -22,6 +22,9 @@ import {
   Map,
   MapPin,
   Repeat,
+  HelpCircle,
+  Info,
+  Phone,
 } from "lucide-react";
 
 function cn(...classes: string[]) {
@@ -154,6 +157,24 @@ export default function Navbar() {
         label: "Users",
         href: "/admin/users",
         icon: Users,
+      },
+    ],
+
+    Support: [
+      {
+        label: "About",
+        href: "/about",
+        icon: Info,
+      },
+      {
+        label: "Help",
+        href: "/help",
+        icon: HelpCircle,
+      },
+      {
+        label: "Contact",
+        href: "/contact",
+        icon: Phone,
       },
     ],
   };
