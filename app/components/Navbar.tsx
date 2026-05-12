@@ -25,6 +25,7 @@ import {
   HelpCircle,
   Info,
   Phone,
+  Briefcase,
 } from "lucide-react";
 
 function cn(...classes: string[]) {
@@ -63,6 +64,11 @@ export default function Navbar() {
   const navGroups = {
     Marketplace: [
       {
+        label: "Services",
+        href: "/services",
+        icon: Briefcase,
+      },
+      {
         label: "Find Cargo",
         href: "/cargo-requests",
         icon: Package,
@@ -96,12 +102,22 @@ export default function Navbar() {
 
     Infrastructure: [
       {
-        label: "Warehouses",
+        label: "Public Suppliers",
+        href: "/suppliers",
+        icon: Users,
+      },
+      {
+        label: "Public Warehouses",
+        href: "/warehouses",
+        icon: Warehouse,
+      },
+      {
+        label: "Admin Warehouses",
         href: "/admin/warehouses",
         icon: Warehouse,
       },
       {
-        label: "Suppliers",
+        label: "Admin Suppliers",
         href: "/admin/suppliers",
         icon: Users,
       },
