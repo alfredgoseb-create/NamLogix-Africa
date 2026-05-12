@@ -13,6 +13,9 @@ const links = [
   { label: "Shipments", href: "/admin/shipments", icon: "🚚" },
   { label: "Trade Routes", href: "/admin/trade-routes", icon: "🛣️" },
   { label: "Vehicles", href: "/admin/vehicles", icon: "🚛" },
+  { label: "Customs Docs", href: "/admin/customs-documents", icon: "📄" },
+  { label: "Inquiries", href: "/admin/inquiries", icon: "📩" },
+  { label: "Barcode Scanner", href: "/admin/barcode-scanner", icon: "📷" },
   { label: "Users", href: "/admin/users", icon: "👤" },
 ];
 
