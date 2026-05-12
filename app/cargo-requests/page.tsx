@@ -1,82 +1,146 @@
-// app/cargo-requests/page.tsx
 "use client";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import Link from "next/link";
 
-type CargoRequest = {
-  id: string;
-  request_number: string;
-  pickup_location: string;
-  delivery_location: string;
-  weight_kg: number;
-  budget: number;
-  transport_mode: string;
-  status: string;
-  created_at: string;
-};
+import PageHero from "@/app/components/PageHero";
+import DashboardCard from "@/app/components/DashboardCard";
+import SectionHeader from "@/app/components/SectionHeader";
+import EmptyState from "@/app/components/EmptyState";
+import AppCard from "@/app/components/AppCard";
+import Button from "@/app/components/Button";
 
 export default function CargoRequestsPage() {
-  const [requests, setRequests] = useState<CargoRequest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filterMode, setFilterMode] = useState("");
-
-  useEffect(() => {
-    fetchRequests();
-  }, [filterMode]);
-
-  async function fetchRequests() {
-    setLoading(true);
-    let query = supabase
-      .from("cargo_requests")
-      .select("*")
-      .eq("status", "pending")
-      .order("created_at", { ascending: false });
-    if (filterMode) query = query.eq("transport_mode", filterMode);
-    const { data, error } = await query;
-    if (error) console.error(error);
-    else setRequests(data || []);
-    setLoading(false);
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">📦 Cargo Requests</h1>
-          <Link href="/post" className="bg-blue-600 text-white px-4 py-2 rounded-lg">+ Post Cargo</Link>
+    <div className="min-h-screen bg-gray-50">
+      <PageHero
+        badge="Cargo Marketplace"
+        titleTop="NamLogix"
+        titleHighlight="AFRICA"
+        titleBottom="Available Cargo"
+        description="Browse cargo requests, discover transport opportunities, and connect cargo owners with logistics operators across Southern Africa."
+        actions={[
+          {
+            label: "📦 Post Cargo",
+            href: "/request-cargo",
+            primary: true,
+          },
+          {
+            label: "🚛 Trip Offers",
+            href: "/trip-offers",
+          },
+          {
+            label: "🛣️ Trade Routes",
+            href: "/trade-routes",
+          },
+          {
+            label: "📍 Track Order",
+            href: "/order-status",
+          },
+        ]}
+        stats={[
+          {
+            value: 0,
+            label: "Open cargo",
+          },
+          {
+            value: 0,
+            label: "Pending bids",
+          },
+          {
+            value: "SADC",
+            label: "Coverage",
+          },
+          {
+            value: "Live",
+            label: "Marketplace",
+          },
+        ]}
+        infoCards={[
+          {
+            title: "Cargo",
+            text: "Available loads",
+          },
+          {
+            title: "Bidding",
+            text: "Transport quotes",
+          },
+          {
+            title: "Routes",
+            text: "Regional lanes",
+          },
+          {
+            title: "Tracking",
+            text: "Delivery visibility",
+          },
+        ]}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <DashboardCard
+            title="Open Cargo"
+            value={0}
+            subtitle="Available requests"
+            color="blue"
+          />
+
+          <DashboardCard
+            title="Pending Bids"
+            value={0}
+            subtitle="Transport quotes"
+            color="orange"
+          />
+
+          <DashboardCard
+            title="Routes"
+            value="SADC"
+            subtitle="Regional network"
+            color="green"
+          />
+
+          <DashboardCard
+            title="Status"
+            value="Ready"
+            subtitle="Cargo marketplace"
+            color="red"
+          />
         </div>
-        <div className="bg-white p-4 rounded-lg shadow mb-6">
-          <select
-            className="border rounded px-3 py-2"
-            value={filterMode}
-            onChange={(e) => setFilterMode(e.target.value)}
-          >
-            <option value="">All transport modes</option>
-            <option value="road">Road</option>
-            <option value="air">Air</option>
-            <option value="sea">Sea</option>
-            <option value="rail">Rail</option>
-          </select>
-        </div>
-        {loading && <p>Loading...</p>}
-        {!loading && requests.length === 0 && (
-          <div className="bg-white rounded-lg shadow p-6 text-center">No cargo requests yet.</div>
-        )}
-        <div className="space-y-4">
-          {requests.map((req) => (
-            <div key={req.id} className="bg-white rounded-lg shadow p-5">
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold">{req.request_number || "Cargo"}</h2>
-                  <p className="text-gray-600">{req.pickup_location} → {req.delivery_location}</p>
-                  <p className="text-sm text-gray-500">{req.weight_kg} kg · {req.transport_mode} · Budget: N${req.budget}</p>
-                </div>
-                <Link href={`/cargo-requests/${req.id}`} className="bg-blue-600 text-white px-4 py-2 rounded text-sm">View & Bid</Link>
-              </div>
-            </div>
-          ))}
-        </div>
+
+        <AppCard className="mb-8">
+          <SectionHeader
+            title="⚡ Cargo Marketplace Actions"
+            subtitle="Move cargo requests through the logistics workflow."
+          />
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button href="/request-cargo" variant="primary" fullWidth>
+              📦 Post Cargo
+            </Button>
+
+            <Button href="/trip-offers" variant="secondary" fullWidth>
+              🚛 Find Trips
+            </Button>
+
+            <Button href="/trade-routes" variant="outline" fullWidth>
+              🛣️ Trade Routes
+            </Button>
+
+            <Button href="/store" variant="outline" fullWidth>
+              🛒 Store
+            </Button>
+          </div>
+        </AppCard>
+
+        <AppCard id="cargo">
+          <SectionHeader
+            title="📦 Available Cargo Requests"
+            subtitle="Cargo requests from traders, warehouses, businesses, and customers will appear here."
+          />
+
+          <EmptyState
+            icon="📦"
+            title="No cargo requests yet"
+            message="Cargo requests will appear here once users post goods that need transportation."
+          />
+        </AppCard>
       </div>
     </div>
   );
