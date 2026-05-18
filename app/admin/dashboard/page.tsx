@@ -8,26 +8,31 @@ import PageHero from "@/app/components/PageHero";
 import DashboardCard from "@/app/components/DashboardCard";
 import SectionHeader from "@/app/components/SectionHeader";
 import EmptyState from "@/app/components/EmptyState";
+import AppCard from "@/app/components/AppCard";
+import Button from "@/app/components/Button";
+
+const emptyProductForm = {
+  name: "",
+  category: "",
+  description: "",
+  unit: "",
+  status: "active",
+  supplier: "",
+  warehouse: "",
+  stock_level: "",
+  price: "",
+  image_url: "",
+};
 
 export default function Dashboard() {
   const router = useRouter();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [form, setForm] = useState({
-    name: "",
-    category: "",
-    description: "",
-    unit: "",
-    status: "active",
-    supplier: "",
-    stock_level: "",
-    image_url: "",
-  });
-
+  const [form, setForm] = useState(emptyProductForm);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     checkUser();
@@ -51,7 +56,7 @@ export default function Dashboard() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      alert("Failed to fetch: " + error.message);
+      alert("Failed to fetch products: " + error.message);
     } else {
       setProducts(data || []);
     }
@@ -61,9 +66,7 @@ export default function Dashboard() {
 
   async function handleImageUpload(file) {
     const fileName =
-      Date.now() +
-      "-" +
-      file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+      Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
 
     setUploading(true);
 
@@ -88,36 +91,38 @@ export default function Dashboard() {
   async function handleCreate(e) {
     e.preventDefault();
 
-    if (!form.name) {
-      alert("Product name is required");
+    if (!form.name.trim()) {
+      alert("Product name is required.");
       return;
     }
 
+    setSaving(true);
+
     const toInsert = {
-      ...form,
+      name: form.name,
+      category: form.category,
+      description: form.description,
+      unit: form.unit,
+      status: form.status || "active",
+      supplier: form.supplier,
+      warehouse: form.warehouse,
       stock_level: Number(form.stock_level) || 0,
+      price: Number(form.price) || 0,
+      image_url: form.image_url,
     };
 
-    const { error } = await supabase
-      .from("products")
-      .insert([toInsert]);
+    const { error } = await supabase.from("products").insert([toInsert]);
+
+    setSaving(false);
 
     if (error) {
       alert("Failed to create product: " + error.message);
-    } else {
-      setForm({
-        name: "",
-        category: "",
-        description: "",
-        unit: "",
-        status: "active",
-        supplier: "",
-        stock_level: "",
-        image_url: "",
-      });
-
-      fetchProducts();
+      return;
     }
+
+    alert("Product created successfully.");
+    setForm(emptyProductForm);
+    fetchProducts();
   }
 
   async function handleUpdate(product) {
@@ -130,26 +135,27 @@ export default function Dashboard() {
         unit: product.unit || "",
         status: product.status || "active",
         supplier: product.supplier || "",
+        warehouse: product.warehouse || "",
         stock_level: Number(product.stock_level) || 0,
+        price: Number(product.price) || 0,
         image_url: product.image_url || "",
       })
       .eq("id", product.id);
 
     if (error) {
       alert("Failed to update product: " + error.message);
-    } else {
-      setSelectedProduct(null);
-      fetchProducts();
+      return;
     }
+
+    alert("Product updated.");
+    setSelectedProduct(null);
+    fetchProducts();
   }
 
   async function handleDelete(id) {
     if (!confirm("Delete this product?")) return;
 
-    const { error } = await supabase
-      .from("products")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("products").delete().eq("id", id);
 
     if (error) {
       alert("Failed to delete product: " + error.message);
@@ -163,28 +169,29 @@ export default function Dashboard() {
     0
   );
 
-  const activeProducts = products.filter(
-    (p) => p.status === "active"
-  ).length;
+  const activeProducts = products.filter((p) => p.status === "active").length;
 
   const outOfStock = products.filter(
     (p) => Number(p.stock_level || 0) === 0
   ).length;
 
   const lowStockProducts = products.filter(
-    (p) =>
-      Number(p.stock_level || 0) <= 10 &&
-      Number(p.stock_level || 0) > 0
+    (p) => Number(p.stock_level || 0) <= 10 && Number(p.stock_level || 0) > 0
+  );
+
+  const totalValue = products.reduce(
+    (acc, p) => acc + Number(p.price || 0) * Number(p.stock_level || 0),
+    0
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen page-soft-bg">
       <PageHero
         badge="Inventory Control Center"
         titleTop="NamLogix"
         titleHighlight="AFRICA"
         titleBottom="Inventory Intelligence"
-        description="Manage products, stock levels, suppliers, warehouse readiness, and trade operations from one central dashboard."
+        description="Manage products, prices, stock levels, suppliers, warehouses, and marketplace inventory from one central dashboard."
         actions={[
           {
             label: "📦 Add Product",
@@ -196,12 +203,12 @@ export default function Dashboard() {
             href: "/admin/suppliers",
           },
           {
-            label: "🛒 Store",
-            href: "/store",
+            label: "🏭 Warehouses",
+            href: "/admin/warehouses",
           },
           {
-            label: "🏭 Warehouses",
-            href: "/warehouses",
+            label: "🛒 Store",
+            href: "/store",
           },
         ]}
         stats={[
@@ -218,8 +225,8 @@ export default function Dashboard() {
             label: "Active products",
           },
           {
-            value: outOfStock,
-            label: "Out of stock",
+            value: `N$${totalValue}`,
+            label: "Stock value",
           },
         ]}
         infoCards={[
@@ -228,16 +235,16 @@ export default function Dashboard() {
             text: "Stock control",
           },
           {
-            title: "Procurement",
-            text: "Supplier ready",
+            title: "Marketplace",
+            text: "Store listings",
           },
           {
-            title: "Alerts",
-            text: `${lowStockProducts.length} low stock`,
+            title: "Suppliers",
+            text: "Product sourcing",
           },
           {
-            title: "Platform",
-            text: "Admin only",
+            title: "Warehouses",
+            text: "Storage tracking",
           },
         ]}
       />
@@ -259,133 +266,106 @@ export default function Dashboard() {
           />
 
           <DashboardCard
-            title="Active Products"
-            value={activeProducts}
-            subtitle="Operational inventory"
+            title="Low Stock"
+            value={lowStockProducts.length}
+            subtitle="Needs attention"
             color="orange"
           />
 
           <DashboardCard
-            title="Out of Stock"
-            value={outOfStock}
-            subtitle="Needs replenishment"
+            title="Stock Value"
+            value={`N$${totalValue}`}
+            subtitle="Estimated inventory value"
             color="red"
           />
         </div>
 
-        <div
-          id="add-product"
-          className="bg-white rounded-xl shadow p-6 mb-8"
-        >
+        <AppCard id="add-product" className="mb-8" variant="blue">
           <SectionHeader
             title="📦 Add New Product"
-            subtitle="Add products into your NamLogix inventory and connect them to suppliers, stock levels, and future marketplace orders."
+            subtitle="Add products into your NamLogix inventory, connect them to suppliers and warehouses, and show them in the public store."
           />
 
-          <form
-            className="space-y-3"
-            onSubmit={handleCreate}
-          >
+          <form className="grid md:grid-cols-2 gap-4" onSubmit={handleCreate}>
             <input
               type="text"
               placeholder="Product Name *"
               value={form.name}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  name: e.target.value,
-                })
-              }
-              className="w-full border rounded-lg px-3 py-2"
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="border rounded-xl px-4 py-3 md:col-span-2"
             />
 
-            <div className="grid md:grid-cols-2 gap-3">
-              <input
-                type="text"
-                placeholder="Category"
-                value={form.category}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    category: e.target.value,
-                  })
-                }
-                className="border rounded-lg px-3 py-2"
-              />
-
-              <input
-                type="text"
-                placeholder="Unit (kg, box...)"
-                value={form.unit}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    unit: e.target.value,
-                  })
-                }
-                className="border rounded-lg px-3 py-2"
-              />
-            </div>
-
-            <textarea
-              placeholder="Description"
-              value={form.description || ""}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  description: e.target.value,
-                })
-              }
-              className="w-full border rounded-lg px-3 py-2"
+            <input
+              type="text"
+              placeholder="Category"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              className="border rounded-xl px-4 py-3"
             />
 
-            <div className="grid md:grid-cols-2 gap-3">
-              <input
-                type="number"
-                placeholder="Stock Level"
-                value={form.stock_level}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    stock_level: e.target.value,
-                  })
-                }
-                className="border rounded-lg px-3 py-2"
-              />
+            <input
+              type="text"
+              placeholder="Unit (kg, box, item...)"
+              value={form.unit}
+              onChange={(e) => setForm({ ...form, unit: e.target.value })}
+              className="border rounded-xl px-4 py-3"
+            />
 
-              <input
-                type="text"
-                placeholder="Supplier"
-                value={form.supplier}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    supplier: e.target.value,
-                  })
-                }
-                className="border rounded-lg px-3 py-2"
-              />
-            </div>
+            <input
+              type="number"
+              placeholder="Stock Level"
+              value={form.stock_level}
+              onChange={(e) =>
+                setForm({ ...form, stock_level: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3"
+            />
+
+            <input
+              type="number"
+              placeholder="Price NAD"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              className="border rounded-xl px-4 py-3"
+            />
+
+            <input
+              type="text"
+              placeholder="Supplier"
+              value={form.supplier}
+              onChange={(e) => setForm({ ...form, supplier: e.target.value })}
+              className="border rounded-xl px-4 py-3"
+            />
+
+            <input
+              type="text"
+              placeholder="Warehouse"
+              value={form.warehouse}
+              onChange={(e) => setForm({ ...form, warehouse: e.target.value })}
+              className="border rounded-xl px-4 py-3"
+            />
 
             <select
               value={form.status}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  status: e.target.value,
-                })
-              }
-              className="w-full border rounded-lg px-3 py-2"
+              onChange={(e) => setForm({ ...form, status: e.target.value })}
+              className="border rounded-xl px-4 py-3 md:col-span-2"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
-              <option value="out_of_stock">
-                Out of Stock
-              </option>
+              <option value="out_of_stock">Out of Stock</option>
             </select>
 
-            <div>
-              <label className="text-sm text-gray-500 mb-1 block">
+            <textarea
+              placeholder="Product Description"
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3 md:col-span-2 min-h-32"
+            />
+
+            <div className="md:col-span-2">
+              <label className="text-sm text-gray-500 mb-2 block">
                 Product Image
               </label>
 
@@ -396,8 +376,7 @@ export default function Dashboard() {
                   const file = e.target.files?.[0];
 
                   if (file) {
-                    const url =
-                      await handleImageUpload(file);
+                    const url = await handleImageUpload(file);
 
                     if (url) {
                       setForm({
@@ -407,73 +386,64 @@ export default function Dashboard() {
                     }
                   }
                 }}
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border rounded-xl px-4 py-3 bg-white"
               />
 
               {uploading && (
-                <p className="text-sm text-blue-500 mt-1">
-                  Uploading...
-                </p>
+                <p className="text-sm text-blue-600 mt-2">Uploading...</p>
               )}
 
               {form.image_url && (
                 <img
                   src={form.image_url}
                   alt="Preview"
-                  className="mt-2 h-20 w-20 object-cover rounded-lg"
+                  className="mt-3 h-24 w-24 object-cover rounded-xl"
                 />
               )}
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800"
-            >
-              Create Product
-            </button>
+            <div className="md:col-span-2">
+              <Button type="submit" variant="orange" fullWidth>
+                {saving ? "Creating Product..." : "📦 Create Product"}
+              </Button>
+            </div>
           </form>
-        </div>
+        </AppCard>
 
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
+        <AppCard className="mb-8" variant="orange">
           <SectionHeader
             title="⚠️ Low Stock Monitor"
-            subtitle="Products that may require urgent replenishment."
+            subtitle="Products with 10 units or fewer will appear here."
           />
 
           {lowStockProducts.length === 0 ? (
             <EmptyState
               icon="✅"
               title="No low stock products"
-              message="Your inventory is currently healthy. Products with 10 units or fewer will appear here."
+              message="Your inventory is currently healthy."
             />
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {lowStockProducts.map((p) => (
-                <div
-                  key={p.id}
-                  className="rounded-xl border border-yellow-200 bg-yellow-50 p-4"
-                >
-                  <p className="font-semibold text-yellow-900">
-                    {p.name}
-                  </p>
-
-                  <p className="text-sm text-yellow-700">
+                <AppCard key={p.id} hover>
+                  <p className="font-bold text-lg">{p.name}</p>
+                  <p className="text-sm text-gray-500 mt-2">
                     {p.stock_level} units left
                   </p>
-                </div>
+                </AppCard>
               ))}
             </div>
           )}
-        </div>
+        </AppCard>
 
-        <div className="bg-white rounded-xl shadow p-6">
+        <AppCard variant="green">
           <SectionHeader
             title="📦 Product Inventory"
             subtitle="Products currently registered in your NamLogix platform."
             action={
               <button
                 onClick={fetchProducts}
-                className="bg-gray-100 px-5 py-2 rounded-lg hover:bg-gray-200"
+                className="bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-800"
               >
                 Refresh
               </button>
@@ -486,186 +456,208 @@ export default function Dashboard() {
             <EmptyState
               icon="📦"
               title="No products yet"
-              message="Add your first product above to start building your NamLogix inventory."
+              message="Add your first product above to start building your NamLogix inventory and marketplace store."
             />
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white border rounded-xl shadow-sm p-5 hover:shadow-lg transition"
-                >
+                <AppCard key={product.id} hover>
                   {product.image_url ? (
                     <img
                       src={product.image_url}
                       alt={product.name}
-                      className="h-40 w-full object-cover rounded-lg mb-4"
+                      className="h-44 w-full object-cover rounded-xl mb-4"
                     />
                   ) : (
-                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm mb-4">
-                      No image
+                    <div className="h-44 w-full rounded-xl mb-4 bg-gradient-to-br from-blue-100 to-orange-100 flex items-center justify-center text-5xl">
+                      📦
                     </div>
                   )}
 
-                  <h3 className="text-lg font-semibold">
-                    {product.name}
-                  </h3>
-
-                  <p className="text-gray-500 text-sm mt-1 line-clamp-2">
-                    {product.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {product.category && (
-                      <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">
-                        {product.category}
-                      </span>
-                    )}
-
-                    {product.unit && (
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                        {product.unit}
-                      </span>
-                    )}
+                  <div className="flex justify-between gap-4 mb-3">
+                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                      {product.category || "General"}
+                    </span>
 
                     <span
-                      className={`text-xs px-2 py-1 rounded-full ${
+                      className={`text-xs px-3 py-1 rounded-full ${
                         product.status === "active"
-                          ? "bg-green-50 text-green-600"
-                          : product.status ===
-                            "out_of_stock"
-                          ? "bg-red-50 text-red-600"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-green-100 text-green-700"
+                          : product.status === "out_of_stock"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-gray-100 text-gray-600"
                       }`}
                     >
                       {product.status || "active"}
                     </span>
                   </div>
 
-                  <div className="mt-4 text-sm text-gray-600">
-                    Stock: {product.stock_level || 0}
+                  <h3 className="font-bold text-lg">{product.name}</h3>
+
+                  <p className="text-sm text-gray-500 mt-2 leading-6">
+                    {product.description || "No description added."}
+                  </p>
+
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                    <div className="bg-gray-50 rounded-xl p-3">
+                      <p className="text-gray-400">Stock</p>
+                      <p className="font-semibold">
+                        {product.stock_level || 0}
+                      </p>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-xl p-3">
+                      <p className="text-gray-400">Price</p>
+                      <p className="font-semibold">N${product.price || 0}</p>
+                    </div>
                   </div>
 
                   {product.supplier && (
-                    <div className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-400 mt-3">
                       Supplier: {product.supplier}
-                    </div>
+                    </p>
                   )}
 
-                  {selectedProduct &&
-                  selectedProduct.id === product.id ? (
-                    <div className="mt-4 border-t pt-4 space-y-3">
+                  {product.warehouse && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Warehouse: {product.warehouse}
+                    </p>
+                  )}
+
+                  {selectedProduct && selectedProduct.id === product.id ? (
+                    <div className="mt-5 border-t pt-4 space-y-3">
                       <input
                         type="text"
-                        value={
-                          selectedProduct.name || ""
-                        }
+                        value={selectedProduct.name || ""}
                         onChange={(e) =>
                           setSelectedProduct({
                             ...selectedProduct,
                             name: e.target.value,
                           })
                         }
-                        className="w-full border rounded-lg px-3 py-2"
+                        className="w-full border rounded-xl px-4 py-3"
                       />
 
                       <textarea
-                        value={
-                          selectedProduct.description ||
-                          ""
-                        }
+                        value={selectedProduct.description || ""}
                         onChange={(e) =>
                           setSelectedProduct({
                             ...selectedProduct,
-                            description:
-                              e.target.value,
+                            description: e.target.value,
                           })
                         }
-                        className="w-full border rounded-lg px-3 py-2"
+                        className="w-full border rounded-xl px-4 py-3"
                       />
 
                       <div className="grid grid-cols-2 gap-3">
                         <input
                           type="number"
-                          value={
-                            selectedProduct.stock_level ||
-                            0
-                          }
+                          value={selectedProduct.stock_level || 0}
                           onChange={(e) =>
                             setSelectedProduct({
                               ...selectedProduct,
-                              stock_level:
-                                e.target.value,
+                              stock_level: e.target.value,
                             })
                           }
-                          className="border rounded-lg px-3 py-2"
+                          className="border rounded-xl px-4 py-3"
+                        />
+
+                        <input
+                          type="number"
+                          value={selectedProduct.price || 0}
+                          onChange={(e) =>
+                            setSelectedProduct({
+                              ...selectedProduct,
+                              price: e.target.value,
+                            })
+                          }
+                          className="border rounded-xl px-4 py-3"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          value={selectedProduct.supplier || ""}
+                          onChange={(e) =>
+                            setSelectedProduct({
+                              ...selectedProduct,
+                              supplier: e.target.value,
+                            })
+                          }
+                          className="border rounded-xl px-4 py-3"
                         />
 
                         <input
                           type="text"
-                          value={
-                            selectedProduct.supplier ||
-                            ""
-                          }
+                          value={selectedProduct.warehouse || ""}
                           onChange={(e) =>
                             setSelectedProduct({
                               ...selectedProduct,
-                              supplier:
-                                e.target.value,
+                              warehouse: e.target.value,
                             })
                           }
-                          className="border rounded-lg px-3 py-2"
+                          className="border rounded-xl px-4 py-3"
                         />
                       </div>
 
+                      <select
+                        value={selectedProduct.status || "active"}
+                        onChange={(e) =>
+                          setSelectedProduct({
+                            ...selectedProduct,
+                            status: e.target.value,
+                          })
+                        }
+                        className="w-full border rounded-xl px-4 py-3"
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="out_of_stock">Out of Stock</option>
+                      </select>
+
                       <div className="flex gap-2">
-                        <button
-                          onClick={() =>
-                            handleUpdate(
-                              selectedProduct
-                            )
-                          }
-                          className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
+                        <Button
+                          type="button"
+                          variant="primary"
+                          onClick={() => handleUpdate(selectedProduct)}
                         >
                           Save
-                        </button>
+                        </Button>
 
-                        <button
-                          onClick={() =>
-                            setSelectedProduct(null)
-                          }
-                          className="bg-gray-100 px-4 py-2 rounded-lg text-sm"
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => setSelectedProduct(null)}
                         >
                           Cancel
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ) : (
                     <div className="flex gap-2 mt-5">
-                      <button
-                        onClick={() =>
-                          setSelectedProduct(product)
-                        }
-                        className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 text-sm"
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setSelectedProduct(product)}
                       >
                         Edit
-                      </button>
+                      </Button>
 
-                      <button
-                        onClick={() =>
-                          handleDelete(product.id)
-                        }
-                        className="bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 text-sm"
+                      <Button
+                        type="button"
+                        variant="danger"
+                        onClick={() => handleDelete(product.id)}
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
                   )}
-                </div>
+                </AppCard>
               ))}
             </div>
           )}
-        </div>
+        </AppCard>
       </div>
     </div>
   );
