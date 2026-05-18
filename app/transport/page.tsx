@@ -2,8 +2,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import PageHero from "@/app/components/PageHero";
+import AppCard from "@/app/components/AppCard";
+import SectionHeader from "@/app/components/SectionHeader";
+import Button from "@/app/components/Button";
 
 const emptyForm = {
   customer_name: "",
@@ -54,43 +57,107 @@ export default function TransportPage() {
 
   return (
     <div className="min-h-screen page-soft-bg">
-      <section className="max-w-7xl mx-auto px-6 py-10">
-        <div className="rounded-[32px] bg-gradient-to-br from-slate-950 via-blue-900 to-orange-500 text-white p-8 md:p-12 mb-8">
-          <p className="text-orange-200 font-bold">NAMLOGIX TRANSPORT</p>
+      <PageHero
+        badge="Local Transport"
+        titleTop="NamLogix"
+        titleHighlight="AFRICA"
+        titleBottom="Transport Booking"
+        description="Book local transport for hospital trips, home-to-work movement, town rides, goods delivery, cargo pickup, and business transport."
+        actions={[
+          {
+            label: "🚕 Book Transport",
+            href: "#transport-form",
+            primary: true,
+          },
+          {
+            label: "📦 Post Cargo",
+            href: "/request-cargo",
+          },
+          {
+            label: "🛒 Store",
+            href: "/store",
+          },
+          {
+            label: "📩 Contact",
+            href: "/contact",
+          },
+        ]}
+        stats={[
+          {
+            value: "24/7",
+            label: "Request access",
+          },
+          {
+            value: "Local",
+            label: "Town transport",
+          },
+          {
+            value: "Medical",
+            label: "Hospital trips",
+          },
+          {
+            value: "Goods",
+            label: "Small deliveries",
+          },
+        ]}
+        infoCards={[
+          {
+            title: "People",
+            text: "Passenger rides",
+          },
+          {
+            title: "Medical",
+            text: "Hospital transport",
+          },
+          {
+            title: "Goods",
+            text: "Local deliveries",
+          },
+          {
+            title: "Business",
+            text: "Company movement",
+          },
+        ]}
+      />
 
-          <h1 className="text-4xl md:text-6xl font-black mt-3">
-            Book Local Transport
-          </h1>
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <AppCard id="transport-form" variant="blue">
+          <SectionHeader
+            title="🚕 Transport Request Form"
+            subtitle="Submit a transport booking request for people, goods, hospital trips, work trips, or business movement."
+          />
 
-          <p className="max-w-3xl mt-5 text-white/80 leading-7">
-            Request transport for hospital trips, home-to-work travel, town rides,
-            goods delivery, cargo pickup, and business movement.
-          </p>
+          <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
+            <input
+              className="border rounded-xl px-4 py-3"
+              placeholder="Customer Name"
+              value={form.customer_name}
+              onChange={(e) =>
+                setForm({ ...form, customer_name: e.target.value })
+              }
+            />
 
-          <div className="flex flex-wrap gap-3 mt-8">
-            <Link href="/contact" className="bg-white text-blue-900 px-5 py-3 rounded-xl font-bold">
-              Contact Us
-            </Link>
+            <input
+              className="border rounded-xl px-4 py-3"
+              placeholder="Phone Number"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
 
-            <Link href="/request-cargo" className="bg-orange-500 text-white px-5 py-3 rounded-xl font-bold">
-              Post Cargo
-            </Link>
+            <input
+              className="border rounded-xl px-4 py-3"
+              placeholder="Email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
 
-            <Link href="/store" className="bg-blue-700 text-white px-5 py-3 rounded-xl font-bold">
-              Marketplace
-            </Link>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-3xl border shadow-sm p-6 md:p-8">
-          <h2 className="text-3xl font-black">🚕 Transport Request Form</h2>
-
-          <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4 mt-6">
-            <input className="border rounded-xl px-4 py-3" placeholder="Customer Name" value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
-            <input className="border rounded-xl px-4 py-3" placeholder="Phone Number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-            <input className="border rounded-xl px-4 py-3" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-
-            <select className="border rounded-xl px-4 py-3" value={form.booking_type} onChange={(e) => setForm({ ...form, booking_type: e.target.value })}>
+            <select
+              className="border rounded-xl px-4 py-3"
+              value={form.booking_type}
+              onChange={(e) =>
+                setForm({ ...form, booking_type: e.target.value })
+              }
+            >
               <option value="people">People Transport</option>
               <option value="goods">Goods Transport</option>
               <option value="medical">Hospital / Medical Trip</option>
@@ -98,32 +165,78 @@ export default function TransportPage() {
               <option value="business">Business Transport</option>
             </select>
 
-            <input className="border rounded-xl px-4 py-3" placeholder="Pickup Location *" value={form.pickup_location} onChange={(e) => setForm({ ...form, pickup_location: e.target.value })} />
-            <input className="border rounded-xl px-4 py-3" placeholder="Drop-off Location *" value={form.dropoff_location} onChange={(e) => setForm({ ...form, dropoff_location: e.target.value })} />
+            <input
+              className="border rounded-xl px-4 py-3"
+              placeholder="Pickup Location *"
+              value={form.pickup_location}
+              onChange={(e) =>
+                setForm({ ...form, pickup_location: e.target.value })
+              }
+            />
 
-            <input type="date" className="border rounded-xl px-4 py-3" value={form.preferred_date} onChange={(e) => setForm({ ...form, preferred_date: e.target.value })} />
-            <input className="border rounded-xl px-4 py-3" placeholder="Preferred Time" value={form.preferred_time} onChange={(e) => setForm({ ...form, preferred_time: e.target.value })} />
+            <input
+              className="border rounded-xl px-4 py-3"
+              placeholder="Drop-off Location *"
+              value={form.dropoff_location}
+              onChange={(e) =>
+                setForm({ ...form, dropoff_location: e.target.value })
+              }
+            />
 
-            <input type="number" className="border rounded-xl px-4 py-3" placeholder="Passengers" value={form.passengers} onChange={(e) => setForm({ ...form, passengers: e.target.value })} />
-            <input className="border rounded-xl px-4 py-3" placeholder="Trip Reason" value={form.trip_reason} onChange={(e) => setForm({ ...form, trip_reason: e.target.value })} />
+            <input
+              type="date"
+              className="border rounded-xl px-4 py-3"
+              value={form.preferred_date}
+              onChange={(e) =>
+                setForm({ ...form, preferred_date: e.target.value })
+              }
+            />
+
+            <input
+              className="border rounded-xl px-4 py-3"
+              placeholder="Preferred Time"
+              value={form.preferred_time}
+              onChange={(e) =>
+                setForm({ ...form, preferred_time: e.target.value })
+              }
+            />
+
+            <input
+              type="number"
+              className="border rounded-xl px-4 py-3"
+              placeholder="Passengers"
+              value={form.passengers}
+              onChange={(e) =>
+                setForm({ ...form, passengers: e.target.value })
+              }
+            />
+
+            <input
+              className="border rounded-xl px-4 py-3"
+              placeholder="Trip Reason"
+              value={form.trip_reason}
+              onChange={(e) =>
+                setForm({ ...form, trip_reason: e.target.value })
+              }
+            />
 
             <textarea
               className="border rounded-xl px-4 py-3 md:col-span-2 min-h-32"
               placeholder="Cargo / Goods Description"
               value={form.cargo_description}
-              onChange={(e) => setForm({ ...form, cargo_description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, cargo_description: e.target.value })
+              }
             />
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="md:col-span-2 bg-orange-500 text-white px-5 py-4 rounded-xl font-black hover:bg-orange-600"
-            >
-              {saving ? "Submitting..." : "Submit Transport Booking"}
-            </button>
+            <div className="md:col-span-2">
+              <Button type="submit" variant="orange" fullWidth>
+                {saving ? "Submitting..." : "🚕 Submit Transport Booking"}
+              </Button>
+            </div>
           </form>
-        </div>
-      </section>
+        </AppCard>
+      </div>
     </div>
   );
 }
