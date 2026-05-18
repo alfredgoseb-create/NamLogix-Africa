@@ -1,145 +1,253 @@
+// @ts-nocheck
 "use client";
 
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import PageHero from "@/app/components/PageHero";
+import AppCard from "@/app/components/AppCard";
 import DashboardCard from "@/app/components/DashboardCard";
 import SectionHeader from "@/app/components/SectionHeader";
 import EmptyState from "@/app/components/EmptyState";
-import AppCard from "@/app/components/AppCard";
 import Button from "@/app/components/Button";
 
-export default function InquiriesPage() {
+export default function AdminInquiriesPage() {
+  const [inquiries, setInquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchInquiries();
+  }, []);
+
+  async function fetchInquiries() {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("inquiries")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      setInquiries(data || []);
+    }
+
+    setLoading(false);
+  }
+
+  async function markClosed(id) {
+    const { error } = await supabase
+      .from("inquiries")
+      .update({
+        status: "closed",
+      })
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+    } else {
+      fetchInquiries();
+    }
+  }
+
+  async function deleteInquiry(id) {
+    if (!confirm("Delete inquiry?")) return;
+
+    const { error } = await supabase
+      .from("inquiries")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+    } else {
+      fetchInquiries();
+    }
+  }
+
+  const openCount = inquiries.filter(
+    (i) => i.status === "open"
+  ).length;
+
+  const closedCount = inquiries.filter(
+    (i) => i.status === "closed"
+  ).length;
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen page-soft-bg">
       <PageHero
-        badge="Customer Inquiries"
+        badge="Customer Communication"
         titleTop="NamLogix"
         titleHighlight="AFRICA"
         titleBottom="Inquiry Center"
-        description="Manage customer questions, supplier requests, cargo inquiries, product questions, and logistics service messages."
+        description="Manage customer inquiries, supplier requests, cargo requests, and marketplace communication from one admin panel."
         actions={[
           {
-            label: "📩 View Inquiries",
-            href: "#inquiries",
+            label: "📩 Contact Page",
+            href: "/contact",
             primary: true,
           },
           {
-            label: "📦 Orders",
-            href: "/admin/orders",
+            label: "🛒 Store",
+            href: "/store",
           },
           {
-            label: "👥 Suppliers",
-            href: "/admin/suppliers",
-          },
-          {
-            label: "📊 Dashboard",
+            label: "📦 Dashboard",
             href: "/admin/dashboard",
           },
         ]}
         stats={[
           {
-            value: 0,
-            label: "Inquiries",
+            value: inquiries.length,
+            label: "Total inquiries",
           },
           {
-            value: 0,
+            value: openCount,
             label: "Open",
           },
           {
-            value: 0,
-            label: "Resolved",
+            value: closedCount,
+            label: "Closed",
           },
           {
-            value: 0,
-            label: "Urgent",
+            value: "Live",
+            label: "System status",
           },
         ]}
         infoCards={[
           {
             title: "Customers",
-            text: "Service requests",
+            text: "Communication tracking",
           },
           {
             title: "Suppliers",
-            text: "Partner messages",
+            text: "Business requests",
           },
           {
             title: "Cargo",
-            text: "Transport questions",
+            text: "Logistics support",
           },
           {
-            title: "Store",
-            text: "Product support",
+            title: "Marketplace",
+            text: "Product inquiries",
           },
         ]}
       />
 
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
           <DashboardCard
-            title="Inquiries"
-            value={0}
-            subtitle="Total messages"
+            title="Total"
+            value={inquiries.length}
+            subtitle="All inquiries"
             color="blue"
           />
 
           <DashboardCard
             title="Open"
-            value={0}
+            value={openCount}
             subtitle="Needs response"
             color="orange"
           />
 
           <DashboardCard
-            title="Resolved"
-            value={0}
-            subtitle="Completed support"
+            title="Closed"
+            value={closedCount}
+            subtitle="Resolved"
             color="green"
-          />
-
-          <DashboardCard
-            title="Urgent"
-            value={0}
-            subtitle="High priority"
-            color="red"
           />
         </div>
 
-        <AppCard className="mb-8">
+        <AppCard variant="blue">
           <SectionHeader
-            title="⚡ Inquiry Actions"
-            subtitle="Manage communication across the trade platform."
+            title="📩 Inquiry Management"
+            subtitle="All contact and marketplace inquiries submitted through NamLogix."
+            action={
+              <button
+                onClick={fetchInquiries}
+                className="bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-800"
+              >
+                Refresh
+              </button>
+            }
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button href="/admin/orders" variant="primary" fullWidth>
-              📦 Orders
-            </Button>
+          {loading ? (
+            <p>Loading inquiries...</p>
+          ) : inquiries.length === 0 ? (
+            <EmptyState
+              icon="📭"
+              title="No inquiries yet"
+              message="Customer inquiries from the contact page will appear here."
+            />
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {inquiries.map((item) => (
+                <AppCard key={item.id} hover>
 
-            <Button href="/admin/suppliers" variant="secondary" fullWidth>
-              👥 Suppliers
-            </Button>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-xl">
+                      {item.subject || "General Inquiry"}
+                    </h3>
 
-            <Button href="/cargo-requests" variant="outline" fullWidth>
-              🚚 Cargo Requests
-            </Button>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        item.status === "closed"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-orange-100 text-orange-700"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
 
-            <Button href="/store" variant="outline" fullWidth>
-              🛒 Store
-            </Button>
-          </div>
-        </AppCard>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p>
+                      <strong>Name:</strong> {item.name}
+                    </p>
 
-        <AppCard id="inquiries">
-          <SectionHeader
-            title="📩 Inquiry Inbox"
-            subtitle="Customer and business inquiries will appear here."
-          />
+                    <p>
+                      <strong>Email:</strong> {item.email || "-"}
+                    </p>
 
-          <EmptyState
-            icon="📩"
-            title="No inquiries yet"
-            message="Messages from customers, suppliers, cargo owners, and traders will appear here once inquiry forms are connected."
-          />
+                    <p>
+                      <strong>Phone:</strong> {item.phone || "-"}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 p-4 rounded-xl bg-gray-50 text-sm leading-7">
+                    {item.message}
+                  </div>
+
+                  <p className="text-xs text-gray-400 mt-4">
+                    {new Date(item.created_at).toLocaleString()}
+                  </p>
+
+                  <div className="flex gap-3 mt-5">
+                    {item.status !== "closed" && (
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={() => markClosed(item.id)}
+                      >
+                        Mark Closed
+                      </Button>
+                    )}
+
+                    <Button
+                      type="button"
+                      variant="danger"
+                      onClick={() => deleteInquiry(item.id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+
+                </AppCard>
+              ))}
+            </div>
+          )}
         </AppCard>
       </div>
     </div>

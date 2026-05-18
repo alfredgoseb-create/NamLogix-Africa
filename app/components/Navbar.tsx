@@ -20,8 +20,10 @@ export default function Navbar() {
     { label: "Cargo", href: "/cargo-requests" },
     { label: "Routes", href: "/trade-routes" },
     { label: "Warehouses", href: "/warehouses" },
+    { label: "Contact", href: "/contact" },
     { label: "Profile", href: "/profile" },
     { label: "Admin", href: "/admin/dashboard" },
+{ label: "Inquiries", href: "/admin/inquiries" },
   ];
 
   return (
@@ -58,6 +60,22 @@ export default function Navbar() {
         >
           NamLogix <span style={{ color: "#fb923c" }}>AFRICA</span>
         </Link>
+
+        <button
+          onClick={() => setOpen(!open)}
+          style={{
+            display: "none",
+            background: "#1e3a8a",
+            color: "white",
+            border: "none",
+            borderRadius: 12,
+            padding: "8px 12px",
+            fontWeight: 900,
+            cursor: "pointer",
+          }}
+        >
+          Menu
+        </button>
 
         <div
           style={{
@@ -98,15 +116,6 @@ export default function Navbar() {
             }}
           >
             Logout
-          </button>
-
-          <button
-            onClick={() => setOpen(!open)}
-            style={{
-              display: "none",
-            }}
-          >
-            Menu
           </button>
         </div>
       </nav>
