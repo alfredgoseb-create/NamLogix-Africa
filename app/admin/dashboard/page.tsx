@@ -2,14 +2,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import PageHero from "@/app/components/PageHero";
-import DashboardCard from "@/app/components/DashboardCard";
-import SectionHeader from "@/app/components/SectionHeader";
-import EmptyState from "@/app/components/EmptyState";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
 
 const emptyProductForm = {
   name: "",
@@ -196,216 +191,580 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="Inventory Control Center"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Inventory Intelligence"
-        description="Manage products, prices, stock levels, suppliers, warehouses, and marketplace inventory from one central dashboard."
-        actions={[
-          { label: "📦 Add Product", href: "#add-product", primary: true },
-          { label: "👥 Suppliers", href: "/admin/suppliers" },
-          { label: "🏭 Warehouses", href: "/admin/warehouses" },
-          { label: "🛒 Store", href: "/store" },
-        ]}
-        stats={[
-          { value: products.length, label: "Products listed" },
-          { value: totalStock, label: "Total stock" },
-          { value: activeProducts, label: "Active products" },
-          { value: `N$${totalValue}`, label: "Stock value" },
-        ]}
-        infoCards={[
-          { title: "Inventory", text: "Stock control" },
-          { title: "Marketplace", text: "Store listings" },
-          { title: "Suppliers", text: "Product sourcing" },
-          { title: "Warehouses", text: "Storage tracking" },
-        ]}
-      />
+    <div style={{ minHeight: "100vh", background: "#f6f8fc", padding: "40px 24px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <section style={heroStyle}>
+          <p style={{ color: "#fed7aa", fontWeight: 800 }}>
+            INVENTORY CONTROL CENTER
+          </p>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <DashboardCard title="Products" value={products.length} subtitle="Registered inventory items" color="blue" />
-          <DashboardCard title="Total Stock" value={totalStock} subtitle="Units in inventory" color="green" />
-          <DashboardCard title="Low Stock" value={lowStockProducts.length} subtitle="Needs attention" color="orange" />
-          <DashboardCard title="Stock Value" value={`N$${totalValue}`} subtitle="Estimated inventory value" color="red" />
-        </div>
+          <h1 style={{ fontSize: 42, fontWeight: 900, margin: "10px 0" }}>
+            NamLogix AFRICA Inventory Intelligence
+          </h1>
 
-        <AppCard id="add-product" className="mb-8" variant="blue">
-          <SectionHeader
-            title="📦 Add New Product"
-            subtitle={`Products added here will belong to ${
-              profile?.company_name || profile?.full_name || "your company profile"
-            }.`}
-          />
+          <p style={{ maxWidth: 760, lineHeight: 1.7 }}>
+            Manage products, prices, stock levels, suppliers, warehouses, and marketplace inventory from one central dashboard.
+          </p>
 
-          <form className="grid md:grid-cols-2 gap-4" onSubmit={handleCreate}>
-            <input type="text" placeholder="Product Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border rounded-xl px-4 py-3 md:col-span-2" />
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
+            <a href="#add-product" style={buttonOrange}>📦 Add Product</a>
+            <Link href="/admin/suppliers" style={buttonPrimary}>👥 Suppliers</Link>
+            <Link href="/admin/warehouses" style={buttonSecondary}>🏭 Warehouses</Link>
+            <Link href="/store" style={buttonSecondary}>🛒 Store</Link>
+          </div>
+        </section>
 
-            <input type="text" placeholder="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="border rounded-xl px-4 py-3" />
+        <section style={statsGrid}>
+          <StatCard title="Products" value={products.length} subtitle="Registered inventory items" />
+          <StatCard title="Total Stock" value={totalStock} subtitle="Units in inventory" />
+          <StatCard title="Low Stock" value={lowStockProducts.length} subtitle="Needs attention" />
+          <StatCard title="Stock Value" value={`N$${totalValue}`} subtitle="Estimated inventory value" />
+        </section>
 
-            <input type="text" placeholder="Unit (kg, box, item...)" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="border rounded-xl px-4 py-3" />
+        <section id="add-product" style={cardStyle}>
+          <h2 style={sectionTitle}>📦 Add New Product</h2>
 
-            <input type="number" placeholder="Stock Level" value={form.stock_level} onChange={(e) => setForm({ ...form, stock_level: e.target.value })} className="border rounded-xl px-4 py-3" />
+          <p style={{ color: "#64748b", marginTop: 8 }}>
+            Products added here will belong to{" "}
+            <strong>
+              {profile?.company_name || profile?.full_name || "your company profile"}
+            </strong>.
+          </p>
 
-            <input type="number" placeholder="Price NAD" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="border rounded-xl px-4 py-3" />
+          <form onSubmit={handleCreate} style={formGrid}>
+            <input
+              type="text"
+              placeholder="Product Name *"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              style={{ ...inputStyle, gridColumn: "1 / -1" }}
+            />
 
-            <input type="text" placeholder="Supplier" value={form.supplier} onChange={(e) => setForm({ ...form, supplier: e.target.value })} className="border rounded-xl px-4 py-3" />
+            <input
+              type="text"
+              placeholder="Category"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              style={inputStyle}
+            />
 
-            <input type="text" placeholder="Warehouse" value={form.warehouse} onChange={(e) => setForm({ ...form, warehouse: e.target.value })} className="border rounded-xl px-4 py-3" />
+            <input
+              type="text"
+              placeholder="Unit (kg, box, item...)"
+              value={form.unit}
+              onChange={(e) => setForm({ ...form, unit: e.target.value })}
+              style={inputStyle}
+            />
 
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="border rounded-xl px-4 py-3 md:col-span-2">
+            <input
+              type="number"
+              placeholder="Stock Level"
+              value={form.stock_level}
+              onChange={(e) => setForm({ ...form, stock_level: e.target.value })}
+              style={inputStyle}
+            />
+
+            <input
+              type="number"
+              placeholder="Price NAD"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              style={inputStyle}
+            />
+
+            <input
+              type="text"
+              placeholder="Supplier"
+              value={form.supplier}
+              onChange={(e) => setForm({ ...form, supplier: e.target.value })}
+              style={inputStyle}
+            />
+
+            <input
+              type="text"
+              placeholder="Warehouse"
+              value={form.warehouse}
+              onChange={(e) => setForm({ ...form, warehouse: e.target.value })}
+              style={inputStyle}
+            />
+
+            <select
+              value={form.status}
+              onChange={(e) => setForm({ ...form, status: e.target.value })}
+              style={{ ...inputStyle, gridColumn: "1 / -1" }}
+            >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
               <option value="out_of_stock">Out of Stock</option>
             </select>
 
-            <textarea placeholder="Product Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="border rounded-xl px-4 py-3 md:col-span-2 min-h-32" />
+            <textarea
+              placeholder="Product Description"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              style={{
+                ...inputStyle,
+                gridColumn: "1 / -1",
+                minHeight: 120,
+                resize: "vertical",
+              }}
+            />
 
-            <div className="md:col-span-2">
-              <label className="text-sm text-gray-500 mb-2 block">
-                Product Image
-              </label>
+            <div style={{ gridColumn: "1 / -1" }}>
+              <label style={labelStyle}>Product Image</label>
 
               <input
                 type="file"
                 accept="image/*"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
+
                   if (file) {
                     const url = await handleImageUpload(file);
-                    if (url) setForm({ ...form, image_url: url });
+
+                    if (url) {
+                      setForm({ ...form, image_url: url });
+                    }
                   }
                 }}
-                className="w-full border rounded-xl px-4 py-3 bg-white"
+                style={inputStyle}
               />
 
-              {uploading && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
+              {uploading && (
+                <p style={{ color: "#2563eb", fontSize: 14 }}>
+                  Uploading image...
+                </p>
+              )}
 
               {form.image_url && (
-                <img src={form.image_url} alt="Preview" className="mt-3 h-24 w-24 object-cover rounded-xl" />
+                <img
+                  src={form.image_url}
+                  alt="Preview"
+                  style={{
+                    width: 120,
+                    height: 120,
+                    objectFit: "cover",
+                    borderRadius: 16,
+                    marginTop: 14,
+                    border: "1px solid #e5e7eb",
+                  }}
+                />
               )}
             </div>
 
-            <div className="md:col-span-2">
-              <Button type="submit" variant="orange" fullWidth>
-                {saving ? "Creating Product..." : "📦 Create Product"}
-              </Button>
-            </div>
+            <button
+              type="submit"
+              disabled={saving}
+              style={{
+                ...buttonOrange,
+                border: "none",
+                cursor: "pointer",
+                gridColumn: "1 / -1",
+              }}
+            >
+              {saving ? "Creating Product..." : "📦 Create Product"}
+            </button>
           </form>
-        </AppCard>
+        </section>
 
-        <AppCard className="mb-8" variant="orange">
-          <SectionHeader title="⚠️ Low Stock Monitor" subtitle="Products with 10 units or fewer will appear here." />
+        <section style={{ ...cardStyle, marginTop: 24 }}>
+          <h2 style={sectionTitle}>⚠️ Low Stock Monitor</h2>
+
+          <p style={{ color: "#64748b", marginTop: 8 }}>
+            Products with 10 units or fewer will appear here.
+          </p>
 
           {lowStockProducts.length === 0 ? (
-            <EmptyState icon="✅" title="No low stock products" message="Your inventory is currently healthy." />
+            <div style={emptyBox}>
+              <div style={{ fontSize: 48 }}>✅</div>
+              <h3>No low stock products</h3>
+              <p>Your inventory is currently healthy.</p>
+            </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div style={productGrid}>
               {lowStockProducts.map((p) => (
-                <AppCard key={p.id} hover>
-                  <p className="font-bold text-lg">{p.name}</p>
-                  <p className="text-sm text-gray-500 mt-2">{p.stock_level} units left</p>
-                </AppCard>
+                <div key={p.id} style={smallCard}>
+                  <h3 style={{ margin: 0 }}>{p.name}</h3>
+                  <p style={{ color: "#64748b" }}>{p.stock_level} units left</p>
+                </div>
               ))}
             </div>
           )}
-        </AppCard>
+        </section>
 
-        <AppCard variant="green">
-          <SectionHeader
-            title="📦 Product Inventory"
-            subtitle="Products currently registered in your NamLogix platform."
-            action={
-              <button onClick={fetchProducts} className="bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-800">
-                Refresh
-              </button>
-            }
-          />
+        <section style={{ ...cardStyle, marginTop: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
+            <div>
+              <h2 style={sectionTitle}>📦 Product Inventory</h2>
+              <p style={{ color: "#64748b", marginTop: 8 }}>
+                Products currently registered in your NamLogix platform.
+              </p>
+            </div>
+
+            <button onClick={fetchProducts} style={refreshButton}>
+              Refresh
+            </button>
+          </div>
 
           {loading ? (
             <p>Loading products...</p>
           ) : products.length === 0 ? (
-            <EmptyState icon="📦" title="No products yet" message="Add your first product above to start building your NamLogix inventory and marketplace store." />
+            <div style={emptyBox}>
+              <div style={{ fontSize: 48 }}>📦</div>
+              <h3>No products yet</h3>
+              <p>Add your first product above to start building your inventory.</p>
+            </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div style={productGrid}>
               {products.map((product) => (
-                <AppCard key={product.id} hover>
+                <div key={product.id} style={productCard}>
                   {product.image_url ? (
-                    <img src={product.image_url} alt={product.name} className="h-44 w-full object-cover rounded-xl mb-4" />
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      style={{
+                        width: "100%",
+                        height: 150,
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
                   ) : (
-                    <div className="h-44 w-full rounded-xl mb-4 bg-gradient-to-br from-blue-100 to-orange-100 flex items-center justify-center text-5xl">
-                      📦
-                    </div>
+                    <div style={placeholderImage}>📦</div>
                   )}
 
-                  <div className="flex justify-between gap-4 mb-3">
-                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                      {product.category || "General"}
-                    </span>
+                  <div style={{ padding: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 12 }}>
+                      <span style={categoryPill}>
+                        {product.category || "General"}
+                      </span>
 
-                    <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
-                      {product.owner_company || "Company"}
-                    </span>
-                  </div>
-
-                  <h3 className="font-bold text-lg">{product.name}</h3>
-
-                  <p className="text-sm text-gray-500 mt-2 leading-6">
-                    {product.description || "No description added."}
-                  </p>
-
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-gray-400">Stock</p>
-                      <p className="font-semibold">{product.stock_level || 0}</p>
+                      <span style={stockPill}>
+                        {product.status || "active"}
+                      </span>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-gray-400">Price</p>
-                      <p className="font-semibold">N${product.price || 0}</p>
+                    <h3 style={{ fontSize: 18, fontWeight: 900, margin: "0 0 8px" }}>
+                      {product.name}
+                    </h3>
+
+                    <p style={{ color: "#64748b", fontSize: 14, lineHeight: "20px", minHeight: 40 }}>
+                      {product.description || "No description added."}
+                    </p>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 14 }}>
+                      <InfoBox label="Stock" value={product.stock_level || 0} />
+                      <InfoBox label="Price" value={`N$${product.price || 0}`} />
                     </div>
-                  </div>
 
-                  {selectedProduct && selectedProduct.id === product.id ? (
-                    <div className="mt-5 border-t pt-4 space-y-3">
-                      <input type="text" value={selectedProduct.name || ""} onChange={(e) => setSelectedProduct({ ...selectedProduct, name: e.target.value })} className="w-full border rounded-xl px-4 py-3" />
+                    <p style={{ color: "#64748b", fontSize: 13, marginTop: 12 }}>
+                      Owner:{" "}
+                      <strong>
+                        {product.owner_company || "Company"}
+                      </strong>
+                    </p>
 
-                      <textarea value={selectedProduct.description || ""} onChange={(e) => setSelectedProduct({ ...selectedProduct, description: e.target.value })} className="w-full border rounded-xl px-4 py-3" />
+                    {selectedProduct && selectedProduct.id === product.id ? (
+                      <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
+                        <input
+                          type="text"
+                          value={selectedProduct.name || ""}
+                          onChange={(e) =>
+                            setSelectedProduct({
+                              ...selectedProduct,
+                              name: e.target.value,
+                            })
+                          }
+                          style={inputStyle}
+                        />
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <input type="number" value={selectedProduct.stock_level || 0} onChange={(e) => setSelectedProduct({ ...selectedProduct, stock_level: e.target.value })} className="border rounded-xl px-4 py-3" />
+                        <textarea
+                          value={selectedProduct.description || ""}
+                          onChange={(e) =>
+                            setSelectedProduct({
+                              ...selectedProduct,
+                              description: e.target.value,
+                            })
+                          }
+                          style={inputStyle}
+                        />
 
-                        <input type="number" value={selectedProduct.price || 0} onChange={(e) => setSelectedProduct({ ...selectedProduct, price: e.target.value })} className="border rounded-xl px-4 py-3" />
+                        <input
+                          type="number"
+                          value={selectedProduct.stock_level || 0}
+                          onChange={(e) =>
+                            setSelectedProduct({
+                              ...selectedProduct,
+                              stock_level: e.target.value,
+                            })
+                          }
+                          style={inputStyle}
+                        />
+
+                        <input
+                          type="number"
+                          value={selectedProduct.price || 0}
+                          onChange={(e) =>
+                            setSelectedProduct({
+                              ...selectedProduct,
+                              price: e.target.value,
+                            })
+                          }
+                          style={inputStyle}
+                        />
+
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                          <button
+                            type="button"
+                            onClick={() => handleUpdate(selectedProduct)}
+                            style={{
+                              ...buttonPrimary,
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Save
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProduct(null)}
+                            style={{
+                              ...buttonSecondary,
+                              border: "1px solid #bfdbfe",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
+                    ) : (
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 16 }}>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedProduct(product)}
+                          style={{
+                            ...buttonPrimary,
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Edit
+                        </button>
 
-                      <div className="flex gap-2">
-                        <Button type="button" variant="primary" onClick={() => handleUpdate(selectedProduct)}>
-                          Save
-                        </Button>
-
-                        <Button type="button" variant="secondary" onClick={() => setSelectedProduct(null)}>
-                          Cancel
-                        </Button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(product.id)}
+                          style={{
+                            ...buttonDanger,
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Delete
+                        </button>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2 mt-5">
-                      <Button type="button" variant="secondary" onClick={() => setSelectedProduct(product)}>
-                        Edit
-                      </Button>
-
-                      <Button type="button" variant="danger" onClick={() => handleDelete(product.id)}>
-                        Delete
-                      </Button>
-                    </div>
-                  )}
-                </AppCard>
+                    )}
+                  </div>
+                </div>
               ))}
             </div>
           )}
-        </AppCard>
+        </section>
       </div>
     </div>
   );
 }
+
+function StatCard({ title, value, subtitle }) {
+  return (
+    <div style={statCard}>
+      <p style={{ color: "#64748b", fontSize: 13, margin: 0 }}>{title}</p>
+      <p style={{ fontSize: 30, fontWeight: 900, margin: "6px 0 0" }}>
+        {value}
+      </p>
+      <p style={{ color: "#94a3b8", fontSize: 13, margin: "4px 0 0" }}>
+        {subtitle}
+      </p>
+    </div>
+  );
+}
+
+function InfoBox({ label, value }) {
+  return (
+    <div style={{ background: "#f8fafc", borderRadius: 14, padding: 12 }}>
+      <p style={{ color: "#94a3b8", fontSize: 11, margin: 0 }}>{label}</p>
+      <p style={{ fontWeight: 900, margin: "5px 0 0" }}>{value}</p>
+    </div>
+  );
+}
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 24,
+};
+
+const statsGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gap: 16,
+  marginBottom: 24,
+};
+
+const statCard = {
+  background: "white",
+  borderRadius: 22,
+  padding: 20,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 8px 22px rgba(15,23,42,0.06)",
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 24,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 8px 24px rgba(15,23,42,0.08)",
+};
+
+const smallCard = {
+  background: "white",
+  borderRadius: 18,
+  padding: 18,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
+};
+
+const sectionTitle = {
+  fontSize: 28,
+  fontWeight: 900,
+  margin: 0,
+};
+
+const formGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gap: 16,
+  marginTop: 24,
+};
+
+const inputStyle = {
+  width: "100%",
+  border: "1px solid #d1d5db",
+  borderRadius: 14,
+  padding: "13px 14px",
+  fontSize: 15,
+  background: "white",
+};
+
+const labelStyle = {
+  display: "block",
+  fontWeight: 800,
+  color: "#374151",
+  marginBottom: 8,
+};
+
+const productGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+  gap: 22,
+};
+
+const productCard = {
+  background: "white",
+  borderRadius: 20,
+  overflow: "hidden",
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 8px 22px rgba(15,23,42,0.08)",
+};
+
+const placeholderImage = {
+  height: 150,
+  background: "#dbeafe",
+  display: "grid",
+  placeItems: "center",
+  fontSize: 46,
+};
+
+const emptyBox = {
+  textAlign: "center",
+  padding: 50,
+  borderRadius: 20,
+  background: "#f8fafc",
+  color: "#64748b",
+};
+
+const refreshButton = {
+  background: "white",
+  border: "1px solid #d1d5db",
+  borderRadius: 14,
+  padding: "10px 16px",
+  fontWeight: 800,
+  cursor: "pointer",
+};
+
+const categoryPill = {
+  background: "#ede9fe",
+  color: "#6b21a8",
+  padding: "5px 10px",
+  borderRadius: 999,
+  fontSize: 12,
+  fontWeight: 800,
+};
+
+const stockPill = {
+  background: "#dcfce7",
+  color: "#166534",
+  padding: "5px 10px",
+  borderRadius: 999,
+  fontSize: 12,
+  fontWeight: 800,
+};
+
+const buttonPrimary = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "11px 14px",
+  borderRadius: 12,
+  textAlign: "center",
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "block",
+};
+
+const buttonSecondary = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "11px 14px",
+  borderRadius: 12,
+  textAlign: "center",
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  textAlign: "center",
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonDanger = {
+  background: "#dc2626",
+  color: "white",
+  padding: "11px 14px",
+  borderRadius: 12,
+  textAlign: "center",
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "block",
+};
