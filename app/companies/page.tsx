@@ -118,7 +118,7 @@ export default function CompaniesPage() {
                     </div>
                   </div>
 
-                  <span className="inline-block text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-3">
+                  <span className="inline-block text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-3 capitalize">
                     {company.role || "customer"}
                   </span>
 
@@ -137,8 +137,12 @@ export default function CompaniesPage() {
                   </p>
 
                   <div className="mt-5">
-                    <Button href="/contact" variant="outline" fullWidth>
-                      Contact Company
+                    <Button
+                      href={`/companies/${company.id}`}
+                      variant="outline"
+                      fullWidth
+                    >
+                      View Company Profile
                     </Button>
                   </div>
                 </AppCard>
