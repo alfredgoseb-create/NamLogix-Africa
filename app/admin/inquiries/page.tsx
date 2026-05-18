@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import PageHero from "@/app/components/PageHero";
+import DashboardHeader from "@/app/components/DashboardHeader";
 import AppCard from "@/app/components/AppCard";
 import DashboardCard from "@/app/components/DashboardCard";
 import SectionHeader from "@/app/components/SectionHeader";
@@ -75,12 +75,10 @@ export default function AdminInquiriesPage() {
 
   return (
     <div className="min-h-screen page-soft-bg">
-      <PageHero
+      <DashboardHeader
         badge="Customer Communication"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Inquiry Center"
-        description="Manage customer inquiries, supplier requests, cargo requests, and marketplace communication from one admin panel."
+        title="Inquiry Center"
+        description="Manage customer inquiries, supplier requests, cargo questions, and marketplace communication from one admin panel."
         actions={[
           {
             label: "📩 Contact Page",
@@ -114,28 +112,9 @@ export default function AdminInquiriesPage() {
             label: "System status",
           },
         ]}
-        infoCards={[
-          {
-            title: "Customers",
-            text: "Communication tracking",
-          },
-          {
-            title: "Suppliers",
-            text: "Business requests",
-          },
-          {
-            title: "Cargo",
-            text: "Logistics support",
-          },
-          {
-            title: "Marketplace",
-            text: "Product inquiries",
-          },
-        ]}
       />
 
       <div className="max-w-7xl mx-auto px-6 py-10">
-
         <div className="grid md:grid-cols-3 gap-4 mb-8">
           <DashboardCard
             title="Total"
@@ -185,7 +164,6 @@ export default function AdminInquiriesPage() {
             <div className="grid md:grid-cols-2 gap-6">
               {inquiries.map((item) => (
                 <AppCard key={item.id} hover>
-
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-bold text-xl">
                       {item.subject || "General Inquiry"}
@@ -243,7 +221,6 @@ export default function AdminInquiriesPage() {
                       Delete
                     </Button>
                   </div>
-
                 </AppCard>
               ))}
             </div>

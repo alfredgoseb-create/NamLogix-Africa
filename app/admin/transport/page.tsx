@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import PageHero from "@/app/components/PageHero";
+import DashboardHeader from "@/app/components/DashboardHeader";
 import AppCard from "@/app/components/AppCard";
 import DashboardCard from "@/app/components/DashboardCard";
 import SectionHeader from "@/app/components/SectionHeader";
@@ -69,11 +69,9 @@ export default function AdminTransportPage() {
 
   return (
     <div className="min-h-screen page-soft-bg">
-      <PageHero
+      <DashboardHeader
         badge="Transport Operations"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Booking Control"
+        title="Transport Booking Control"
         description="Manage local transport, hospital trips, home-to-work rides, goods movement, and business transport requests."
         actions={[
           {
@@ -112,32 +110,37 @@ export default function AdminTransportPage() {
             label: "Completed",
           },
         ]}
-        infoCards={[
-          {
-            title: "People",
-            text: "Passenger rides",
-          },
-          {
-            title: "Medical",
-            text: "Hospital transport",
-          },
-          {
-            title: "Goods",
-            text: "Local deliveries",
-          },
-          {
-            title: "Business",
-            text: "Company movement",
-          },
-        ]}
       />
 
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <DashboardCard title="Total" value={bookings.length} subtitle="All bookings" color="blue" />
-          <DashboardCard title="Pending" value={pending} subtitle="Needs action" color="orange" />
-          <DashboardCard title="Accepted" value={accepted} subtitle="Approved trips" color="green" />
-          <DashboardCard title="Completed" value={completed} subtitle="Finished trips" color="red" />
+          <DashboardCard
+            title="Total"
+            value={bookings.length}
+            subtitle="All bookings"
+            color="blue"
+          />
+
+          <DashboardCard
+            title="Pending"
+            value={pending}
+            subtitle="Needs action"
+            color="orange"
+          />
+
+          <DashboardCard
+            title="Accepted"
+            value={accepted}
+            subtitle="Approved trips"
+            color="green"
+          />
+
+          <DashboardCard
+            title="Completed"
+            value={completed}
+            subtitle="Finished trips"
+            color="red"
+          />
         </div>
 
         <AppCard variant="blue">
@@ -169,7 +172,8 @@ export default function AdminTransportPage() {
                   <div className="flex justify-between gap-4 mb-4">
                     <div>
                       <h3 className="font-black text-xl">
-                        {booking.pickup_location} → {booking.dropoff_location}
+                        {booking.pickup_location} →{" "}
+                        {booking.dropoff_location}
                       </h3>
 
                       <p className="text-sm text-gray-500 mt-1">
@@ -185,55 +189,87 @@ export default function AdminTransportPage() {
                   <div className="grid md:grid-cols-2 gap-3 text-sm">
                     <div className="bg-gray-50 rounded-xl p-3">
                       <p className="text-gray-400">Customer</p>
-                      <p className="font-semibold">{booking.customer_name || "-"}</p>
+                      <p className="font-semibold">
+                        {booking.customer_name || "-"}
+                      </p>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-3">
                       <p className="text-gray-400">Phone</p>
-                      <p className="font-semibold">{booking.phone || "-"}</p>
+                      <p className="font-semibold">
+                        {booking.phone || "-"}
+                      </p>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-3">
                       <p className="text-gray-400">Date</p>
-                      <p className="font-semibold">{booking.preferred_date || "-"}</p>
+                      <p className="font-semibold">
+                        {booking.preferred_date || "-"}
+                      </p>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-3">
                       <p className="text-gray-400">Time</p>
-                      <p className="font-semibold">{booking.preferred_time || "-"}</p>
+                      <p className="font-semibold">
+                        {booking.preferred_time || "-"}
+                      </p>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-3">
                       <p className="text-gray-400">Passengers</p>
-                      <p className="font-semibold">{booking.passengers || 1}</p>
+                      <p className="font-semibold">
+                        {booking.passengers || 1}
+                      </p>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-3">
                       <p className="text-gray-400">Reason</p>
-                      <p className="font-semibold">{booking.trip_reason || "-"}</p>
+                      <p className="font-semibold">
+                        {booking.trip_reason || "-"}
+                      </p>
                     </div>
                   </div>
 
                   {booking.cargo_description && (
                     <div className="mt-4 bg-gray-50 rounded-xl p-4 text-sm leading-7">
-                      <strong>Goods:</strong> {booking.cargo_description}
+                      <strong>Goods:</strong>{" "}
+                      {booking.cargo_description}
                     </div>
                   )}
 
                   <p className="text-xs text-gray-400 mt-4">
-                    Created: {new Date(booking.created_at).toLocaleString()}
+                    Created:{" "}
+                    {new Date(
+                      booking.created_at
+                    ).toLocaleString()}
                   </p>
 
                   <div className="flex flex-wrap gap-2 mt-5">
-                    <Button type="button" variant="primary" onClick={() => updateStatus(booking.id, "accepted")}>
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onClick={() =>
+                        updateStatus(booking.id, "accepted")
+                      }
+                    >
                       Accept
                     </Button>
 
-                    <Button type="button" variant="secondary" onClick={() => updateStatus(booking.id, "completed")}>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() =>
+                        updateStatus(booking.id, "completed")
+                      }
+                    >
                       Complete
                     </Button>
 
-                    <Button type="button" variant="danger" onClick={() => deleteBooking(booking.id)}>
+                    <Button
+                      type="button"
+                      variant="danger"
+                      onClick={() => deleteBooking(booking.id)}
+                    >
                       Delete
                     </Button>
                   </div>
