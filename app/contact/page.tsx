@@ -1,147 +1,206 @@
+// @ts-nocheck
 "use client";
 
-import PageHero from "@/app/components/PageHero";
-import DashboardCard from "@/app/components/DashboardCard";
-import SectionHeader from "@/app/components/SectionHeader";
-import EmptyState from "@/app/components/EmptyState";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
+import { useState } from "react";
+import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
+
+const emptyForm = {
+  name: "",
+  email: "",
+  phone: "",
+  subject: "",
+  message: "",
+};
 
 export default function ContactPage() {
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!form.name || !form.message) {
+      alert("Name and message are required.");
+      return;
+    }
+
+    setSaving(true);
+
+    const { error } = await supabase.from("inquiries").insert([
+      {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        subject: form.subject,
+        message: form.message,
+        status: "open",
+      },
+    ]);
+
+    setSaving(false);
+
+    if (error) {
+      alert("Failed to send inquiry: " + error.message);
+      return;
+    }
+
+    alert("Inquiry sent successfully.");
+    setForm(emptyForm);
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <PageHero
-        badge="Contact NamLogix Africa"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Contact Center"
-        description="Connect with NamLogix Africa for cargo, suppliers, warehouse support, marketplace questions, aviation logistics, and trade infrastructure services."
-        actions={[
-          {
-            label: "📩 Contact Us",
-            href: "#contact",
-            primary: true,
-          },
-          {
-            label: "📦 Post Cargo",
-            href: "/request-cargo",
-          },
-          {
-            label: "🛒 Store",
-            href: "/store",
-          },
-          {
-            label: "👥 Suppliers",
-            href: "/admin/suppliers",
-          },
-        ]}
-        stats={[
-          {
-            value: "Support",
-            label: "Customer help",
-          },
-          {
-            value: "Cargo",
-            label: "Logistics requests",
-          },
-          {
-            value: "Trade",
-            label: "Business inquiries",
-          },
-          {
-            value: "SADC",
-            label: "Regional interest",
-          },
-        ]}
-        infoCards={[
-          {
-            title: "Cargo",
-            text: "Transport support",
-          },
-          {
-            title: "Suppliers",
-            text: "Partner inquiries",
-          },
-          {
-            title: "Store",
-            text: "Product questions",
-          },
-          {
-            title: "Aviation",
-            text: "Air logistics",
-          },
-        ]}
-      />
+    <div style={{ minHeight: "100vh", background: "#f6f8fc", padding: "40px 24px" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+        <section style={heroStyle}>
+          <p style={{ color: "#fed7aa", fontWeight: 800 }}>CONTACT NAMLOGIX</p>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <DashboardCard
-            title="Support"
-            value="Ready"
-            subtitle="Contact foundation"
-            color="blue"
-          />
+          <h1 style={{ fontSize: 42, fontWeight: 900, margin: "10px 0" }}>
+            Send Inquiry
+          </h1>
 
-          <DashboardCard
-            title="Cargo"
-            value="Requests"
-            subtitle="Transport inquiries"
-            color="green"
-          />
+          <p style={{ maxWidth: 720, lineHeight: 1.7 }}>
+            Contact NamLogix Africa about products, cargo, transport, suppliers, warehouses, aviation, or trade routes.
+          </p>
 
-          <DashboardCard
-            title="Suppliers"
-            value="Partners"
-            subtitle="Business network"
-            color="orange"
-          />
-
-          <DashboardCard
-            title="Region"
-            value="SADC"
-            subtitle="Expansion market"
-            color="red"
-          />
-        </div>
-
-        <AppCard className="mb-8">
-          <SectionHeader
-            title="⚡ Contact Shortcuts"
-            subtitle="Choose the area of the platform you need help with."
-          />
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button href="/request-cargo" variant="primary" fullWidth>
-              📦 Cargo Support
-            </Button>
-
-            <Button href="/store" variant="secondary" fullWidth>
-              🛒 Store Support
-            </Button>
-
-            <Button href="/admin/inquiries" variant="outline" fullWidth>
-              📩 Admin Inquiries
-            </Button>
-
-            <Button href="/aviation" variant="outline" fullWidth>
-              ✈️ Aviation
-            </Button>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
+            <Link href="/store" style={buttonPrimary}>Marketplace</Link>
+            <Link href="/companies" style={buttonSecondary}>Companies</Link>
+            <Link href="/request-cargo" style={buttonOrange}>Post Cargo</Link>
           </div>
-        </AppCard>
+        </section>
 
-        <AppCard id="contact">
-          <SectionHeader
-            title="📩 Contact Form"
-            subtitle="A live contact form can be connected here later."
-          />
+        <section style={cardStyle}>
+          <h2 style={{ fontSize: 30, fontWeight: 900, margin: 0 }}>
+            📩 Inquiry Form
+          </h2>
 
-          <EmptyState
-            icon="📩"
-            title="Contact form coming soon"
-            message="This section is ready for name, email, phone, message, service type, and Supabase inquiry storage."
-          />
-        </AppCard>
+          <p style={{ color: "#64748b", marginTop: 8 }}>
+            Fill in your details and message. The inquiry will be saved inside Supabase.
+          </p>
+
+          <form onSubmit={handleSubmit} style={formGrid}>
+            <input
+              type="text"
+              placeholder="Your Name *"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              style={inputStyle}
+            />
+
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              style={inputStyle}
+            />
+
+            <input
+              type="text"
+              placeholder="Phone Number"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              style={inputStyle}
+            />
+
+            <input
+              type="text"
+              placeholder="Subject"
+              value={form.subject}
+              onChange={(e) => setForm({ ...form, subject: e.target.value })}
+              style={inputStyle}
+            />
+
+            <textarea
+              placeholder="Message *"
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              style={{
+                ...inputStyle,
+                gridColumn: "1 / -1",
+                minHeight: 150,
+                resize: "vertical",
+              }}
+            />
+
+            <button
+              type="submit"
+              disabled={saving}
+              style={{
+                ...buttonOrange,
+                border: "none",
+                cursor: "pointer",
+                gridColumn: "1 / -1",
+              }}
+            >
+              {saving ? "Sending Inquiry..." : "Send Inquiry"}
+            </button>
+          </form>
+        </section>
       </div>
     </div>
   );
 }
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 24,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 24,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 8px 24px rgba(15,23,42,0.08)",
+};
+
+const formGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gap: 16,
+  marginTop: 24,
+};
+
+const inputStyle = {
+  width: "100%",
+  border: "1px solid #d1d5db",
+  borderRadius: 14,
+  padding: "13px 14px",
+  fontSize: 15,
+  background: "white",
+};
+
+const buttonPrimary = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonSecondary = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
