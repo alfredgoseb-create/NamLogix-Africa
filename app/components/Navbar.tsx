@@ -20,6 +20,7 @@ export default function Navbar() {
     { label: "Cargo", href: "/cargo-requests" },
     { label: "Routes", href: "/trade-routes" },
     { label: "Warehouses", href: "/warehouses" },
+    { label: "Transport", href: "/transport" },
     { label: "Contact", href: "/contact" },
     { label: "Profile", href: "/profile" },
     { label: "Admin", href: "/admin/dashboard" },
