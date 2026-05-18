@@ -2,156 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* =========================================================
-   GLOBAL BODY
-========================================================= */
-
-html {
-  scroll-behavior: smooth;
-}
-
+html,
 body {
-  font-family: system-ui, sans-serif;
-  background: #f4f7fb;
+  padding: 0;
+  margin: 0;
+  background: #f5f7fb;
   color: #111827;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* =========================================================
-   PAGE BACKGROUNDS
-========================================================= */
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
 
 .page-soft-bg {
   background:
-    radial-gradient(
-      circle at top left,
-      rgba(37, 99, 235, 0.08),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at bottom right,
-      rgba(249, 115, 22, 0.08),
-      transparent 30%
-    ),
-    #f4f7fb;
-}
-
-/* =========================================================
-   HERO GRADIENTS
-========================================================= */
-
-.gradient-hero {
-  background:
-    linear-gradient(
-      135deg,
-      #0b1220 0%,
-      #111827 35%,
-      #1e3a8a 70%,
-      #ea580c 100%
-    );
-}
-
-.gradient-card-blue {
-  background:
-    linear-gradient(
-      135deg,
-      #1d4ed8,
-      #1e40af
-    );
-}
-
-.gradient-card-orange {
-  background:
-    linear-gradient(
-      135deg,
-      #f97316,
-      #ea580c
-    );
-}
-
-.gradient-card-green {
-  background:
-    linear-gradient(
-      135deg,
-      #059669,
-      #047857
-    );
-}
-
-.gradient-card-red {
-  background:
-    linear-gradient(
-      135deg,
-      #dc2626,
-      #b91c1c
-    );
-}
-
-/* =========================================================
-   GLASS EFFECTS
-========================================================= */
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-/* =========================================================
-   CUSTOM SCROLLBAR
-========================================================= */
-
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #e5e7eb;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-/* =========================================================
-   INPUTS
-========================================================= */
-
-input,
-textarea,
-select {
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: #2563eb;
-  box-shadow:
-    0 0 0 4px rgba(37, 99, 235, 0.1);
-}
-
-/* =========================================================
-   ANIMATIONS
-========================================================= */
-
-.fade-up {
-  animation: fadeUp 0.5s ease;
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    radial-gradient(circle at top left, rgba(59,130,246,0.08), transparent 30%),
+    radial-gradient(circle at top right, rgba(249,115,22,0.08), transparent 30%),
+    #f8fafc;
+  min-height: 100vh;
 }
