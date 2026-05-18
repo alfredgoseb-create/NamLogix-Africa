@@ -67,7 +67,10 @@ export default function Navbar() {
         label: "Services",
         href: "/services",
         icon: Briefcase,
-      },
+      },{
+  label: "Suppliers",
+  href: "/admin/suppliers",
+},
       {
         label: "Find Cargo",
         href: "/cargo-requests",
