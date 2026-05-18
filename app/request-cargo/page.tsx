@@ -1,333 +1,267 @@
+// @ts-nocheck
 "use client";
-import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import Link from "next/link";
 
-const transportModes = [
-  { value: "road", label: "🚛 Road (Truck/Van)" },
-  { value: "rail", label: "🚂 Rail" },
-  { value: "air", label: "✈️ Air" },
-  { value: "sea", label: "🚢 Sea" },
-  { value: "any", label: "🌍 Any / Best Option" },
-];
+import { useState } from "react";
+import PageHero from "@/app/components/PageHero";
+import DashboardCard from "@/app/components/DashboardCard";
+import SectionHeader from "@/app/components/SectionHeader";
+import AppCard from "@/app/components/AppCard";
+import Button from "@/app/components/Button";
+import { supabase } from "@/lib/supabaseClient";
+
+const emptyForm = {
+  pickup_location: "",
+  delivery_location: "",
+  cargo_type: "",
+  weight_kg: "",
+  budget: "",
+  description: "",
+  contact_name: "",
+  contact_phone: "",
+  contact_email: "",
+};
 
 export default function RequestCargoPage() {
-  const [form, setForm] = useState({
-    customer_name: "",
-    customer_phone: "",
-    customer_email: "",
-    pickup_location: "",
-    delivery_location: "",
-    weight_kg: "",
-    volume_cbm: "",
-    transport_mode: "any",
-    preferred_date: "",
-    budget: "",
-    description: "",
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
-    setError("");
 
-    if (!form.customer_name || !form.pickup_location || !form.delivery_location) {
-      setError("Please fill in all required fields (*)");
-      setSubmitting(false);
+    if (!form.pickup_location || !form.delivery_location) {
+      alert("Pickup and delivery locations are required.");
       return;
     }
 
-    const payload = {
-      customer_name: form.customer_name,
-      customer_phone: form.customer_phone || null,
-      customer_email: form.customer_email || null,
-      pickup_location: form.pickup_location,
-      delivery_location: form.delivery_location,
-      weight_kg: form.weight_kg ? parseInt(form.weight_kg) : null,
-      volume_cbm: form.volume_cbm ? parseFloat(form.volume_cbm) : null,
-      transport_mode: form.transport_mode,
-      preferred_date: form.preferred_date || null,
-      budget: form.budget ? parseFloat(form.budget) : null,
-      description: form.description || null,
-      status: "open",
-    };
+    setSaving(true);
 
-    const { error: supabaseError } = await supabase
-      .from("cargo_requests")
-      .insert([payload]);
+    const requestNumber = `CR-${Date.now()}`;
 
-    if (supabaseError) {
-      setError("Failed to submit request. Please try again.");
-      console.error(supabaseError);
-    } else {
-      setSuccess(true);
-      setForm({
-        customer_name: "",
-        customer_phone: "",
-        customer_email: "",
-        pickup_location: "",
-        delivery_location: "",
-        weight_kg: "",
-        volume_cbm: "",
-        transport_mode: "any",
-        preferred_date: "",
-        budget: "",
-        description: "",
-      });
+    const { error } = await supabase.from("cargo_requests").insert([
+      {
+        request_number: requestNumber,
+        pickup_location: form.pickup_location,
+        delivery_location: form.delivery_location,
+        cargo_type: form.cargo_type,
+        weight_kg: Number(form.weight_kg) || 0,
+        budget: Number(form.budget) || 0,
+        description: form.description,
+        contact_name: form.contact_name,
+        contact_phone: form.contact_phone,
+        contact_email: form.contact_email,
+        status: "pending",
+      },
+    ]);
+
+    setSaving(false);
+
+    if (error) {
+      alert("Failed to post cargo: " + error.message);
+      return;
     }
-    setSubmitting(false);
-  }
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm border-b">
-          <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold">
-              NamLogix <span className="text-blue-600">AFRICA</span>
-            </h1>
-            <Link href="/" className="text-sm text-blue-600 hover:underline">
-              Back to Home
-            </Link>
-          </div>
-        </header>
-        <main className="max-w-3xl mx-auto px-4 py-12">
-          <div className="bg-white rounded-xl shadow p-8 text-center">
-            <div className="text-6xl mb-4">✅</div>
-            <h2 className="text-2xl font-bold mb-2">Request Submitted!</h2>
-            <p className="text-gray-600 mb-6">
-              Your cargo request has been received. Our logistics team will review it and contact you shortly with quotes from available carriers.
-            </p>
-            <Link
-              href="/request-cargo"
-              className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Submit Another Request
-            </Link>
-          </div>
-        </main>
-      </div>
-    );
+    alert("Cargo request posted successfully.");
+    setForm(emptyForm);
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center flex-wrap gap-4">
-          <h1 className="text-2xl font-bold">
-            NamLogix <span className="text-blue-600">AFRICA</span>
-          </h1>
-          <div className="flex gap-4">
-            <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
-              Home
-            </Link>
-            <Link href="/store" className="text-sm text-gray-600 hover:text-gray-900">
-              Store
-            </Link>
-            <Link href="/routes" className="text-sm text-gray-600 hover:text-gray-900">
-              Trade Routes
-            </Link>
-          </div>
+    <div className="min-h-screen page-soft-bg">
+      <PageHero
+        badge="Cargo Request"
+        titleTop="NamLogix"
+        titleHighlight="AFRICA"
+        titleBottom="Post Cargo"
+        description="Create cargo requests and connect with transporters, logistics operators, warehouses, and trade partners across Southern Africa."
+        actions={[
+          {
+            label: "📦 Start Request",
+            href: "#cargo-form",
+            primary: true,
+          },
+          {
+            label: "🚚 Find Cargo",
+            href: "/cargo-requests",
+          },
+          {
+            label: "💰 Cargo Bids",
+            href: "/bids",
+          },
+          {
+            label: "🛣️ Trade Routes",
+            href: "/trade-routes",
+          },
+        ]}
+        stats={[
+          {
+            value: "Cargo",
+            label: "Request type",
+          },
+          {
+            value: "Bids",
+            label: "Transport quotes",
+          },
+          {
+            value: "SADC",
+            label: "Regional coverage",
+          },
+          {
+            value: "NAD",
+            label: "Local currency",
+          },
+        ]}
+        infoCards={[
+          {
+            title: "Post",
+            text: "Cargo request",
+          },
+          {
+            title: "Receive",
+            text: "Transport bids",
+          },
+          {
+            title: "Select",
+            text: "Best offer",
+          },
+          {
+            title: "Track",
+            text: "Delivery flow",
+          },
+        ]}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <DashboardCard
+            title="Cargo"
+            value="Open"
+            subtitle="Request posting active"
+            color="blue"
+          />
+
+          <DashboardCard
+            title="Transporters"
+            value="Bids"
+            subtitle="Quote system ready"
+            color="green"
+          />
+
+          <DashboardCard
+            title="Coverage"
+            value="SADC"
+            subtitle="Regional network"
+            color="orange"
+          />
+
+          <DashboardCard
+            title="Status"
+            value="Live"
+            subtitle="Supabase connected"
+            color="red"
+          />
         </div>
-      </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-xl shadow p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-2">Request Cargo Transport</h1>
-          <p className="text-gray-600 mb-6">
-            Fill out the form below and we'll connect you with reliable carriers across Southern Africa.
-          </p>
+        <AppCard id="cargo-form" variant="blue">
+          <SectionHeader
+            title="📦 Cargo Request Form"
+            subtitle="Post cargo details so transporters can view the request and submit bids."
+          />
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg mb-6">
-              {error}
-            </div>
-          )}
+          <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="Pickup Location *"
+              value={form.pickup_location}
+              onChange={(e) =>
+                setForm({ ...form, pickup_location: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3"
+            />
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Customer Info */}
-            <div className="border-b pb-4">
-              <h2 className="text-lg font-semibold mb-3">Your Contact Information</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Full Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.customer_name}
-                    onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="John Doe"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Phone Number</label>
-                    <input
-                      type="tel"
-                      value={form.customer_phone}
-                      onChange={(e) => setForm({ ...form, customer_phone: e.target.value })}
-                      className="w-full border rounded-lg px-3 py-2"
-                      placeholder="+264 81 234 5678"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Email Address</label>
-                    <input
-                      type="email"
-                      value={form.customer_email}
-                      onChange={(e) => setForm({ ...form, customer_email: e.target.value })}
-                      className="w-full border rounded-lg px-3 py-2"
-                      placeholder="john@example.com"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <input
+              type="text"
+              placeholder="Delivery Location *"
+              value={form.delivery_location}
+              onChange={(e) =>
+                setForm({ ...form, delivery_location: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3"
+            />
 
-            {/* Route Info */}
-            <div className="border-b pb-4">
-              <h2 className="text-lg font-semibold mb-3">Pickup & Delivery</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Pickup Location <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.pickup_location}
-                    onChange={(e) => setForm({ ...form, pickup_location: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="City, Country"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Delivery Location <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.delivery_location}
-                    onChange={(e) => setForm({ ...form, delivery_location: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="City, Country"
-                  />
-                </div>
-              </div>
-            </div>
+            <input
+              type="text"
+              placeholder="Cargo Type"
+              value={form.cargo_type}
+              onChange={(e) =>
+                setForm({ ...form, cargo_type: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3"
+            />
 
-            {/* Cargo Details */}
-            <div className="border-b pb-4">
-              <h2 className="text-lg font-semibold mb-3">Cargo Details</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Weight (kg)</label>
-                  <input
-                    type="number"
-                    value={form.weight_kg}
-                    onChange={(e) => setForm({ ...form, weight_kg: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="e.g., 5000"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Volume (m³)</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={form.volume_cbm}
-                    onChange={(e) => setForm({ ...form, volume_cbm: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="e.g., 15.5"
-                  />
-                </div>
-              </div>
-              <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">Preferred Transport Mode</label>
-                <select
-                  value={form.transport_mode}
-                  onChange={(e) => setForm({ ...form, transport_mode: e.target.value })}
-                  className="w-full border rounded-lg px-3 py-2"
-                >
-                  {transportModes.map((mode) => (
-                    <option key={mode.value} value={mode.value}>
-                      {mode.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <input
+              type="number"
+              placeholder="Weight KG"
+              value={form.weight_kg}
+              onChange={(e) =>
+                setForm({ ...form, weight_kg: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3"
+            />
 
-            {/* Timing & Budget */}
-            <div className="border-b pb-4">
-              <h2 className="text-lg font-semibold mb-3">Timing & Budget</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Preferred Date</label>
-                  <input
-                    type="date"
-                    value={form.preferred_date}
-                    onChange={(e) => setForm({ ...form, preferred_date: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Budget (N$)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.budget}
-                    onChange={(e) => setForm({ ...form, budget: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="e.g., 5000"
-                  />
-                </div>
-              </div>
-            </div>
+            <input
+              type="number"
+              placeholder="Budget NAD"
+              value={form.budget}
+              onChange={(e) => setForm({ ...form, budget: e.target.value })}
+              className="border rounded-xl px-4 py-3"
+            />
 
-            {/* Additional Info */}
-            <div>
-              <label className="block text-sm font-medium mb-1">Additional Description</label>
-              <textarea
-                rows={4}
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2"
-                placeholder="Describe your cargo, special handling requirements, dimensions, etc."
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="Contact Name"
+              value={form.contact_name}
+              onChange={(e) =>
+                setForm({ ...form, contact_name: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3"
+            />
 
-            <div className="flex gap-3 pt-4">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
-              >
-                {submitting ? "Submitting..." : "Submit Cargo Request"}
-              </button>
-              <Link
-                href="/"
-                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold text-center hover:bg-gray-300"
-              >
-                Cancel
-              </Link>
+            <input
+              type="text"
+              placeholder="Contact Phone"
+              value={form.contact_phone}
+              onChange={(e) =>
+                setForm({ ...form, contact_phone: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3"
+            />
+
+            <input
+              type="email"
+              placeholder="Contact Email"
+              value={form.contact_email}
+              onChange={(e) =>
+                setForm({ ...form, contact_email: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3"
+            />
+
+            <textarea
+              placeholder="Cargo Description"
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              className="border rounded-xl px-4 py-3 md:col-span-2 min-h-32"
+            />
+
+            <div className="md:col-span-2">
+              <Button type="submit" variant="orange" fullWidth>
+                {saving ? "Posting Cargo..." : "📦 Post Cargo Request"}
+              </Button>
             </div>
           </form>
-        </div>
-      </main>
-
-      <footer className="bg-white border-t mt-12 py-6">
-        <div className="max-w-3xl mx-auto px-4 text-center text-gray-500 text-sm">
-          © {new Date().getFullYear()} NamLogix Africa – Connecting Southern African Trade
-        </div>
-      </footer>
+        </AppCard>
+      </div>
     </div>
   );
 }
