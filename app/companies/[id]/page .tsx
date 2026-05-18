@@ -78,7 +78,7 @@ export default function CompanyDetailsPage() {
         description="View this company's business identity, role, contact details, and platform presence on NamLogix Africa."
         actions={[
           { label: "Back to Companies", href: "/companies", primary: true },
-          { label: "Contact", href: "/contact" },
+          { label: "Company Products", href: `/companies/${company.id}/products` },
           { label: "Marketplace", href: "/store" },
         ]}
         stats={[
@@ -126,14 +126,12 @@ export default function CompanyDetailsPage() {
           </div>
 
           <div className="pt-24">
-            <span className="inline-block text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-3">
+            <span className="inline-block text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-3 capitalize">
               {company.role || "customer"}
             </span>
 
             <h1 className="text-4xl font-black text-gray-900">
-              {company.company_name ||
-                company.full_name ||
-                "Unnamed Company"}
+              {company.company_name || company.full_name || "Unnamed Company"}
             </h1>
 
             <p className="text-gray-500 mt-3">
@@ -188,8 +186,12 @@ export default function CompanyDetailsPage() {
             </div>
 
             <div className="mt-6">
-              <Button href="/contact" variant="orange" fullWidth>
-                Send Inquiry
+              <Button
+                href={`/companies/${company.id}/products`}
+                variant="orange"
+                fullWidth
+              >
+                View Company Products
               </Button>
             </div>
           </AppCard>
