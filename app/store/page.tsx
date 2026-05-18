@@ -11,12 +11,36 @@ import Button from "@/app/components/Button";
 import { supabase } from "@/lib/supabaseClient";
 
 const fallbackCategories = [
-  { title: "Construction", desc: "Building materials, cement, steel, and industrial products.", icon: "🏗️" },
-  { title: "Agriculture", desc: "Farm supplies, seeds, tools, and agricultural logistics.", icon: "🌾" },
-  { title: "Mining", desc: "Mining equipment, machinery, and industrial support products.", icon: "⛏️" },
-  { title: "Automotive", desc: "Vehicle parts, transport accessories, and fleet supplies.", icon: "🚛" },
-  { title: "Retail", desc: "Consumer products, electronics, and general merchandise.", icon: "🛒" },
-  { title: "Warehouse Goods", desc: "Products stored inside logistics and warehouse facilities.", icon: "🏭" },
+  {
+    title: "Construction",
+    desc: "Building materials, cement, steel, and industrial products.",
+    icon: "🏗️",
+  },
+  {
+    title: "Agriculture",
+    desc: "Farm supplies, seeds, tools, and agricultural logistics.",
+    icon: "🌾",
+  },
+  {
+    title: "Mining",
+    desc: "Mining equipment, machinery, and industrial support products.",
+    icon: "⛏️",
+  },
+  {
+    title: "Automotive",
+    desc: "Vehicle parts, transport accessories, and fleet supplies.",
+    icon: "🚛",
+  },
+  {
+    title: "Retail",
+    desc: "Consumer products, electronics, and general merchandise.",
+    icon: "🛒",
+  },
+  {
+    title: "Warehouse Goods",
+    desc: "Products stored inside logistics and warehouse facilities.",
+    icon: "🏭",
+  },
 ];
 
 export default function StorePage() {
@@ -84,10 +108,33 @@ export default function StorePage() {
 
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <DashboardCard title="Products" value={products.length} subtitle="Active marketplace items" color="blue" />
-          <DashboardCard title="Total Stock" value={totalStock} subtitle="Available inventory units" color="green" />
-          <DashboardCard title="Categories" value={categories} subtitle="Product groups" color="orange" />
-          <DashboardCard title="Status" value="Live" subtitle="Supabase connected" color="red" />
+          <DashboardCard
+            title="Products"
+            value={products.length}
+            subtitle="Active marketplace items"
+            color="blue"
+          />
+
+          <DashboardCard
+            title="Total Stock"
+            value={totalStock}
+            subtitle="Available inventory units"
+            color="green"
+          />
+
+          <DashboardCard
+            title="Categories"
+            value={categories}
+            subtitle="Product groups"
+            color="orange"
+          />
+
+          <DashboardCard
+            title="Status"
+            value="Live"
+            subtitle="Supabase connected"
+            color="red"
+          />
         </div>
 
         <AppCard className="mb-8" variant="orange">
@@ -184,11 +231,21 @@ export default function StorePage() {
                   <div className="mt-4 bg-blue-50 rounded-xl p-3">
                     <p className="text-xs text-blue-500">Listed by</p>
                     <p className="font-bold text-blue-900">
-                      {product.owner_company || product.supplier || "NamLogix Company"}
+                      {product.owner_company ||
+                        product.supplier ||
+                        "NamLogix Company"}
                     </p>
                   </div>
 
                   <div className="mt-5 grid grid-cols-1 gap-2">
+                    <Button
+                      href={`/products/${product.id}`}
+                      variant="primary"
+                      fullWidth
+                    >
+                      View Product
+                    </Button>
+
                     {product.owner_id && (
                       <Button
                         href={`/companies/${product.owner_id}`}
@@ -229,7 +286,9 @@ export default function StorePage() {
             {fallbackCategories.map((item) => (
               <AppCard key={item.title} hover>
                 <div className="text-4xl mb-4">{item.icon}</div>
+
                 <h3 className="font-semibold text-lg">{item.title}</h3>
+
                 <p className="text-sm text-gray-500 mt-2 leading-6">
                   {item.desc}
                 </p>
