@@ -28,6 +28,7 @@ const navItems = [
   { label: "Post Cargo", href: "/request-cargo", icon: Package },
   { label: "Profile", href: "/profile", icon: Users },
   { label: "Cargo Requests", href: "/cargo-requests", icon: Truck },
+  { label: "Companies", href: "/companies", icon: Building2 },
   { label: "Bids", href: "/bids", icon: HandCoins },
   { label: "Trip Offers", href: "/trip-offers", icon: Truck },
   { label: "Trade Routes", href: "/trade-routes", icon: Map },
