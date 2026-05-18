@@ -3,10 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import PageHero from "@/app/components/PageHero";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
-import SectionHeader from "@/app/components/SectionHeader";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function CompanyDetailsPage() {
@@ -39,145 +36,129 @@ export default function CompanyDetailsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen page-soft-bg flex items-center justify-center">
-        Loading company profile...
-      </div>
-    );
+    return <CenterText text="Loading company profile..." />;
   }
 
   if (!company) {
     return (
-      <div className="min-h-screen page-soft-bg flex items-center justify-center px-6">
-        <AppCard>
-          <h1 className="text-2xl font-black text-gray-900">
-            Company not found
-          </h1>
-
-          <p className="text-gray-500 mt-2">
-            This company profile could not be loaded.
-          </p>
-
-          <div className="mt-6">
-            <Button href="/companies" variant="primary">
-              Back to Companies
-            </Button>
-          </div>
-        </AppCard>
-      </div>
+      <CenterText text="Company profile could not be loaded." />
     );
   }
 
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="Company Profile"
-        titleTop={company.company_name || company.full_name || "NamLogix"}
-        titleHighlight="AFRICA"
-        titleBottom={company.role || "Business Partner"}
-        description="View this company's business identity, role, contact details, and platform presence on NamLogix Africa."
-        actions={[
-          { label: "Back to Companies", href: "/companies", primary: true },
-          { label: "Company Products", href: `/companies/${company.id}/products` },
-          { label: "Marketplace", href: "/store" },
-        ]}
-        stats={[
-          { value: company.role || "User", label: "Account role" },
-          { value: company.logo_url ? "Yes" : "No", label: "Logo" },
-          { value: company.banner_url ? "Yes" : "No", label: "Banner" },
-          { value: "Live", label: "Profile" },
-        ]}
-        infoCards={[
-          { title: "Company", text: company.company_name || "Profile" },
-          { title: "Contact", text: company.full_name || "Person" },
-          { title: "Phone", text: company.phone || "Not added" },
-          { title: "Role", text: company.role || "customer" },
-        ]}
-      />
+    <div style={{ minHeight: "100vh", background: "#f6f8fc", padding: "40px 24px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <section style={heroStyle}>
+          <p style={{ color: "#fed7aa", fontWeight: 800 }}>COMPANY PROFILE</p>
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
-        <AppCard variant="blue" className="mb-8">
-          <div className="relative rounded-3xl overflow-hidden bg-gray-100 min-h-64">
+          <h1 style={{ fontSize: 42, fontWeight: 900, margin: "10px 0" }}>
+            {company.company_name || company.full_name || "Unnamed Company"}
+          </h1>
+
+          <p style={{ maxWidth: 720, lineHeight: 1.7 }}>
+            View this company’s business identity, role, contact details, and platform presence.
+          </p>
+
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
+            <Link href="/companies" style={buttonPrimary}>Back to Companies</Link>
+            <Link href={`/companies/${company.id}/products`} style={buttonOrange}>Company Products</Link>
+            <Link href="/store" style={buttonSecondary}>Marketplace</Link>
+          </div>
+        </section>
+
+        <section style={cardStyle}>
+          <div style={{ position: "relative" }}>
             {company.banner_url ? (
               <img
                 src={company.banner_url}
-                alt={company.company_name || "Company banner"}
-                className="w-full h-64 object-cover"
+                alt="Company banner"
+                style={{
+                  width: "100%",
+                  height: 260,
+                  objectFit: "cover",
+                  borderRadius: 24,
+                  display: "block",
+                }}
               />
             ) : (
-              <div className="h-64 bg-gradient-to-r from-blue-900 to-orange-500 flex items-center justify-center text-white font-black text-3xl">
+              <div
+                style={{
+                  width: "100%",
+                  height: 260,
+                  borderRadius: 24,
+                  background: "linear-gradient(135deg, #1e3a8a, #f97316)",
+                  display: "grid",
+                  placeItems: "center",
+                  color: "white",
+                  fontSize: 30,
+                  fontWeight: 900,
+                }}
+              >
                 Company Banner
               </div>
             )}
 
-            <div className="absolute left-8 -bottom-0 translate-y-1/2">
+            <div style={{ position: "absolute", left: 28, bottom: -55 }}>
               {company.logo_url ? (
                 <img
                   src={company.logo_url}
-                  alt={company.company_name || "Company logo"}
-                  className="h-32 w-32 object-cover rounded-3xl border-4 border-white shadow-xl bg-white"
+                  alt="Company logo"
+                  style={{
+                    width: 110,
+                    height: 110,
+                    objectFit: "cover",
+                    borderRadius: 24,
+                    border: "5px solid white",
+                    background: "white",
+                    boxShadow: "0 12px 30px rgba(15,23,42,0.25)",
+                  }}
                 />
               ) : (
-                <div className="h-32 w-32 rounded-3xl border-4 border-white shadow-xl bg-white flex items-center justify-center text-5xl">
+                <div
+                  style={{
+                    width: 110,
+                    height: 110,
+                    borderRadius: 24,
+                    border: "5px solid white",
+                    background: "white",
+                    boxShadow: "0 12px 30px rgba(15,23,42,0.25)",
+                    display: "grid",
+                    placeItems: "center",
+                    fontSize: 42,
+                  }}
+                >
                   🏢
                 </div>
               )}
             </div>
           </div>
 
-          <div className="pt-24">
-            <span className="inline-block text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-3 capitalize">
-              {company.role || "customer"}
-            </span>
+          <div style={{ paddingTop: 80 }}>
+            <span style={pillStyle}>{company.role || "customer"}</span>
 
-            <h1 className="text-4xl font-black text-gray-900">
+            <h2 style={{ fontSize: 34, fontWeight: 900, margin: "14px 0 6px" }}>
               {company.company_name || company.full_name || "Unnamed Company"}
-            </h1>
+            </h2>
 
-            <p className="text-gray-500 mt-3">
+            <p style={{ color: "#64748b" }}>
               Business profile on NamLogix Africa.
             </p>
           </div>
-        </AppCard>
+        </section>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <AppCard variant="orange">
-            <SectionHeader
-              title="📞 Contact Details"
-              subtitle="Company representative information."
-            />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, marginTop: 24 }}>
+          <section style={cardStyle}>
+            <h2 style={sectionTitle}>📞 Contact Details</h2>
 
-            <div className="space-y-4 text-sm">
-              <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-gray-400">Contact Person</p>
-                <p className="font-bold text-gray-900">
-                  {company.full_name || "Not provided"}
-                </p>
-              </div>
+            <InfoBox label="Contact Person" value={company.full_name || "Not provided"} />
+            <InfoBox label="Phone" value={company.phone || "Not provided"} />
+            <InfoBox label="Company Role" value={company.role || "customer"} />
+          </section>
 
-              <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-gray-400">Phone</p>
-                <p className="font-bold text-gray-900">
-                  {company.phone || "Not provided"}
-                </p>
-              </div>
+          <section style={cardStyle}>
+            <h2 style={sectionTitle}>🚀 Platform Opportunities</h2>
 
-              <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-gray-400">Company Role</p>
-                <p className="font-bold text-gray-900">
-                  {company.role || "customer"}
-                </p>
-              </div>
-            </div>
-          </AppCard>
-
-          <AppCard variant="green">
-            <SectionHeader
-              title="🚀 Platform Opportunities"
-              subtitle="What this company can do inside NamLogix."
-            />
-
-            <div className="space-y-3 text-sm text-gray-600">
+            <div style={{ color: "#475569", lineHeight: 1.9 }}>
               <p>✅ Sell products in the marketplace</p>
               <p>✅ Connect with cargo owners</p>
               <p>✅ Join warehouse and logistics networks</p>
@@ -185,18 +166,94 @@ export default function CompanyDetailsPage() {
               <p>✅ Build trust through a branded profile</p>
             </div>
 
-            <div className="mt-6">
-              <Button
-                href={`/companies/${company.id}/products`}
-                variant="orange"
-                fullWidth
-              >
+            <div style={{ marginTop: 22 }}>
+              <Link href={`/companies/${company.id}/products`} style={buttonOrange}>
                 View Company Products
-              </Button>
+              </Link>
             </div>
-          </AppCard>
+          </section>
         </div>
       </div>
     </div>
   );
 }
+
+function CenterText({ text }) {
+  return (
+    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+      {text}
+    </div>
+  );
+}
+
+function InfoBox({ label, value }) {
+  return (
+    <div style={{ background: "#f8fafc", borderRadius: 16, padding: 16, marginTop: 14 }}>
+      <p style={{ color: "#94a3b8", fontSize: 12, margin: 0 }}>{label}</p>
+      <p style={{ fontWeight: 900, margin: "6px 0 0" }}>{value}</p>
+    </div>
+  );
+}
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 28,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 24,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
+};
+
+const sectionTitle = {
+  fontSize: 24,
+  fontWeight: 900,
+  marginBottom: 14,
+};
+
+const pillStyle = {
+  display: "inline-block",
+  background: "#dbeafe",
+  color: "#1d4ed8",
+  padding: "6px 12px",
+  borderRadius: 999,
+  fontSize: 12,
+  fontWeight: 800,
+  textTransform: "capitalize",
+};
+
+const buttonPrimary = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonSecondary = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};

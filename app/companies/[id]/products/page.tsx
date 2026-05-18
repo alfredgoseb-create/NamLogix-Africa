@@ -3,11 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import PageHero from "@/app/components/PageHero";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
-import SectionHeader from "@/app/components/SectionHeader";
-import EmptyState from "@/app/components/EmptyState";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function CompanyProductsPage() {
@@ -44,116 +40,229 @@ export default function CompanyProductsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen page-soft-bg flex items-center justify-center">
-        Loading products...
-      </div>
-    );
+    return <CenterText text="Loading company products..." />;
   }
 
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="Company Products"
-        titleTop={company?.company_name || "Company"}
-        titleHighlight="AFRICA"
-        titleBottom="Marketplace Products"
-        description="Products listed by this company on the NamLogix Africa marketplace."
-        actions={[
-          {
-            label: "Company Profile",
-            href: `/companies/${companyId}`,
-            primary: true,
-          },
-          {
-            label: "Marketplace",
-            href: "/store",
-          },
-        ]}
-        stats={[
-          { value: products.length, label: "Products" },
-          { value: "Live", label: "Marketplace" },
-          { value: company?.role || "Business", label: "Role" },
-          { value: "B2B", label: "Trade" },
-        ]}
-        infoCards={[
-          { title: "Inventory", text: "Company stock" },
-          { title: "Marketplace", text: "Public products" },
-          { title: "Trade", text: "Regional commerce" },
-          { title: "Logistics", text: "Integrated shipping" },
-        ]}
-      />
+    <div style={{ minHeight: "100vh", background: "#f6f8fc", padding: "40px 24px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <section style={heroStyle}>
+          <p style={{ color: "#fed7aa", fontWeight: 800 }}>COMPANY PRODUCTS</p>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <AppCard variant="blue">
-          <SectionHeader
-            title="🛒 Company Marketplace Products"
-            subtitle="Products created by this company."
-          />
+          <h1 style={{ fontSize: 42, fontWeight: 900, margin: "10px 0" }}>
+            {company?.company_name || company?.full_name || "Company Products"}
+          </h1>
+
+          <p style={{ maxWidth: 720, lineHeight: 1.7 }}>
+            Products listed by this company on the NamLogix Africa marketplace.
+          </p>
+
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
+            <Link href={`/companies/${companyId}`} style={buttonPrimary}>
+              Company Profile
+            </Link>
+
+            <Link href="/store" style={buttonSecondary}>
+              Marketplace
+            </Link>
+          </div>
+        </section>
+
+        <section style={cardStyle}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
+            <div>
+              <h2 style={{ fontSize: 28, fontWeight: 900, margin: 0 }}>
+                🛒 Marketplace Products
+              </h2>
+
+              <p style={{ color: "#64748b", marginTop: 8 }}>
+                Products created by this company.
+              </p>
+            </div>
+
+            <button onClick={fetchData} style={refreshButton}>
+              Refresh
+            </button>
+          </div>
 
           {products.length === 0 ? (
-            <EmptyState
-              icon="🛒"
-              title="No products yet"
-              message="This company has not listed products yet."
-            />
+            <div style={emptyBox}>
+              <div style={{ fontSize: 50 }}>🛒</div>
+              <h3>No products yet</h3>
+              <p>This company has not listed products yet.</p>
+            </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: 22,
+              }}
+            >
               {products.map((product) => (
-                <AppCard key={product.id} hover>
+                <div key={product.id} style={productCard}>
                   {product.image_url ? (
                     <img
                       src={product.image_url}
                       alt={product.name}
-                      className="h-48 w-full object-cover rounded-2xl mb-4"
+                      style={{
+                        width: "100%",
+                        height: 150,
+                        objectFit: "cover",
+                        display: "block",
+                      }}
                     />
                   ) : (
-                    <div className="h-48 rounded-2xl bg-gradient-to-br from-blue-100 to-orange-100 flex items-center justify-center text-5xl mb-4">
-                      📦
-                    </div>
+                    <div style={placeholderImage}>📦</div>
                   )}
 
-                  <div className="flex justify-between mb-3">
-                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                      {product.category || "General"}
-                    </span>
+                  <div style={{ padding: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 12 }}>
+                      <span style={categoryPill}>
+                        {product.category || "General"}
+                      </span>
 
-                    <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
-                      {product.stock_level || 0} stock
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-black text-gray-900">
-                    {product.name}
-                  </h3>
-
-                  <p className="text-sm text-gray-500 mt-2 leading-6">
-                    {product.description || "No description added."}
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-3 mt-4">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-xs text-gray-400">Price</p>
-                      <p className="font-bold">N${product.price || 0}</p>
+                      <span style={stockPill}>
+                        {product.stock_level || 0} stock
+                      </span>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-xs text-gray-400">Unit</p>
-                      <p className="font-bold">{product.unit || "item"}</p>
+                    <h3 style={{ fontSize: 18, fontWeight: 900, margin: "0 0 8px" }}>
+                      {product.name}
+                    </h3>
+
+                    <p style={{ color: "#64748b", fontSize: 14, lineHeight: "20px", minHeight: 40 }}>
+                      {product.description || "No description added."}
+                    </p>
+
+                    <p style={{ fontWeight: 900, marginTop: 12 }}>
+                      N${product.price || 0} • {product.unit || "item"}
+                    </p>
+
+                    <div style={{ display: "grid", gap: 10, marginTop: 16 }}>
+                      <Link href={`/products/${product.id}`} style={buttonPrimary}>
+                        View Product
+                      </Link>
+
+                      <Link href="/contact" style={buttonOrange}>
+                        Request Product
+                      </Link>
                     </div>
                   </div>
-
-                  <div className="mt-5">
-                    <Button href="/contact" variant="orange" fullWidth>
-                      Request Product
-                    </Button>
-                  </div>
-                </AppCard>
+                </div>
               ))}
             </div>
           )}
-        </AppCard>
+        </section>
       </div>
     </div>
   );
 }
+
+function CenterText({ text }) {
+  return (
+    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+      {text}
+    </div>
+  );
+}
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 28,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 24,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
+};
+
+const productCard = {
+  background: "white",
+  borderRadius: 20,
+  overflow: "hidden",
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 8px 22px rgba(15, 23, 42, 0.08)",
+};
+
+const placeholderImage = {
+  height: 150,
+  background: "#dbeafe",
+  display: "grid",
+  placeItems: "center",
+  fontSize: 46,
+};
+
+const emptyBox = {
+  textAlign: "center",
+  padding: 50,
+  borderRadius: 20,
+  background: "#f8fafc",
+  color: "#64748b",
+};
+
+const refreshButton = {
+  background: "white",
+  border: "1px solid #d1d5db",
+  borderRadius: 14,
+  padding: "10px 16px",
+  fontWeight: 800,
+  cursor: "pointer",
+};
+
+const categoryPill = {
+  background: "#ede9fe",
+  color: "#6b21a8",
+  padding: "5px 10px",
+  borderRadius: 999,
+  fontSize: 12,
+  fontWeight: 800,
+};
+
+const stockPill = {
+  background: "#dcfce7",
+  color: "#166534",
+  padding: "5px 10px",
+  borderRadius: 999,
+  fontSize: 12,
+  fontWeight: 800,
+};
+
+const buttonPrimary = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "11px 14px",
+  borderRadius: 12,
+  textAlign: "center",
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "block",
+};
+
+const buttonSecondary = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "11px 14px",
+  borderRadius: 12,
+  textAlign: "center",
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "11px 14px",
+  borderRadius: 12,
+  textAlign: "center",
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "block",
+};
