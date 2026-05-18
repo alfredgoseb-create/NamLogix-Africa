@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
 import {
   Menu,
   X,
@@ -17,14 +19,15 @@ import {
   MessageSquare,
   HandCoins,
   Building2,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
 
 const navItems = [
   { label: "Home", href: "/", icon: Home },
   { label: "Post Cargo", href: "/request-cargo", icon: Package },
+  { label: "Profile", href: "/profile", icon: Users },
   { label: "Cargo Requests", href: "/cargo-requests", icon: Truck },
-  { label: "Login", href: "/login", icon: LayoutDashboard },
-{ label: "Signup", href: "/signup", icon: Users },
   { label: "Bids", href: "/bids", icon: HandCoins },
   { label: "Trip Offers", href: "/trip-offers", icon: Truck },
   { label: "Trade Routes", href: "/trade-routes", icon: Map },
@@ -34,10 +37,17 @@ const navItems = [
   { label: "Aviation", href: "/aviation", icon: Plane },
   { label: "Contact", href: "/contact", icon: MessageSquare },
   { label: "Admin", href: "/admin/dashboard", icon: LayoutDashboard },
+  { label: "Login", href: "/login", icon: LogIn },
+  { label: "Signup", href: "/signup", icon: UserPlus },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0B1220] border-b border-blue-900 shadow-2xl">
@@ -60,7 +70,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* DESKTOP MENU */}
+        {/* DESKTOP NAVIGATION */}
         <div className="hidden xl:flex items-center gap-1">
           {navItems.map((item) => {
             const Icon = item.icon || Home;
@@ -78,13 +88,27 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* MOBILE BUTTON */}
+        {/* RIGHT ACTIONS */}
+        <div className="hidden xl:flex items-center gap-3">
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 rounded-xl bg-orange-500 text-white text-sm font-bold hover:bg-orange-600 transition"
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* MOBILE MENU BUTTON */}
         <button
           onClick={() => setOpen(!open)}
           className="xl:hidden p-2 rounded-xl bg-blue-900 text-white hover:bg-blue-800 transition"
           aria-label="Toggle menu"
         >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {open ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </nav>
 
@@ -107,6 +131,13 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200 sm:col-span-2"
+            >
+              Logout
+            </button>
           </div>
         </div>
       )}
