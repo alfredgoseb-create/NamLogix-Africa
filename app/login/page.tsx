@@ -2,25 +2,19 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import PageHero from "@/app/components/PageHero";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
-  const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [saving, setSaving] = useState(false);
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e) {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Please enter your email and password.");
+      alert("Email and password are required.");
       return;
     }
 
@@ -38,59 +32,52 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/admin/dashboard");
+    window.location.href = "/admin/dashboard";
   }
 
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="Secure Access"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Login Portal"
-        description="Access your dashboard, manage inventory, suppliers, warehouses, cargo, and marketplace operations."
-        actions={[
-          {
-            label: "Create Account",
-            href: "/signup",
-            primary: true,
-          },
-          {
-            label: "Back Home",
-            href: "/",
-          },
-        ]}
-        stats={[
-          { value: "Admin", label: "Dashboard" },
-          { value: "Secure", label: "Access" },
-          { value: "Live", label: "Supabase Auth" },
-          { value: "B2B", label: "Platform" },
-        ]}
-        infoCards={[
-          { title: "Inventory", text: "Manage stock" },
-          { title: "Suppliers", text: "Business network" },
-          { title: "Warehouses", text: "Storage control" },
-          { title: "Cargo", text: "Request flow" },
-        ]}
-      />
+    <div style={pageStyle}>
+      <div style={containerStyle}>
+        <section style={heroStyle}>
+          <p style={badgeStyle}>NAMLOGIX ACCESS</p>
 
-      <div className="max-w-xl mx-auto px-6 py-10">
-        <AppCard variant="blue">
-          <h2 className="text-2xl font-black text-gray-900 mb-2">
-            Login to NamLogix
-          </h2>
+          <h1 style={titleStyle}>Login</h1>
 
-          <p className="text-gray-500 mb-6">
-            Enter your account details to continue.
+          <p style={descStyle}>
+            Access your NamLogix Africa dashboard to manage cargo, products,
+            warehouses, transport bookings, drivers, and inquiries.
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <div style={buttonRowStyle}>
+            <Link href="/" style={buttonWhite}>
+              Home
+            </Link>
+
+            <Link href="/store" style={buttonBlue}>
+              Store
+            </Link>
+
+            <Link href="/contact" style={buttonOrange}>
+              Contact Support
+            </Link>
+          </div>
+        </section>
+
+        <section style={cardStyle}>
+          <h2 style={formTitleStyle}>🔐 Sign in to your account</h2>
+
+          <p style={formDescStyle}>
+            Enter your email and password to continue to the NamLogix control
+            center.
+          </p>
+
+          <form onSubmit={handleLogin} style={formGridStyle}>
             <input
               type="email"
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border rounded-xl px-4 py-3"
+              style={inputStyle}
             />
 
             <input
@@ -98,22 +85,157 @@ export default function LoginPage() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border rounded-xl px-4 py-3"
+              style={inputStyle}
             />
 
-            <Button type="submit" variant="orange" fullWidth>
-              {saving ? "Logging in..." : "Login"}
-            </Button>
+            <button type="submit" disabled={saving} style={submitButtonStyle}>
+              {saving ? "Signing in..." : "Login"}
+            </button>
           </form>
 
-          <p className="text-sm text-gray-500 mt-6 text-center">
+          <p style={bottomTextStyle}>
             No account yet?{" "}
-            <Link href="/signup" className="text-blue-700 font-bold">
-              Create one here
+            <Link href="/register" style={inlineLinkStyle}>
+              Create account
             </Link>
           </p>
-        </AppCard>
+        </section>
       </div>
     </div>
   );
 }
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "#f6f8fc",
+  padding: "40px 24px",
+};
+
+const containerStyle = {
+  maxWidth: 900,
+  margin: "0 auto",
+};
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 24,
+  boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
+};
+
+const badgeStyle = {
+  color: "#fed7aa",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: 0,
+};
+
+const titleStyle = {
+  fontSize: 42,
+  fontWeight: 900,
+  margin: "10px 0",
+};
+
+const descStyle = {
+  maxWidth: 720,
+  lineHeight: 1.7,
+  color: "rgba(255,255,255,0.85)",
+};
+
+const buttonRowStyle = {
+  display: "flex",
+  gap: 12,
+  flexWrap: "wrap",
+  marginTop: 24,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 28,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.10)",
+};
+
+const formTitleStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const formDescStyle = {
+  color: "#64748b",
+  marginTop: 8,
+  marginBottom: 0,
+};
+
+const formGridStyle = {
+  display: "grid",
+  gap: 16,
+  marginTop: 24,
+};
+
+const inputStyle = {
+  width: "100%",
+  border: "1px solid #d1d5db",
+  borderRadius: 14,
+  padding: "14px 15px",
+  fontSize: 15,
+  background: "#f8fafc",
+  outline: "none",
+};
+
+const submitButtonStyle = {
+  background: "#f97316",
+  color: "white",
+  padding: "14px 18px",
+  borderRadius: 14,
+  fontWeight: 900,
+  border: "none",
+  cursor: "pointer",
+  fontSize: 16,
+};
+
+const bottomTextStyle = {
+  color: "#64748b",
+  marginTop: 18,
+};
+
+const inlineLinkStyle = {
+  color: "#1d4ed8",
+  fontWeight: 900,
+  textDecoration: "none",
+};
+
+const buttonBlue = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonWhite = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
