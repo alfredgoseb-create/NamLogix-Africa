@@ -21,6 +21,7 @@ export default function Navbar() {
     { label: "Warehouses", href: "/warehouses" },
     { label: "Transport", href: "/transport" },
     { label: "Contact", href: "/contact" },
+    { label: "Register", href: "/register" },
     { label: "Profile", href: "/profile" },
     { label: "Admin", href: "/admin/dashboard" },
     { label: "Admin Transport", href: "/admin/transport" },
