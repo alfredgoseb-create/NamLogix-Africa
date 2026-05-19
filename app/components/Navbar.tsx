@@ -27,6 +27,7 @@ export default function Navbar() {
     { label: "Admin", href: "/admin/dashboard" },
     { label: "Admin Transport", href: "/admin/transport" },
     { label: "Drivers", href: "/admin/drivers" },
+    { label: "Admin Warehouses", href: "/admin/warehouses" },
     { label: "Inquiries", href: "/admin/inquiries" },
   ];
 
