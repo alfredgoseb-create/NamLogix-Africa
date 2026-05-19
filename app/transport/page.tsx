@@ -1,232 +1,149 @@
 // @ts-nocheck
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
 
-const emptyForm = {
-  customer_name: "",
-  phone: "",
-  email: "",
-  pickup_location: "",
-  dropoff_location: "",
-  booking_type: "people",
-  trip_reason: "",
-  preferred_date: "",
-  preferred_time: "",
-  passengers: "1",
-  cargo_description: "",
-};
+const services = [
+  {
+    title: "Hospital Transport",
+    icon: "🏥",
+    text: "Safe and reliable transport for patients, clinics, hospitals, and medical appointments.",
+  },
+  {
+    title: "Home to Work",
+    icon: "🚕",
+    text: "Daily staff and worker transportation services for businesses and individuals.",
+  },
+  {
+    title: "Cargo & Goods",
+    icon: "📦",
+    text: "Transport goods, packages, stock, and inventory between towns, warehouses, and businesses.",
+  },
+  {
+    title: "Regional Trips",
+    icon: "🛣️",
+    text: "Book transport across Namibia and Southern Africa using trusted transport operators.",
+  },
+];
 
 export default function TransportPage() {
-  const [form, setForm] = useState(emptyForm);
-  const [saving, setSaving] = useState(false);
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    if (!form.pickup_location || !form.dropoff_location) {
-      alert("Pickup and drop-off locations are required.");
-      return;
-    }
-
-    setSaving(true);
-
-    const { error } = await supabase.from("transport_bookings").insert([
-      {
-        ...form,
-        passengers: Number(form.passengers) || 1,
-        status: "pending",
-      },
-    ]);
-
-    setSaving(false);
-
-    if (error) {
-      alert("Failed to create booking: " + error.message);
-      return;
-    }
-
-    alert("Transport booking submitted successfully.");
-    setForm(emptyForm);
-  }
-
   return (
     <div style={pageStyle}>
       <div style={containerStyle}>
         <section style={heroStyle}>
           <p style={badgeStyle}>NAMLOGIX TRANSPORT</p>
 
-          <h1 style={titleStyle}>Book Local Transport</h1>
+          <h1 style={titleStyle}>Transport Services</h1>
 
           <p style={descStyle}>
-            Request transport for hospital trips, home-to-work travel, town
-            rides, goods delivery, cargo pickup, and business movement.
+            Book local rides, hospital transport, goods movement, worker
+            transport, and regional logistics services across Namibia and
+            Southern Africa.
           </p>
 
           <div style={buttonRowStyle}>
-            <Link href="#transport-form" style={buttonOrange}>
-              🚕 Book Transport
+            <Link href="/contact" style={buttonOrange}>
+              🚕 Request Transport
             </Link>
 
             <Link href="/request-cargo" style={buttonBlue}>
               📦 Post Cargo
             </Link>
 
-            <Link href="/contact" style={buttonWhite}>
-              📩 Contact Support
+            <Link href="/trip-offers" style={buttonWhite}>
+              🛣️ Trip Offers
             </Link>
           </div>
         </section>
 
         <section style={statsGridStyle}>
           <div style={statCardStyle}>
-            <p style={statLabelStyle}>People</p>
-            <h3 style={statValueStyle}>Rides</h3>
-            <p style={statTextStyle}>Passenger transport</p>
+            <p style={statLabelStyle}>Transport</p>
+            <h3 style={statValueStyle}>Local</h3>
+            <p style={statTextStyle}>City movement</p>
           </div>
 
           <div style={statCardStyle}>
-            <p style={statLabelStyle}>Medical</p>
-            <h3 style={statValueStyle}>Trips</h3>
-            <p style={statTextStyle}>Hospital transport</p>
+            <p style={statLabelStyle}>Cargo</p>
+            <h3 style={statValueStyle}>Goods</h3>
+            <p style={statTextStyle}>Inventory movement</p>
           </div>
 
           <div style={statCardStyle}>
-            <p style={statLabelStyle}>Goods</p>
-            <h3 style={statValueStyle}>Delivery</h3>
-            <p style={statTextStyle}>Small cargo movement</p>
+            <p style={statLabelStyle}>Coverage</p>
+            <h3 style={statValueStyle}>SADC</h3>
+            <p style={statTextStyle}>Regional support</p>
           </div>
 
           <div style={statCardStyle}>
-            <p style={statLabelStyle}>Business</p>
-            <h3 style={statValueStyle}>Support</h3>
-            <p style={statTextStyle}>Company transport</p>
+            <p style={statLabelStyle}>Support</p>
+            <h3 style={statValueStyle}>24/7</h3>
+            <p style={statTextStyle}>Transport coordination</p>
           </div>
         </section>
 
-        <section id="transport-form" style={cardStyle}>
-          <h2 style={formTitleStyle}>🚕 Transport Request Form</h2>
+        <section style={cardStyle}>
+          <h2 style={formTitleStyle}>🚕 Transport Categories</h2>
 
           <p style={formDescStyle}>
-            Submit a transport booking request for people, goods, hospital
-            trips, work trips, or business movement.
+            NamLogix transport services can support people, businesses,
+            warehouses, hospitals, suppliers, and cargo operators.
           </p>
 
-          <form onSubmit={handleSubmit} style={formGridStyle}>
-            <input
-              type="text"
-              placeholder="Customer Name"
-              value={form.customer_name}
-              onChange={(e) =>
-                setForm({ ...form, customer_name: e.target.value })
-              }
-              style={inputStyle}
-            />
+          <div style={gridStyle}>
+            {services.map((service) => (
+              <article key={service.title} style={itemCardStyle}>
+                <div style={iconStyle}>{service.icon}</div>
 
-            <input
-              type="text"
-              placeholder="Phone Number"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              style={inputStyle}
-            />
+                <h3 style={itemTitleStyle}>{service.title}</h3>
 
-            <input
-              type="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              style={inputStyle}
-            />
+                <p style={descriptionStyle}>{service.text}</p>
 
-            <select
-              value={form.booking_type}
-              onChange={(e) =>
-                setForm({ ...form, booking_type: e.target.value })
-              }
-              style={inputStyle}
-            >
-              <option value="people">People Transport</option>
-              <option value="goods">Goods Transport</option>
-              <option value="medical">Hospital / Medical Trip</option>
-              <option value="work">Home to Work</option>
-              <option value="business">Business Transport</option>
-            </select>
+                <div style={actionsStyle}>
+                  <Link href="/contact" style={buttonOrangeSmall}>
+                    Request Service
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
-            <input
-              type="text"
-              placeholder="Pickup Location *"
-              value={form.pickup_location}
-              onChange={(e) =>
-                setForm({ ...form, pickup_location: e.target.value })
-              }
-              style={inputStyle}
-            />
+        <section style={{ ...cardStyle, marginTop: 24 }}>
+          <div style={splitLayoutStyle}>
+            <div>
+              <p style={badgeDarkStyle}>SMART MOVEMENT</p>
 
-            <input
-              type="text"
-              placeholder="Drop-off Location *"
-              value={form.dropoff_location}
-              onChange={(e) =>
-                setForm({ ...form, dropoff_location: e.target.value })
-              }
-              style={inputStyle}
-            />
+              <h2 style={formTitleStyle}>
+                Connect transport with trade and logistics.
+              </h2>
 
-            <input
-              type="date"
-              value={form.preferred_date}
-              onChange={(e) =>
-                setForm({ ...form, preferred_date: e.target.value })
-              }
-              style={inputStyle}
-            />
+              <p style={descriptionStyle}>
+                NamLogix transport services become stronger when connected to
+                warehouses, suppliers, cargo requests, and marketplace trade.
+                This creates a complete logistics ecosystem instead of only a
+                transport booking page.
+              </p>
+            </div>
 
-            <input
-              type="text"
-              placeholder="Preferred Time"
-              value={form.preferred_time}
-              onChange={(e) =>
-                setForm({ ...form, preferred_time: e.target.value })
-              }
-              style={inputStyle}
-            />
+            <div style={benefitListStyle}>
+              <div style={benefitItemStyle}>✅ Local ride requests</div>
+              <div style={benefitItemStyle}>✅ Cargo movement support</div>
+              <div style={benefitItemStyle}>✅ Hospital transportation</div>
+              <div style={benefitItemStyle}>✅ Business transport services</div>
+              <div style={benefitItemStyle}>✅ Regional logistics routes</div>
+            </div>
+          </div>
 
-            <input
-              type="number"
-              placeholder="Passengers"
-              value={form.passengers}
-              onChange={(e) =>
-                setForm({ ...form, passengers: e.target.value })
-              }
-              style={inputStyle}
-            />
+          <div style={actionsStyle}>
+            <Link href="/contact" style={buttonOrangeSmall}>
+              Book Transport
+            </Link>
 
-            <input
-              type="text"
-              placeholder="Trip Reason"
-              value={form.trip_reason}
-              onChange={(e) =>
-                setForm({ ...form, trip_reason: e.target.value })
-              }
-              style={inputStyle}
-            />
-
-            <textarea
-              placeholder="Cargo / Goods Description"
-              value={form.cargo_description}
-              onChange={(e) =>
-                setForm({ ...form, cargo_description: e.target.value })
-              }
-              style={textareaStyle}
-            />
-
-            <button type="submit" disabled={saving} style={submitButtonStyle}>
-              {saving ? "Submitting..." : "🚕 Submit Transport Booking"}
-            </button>
-          </form>
+            <Link href="/admin/drivers" style={buttonBlueSmall}>
+              Driver Network
+            </Link>
+          </div>
         </section>
       </div>
     </div>
@@ -240,7 +157,7 @@ const pageStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 1000,
+  maxWidth: 1100,
   margin: "0 auto",
 };
 
@@ -260,6 +177,13 @@ const badgeStyle = {
   margin: 0,
 };
 
+const badgeDarkStyle = {
+  color: "#f97316",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: "0 0 10px",
+};
+
 const titleStyle = {
   fontSize: 42,
   fontWeight: 900,
@@ -267,7 +191,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 720,
+  maxWidth: 760,
   lineHeight: 1.7,
   color: "rgba(255,255,255,0.85)",
 };
@@ -330,31 +254,73 @@ const formTitleStyle = {
 const formDescStyle = {
   color: "#64748b",
   marginTop: 8,
-  marginBottom: 0,
+  marginBottom: 24,
 };
 
-const formGridStyle = {
+const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-  gap: 16,
-  marginTop: 24,
+  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+  gap: 18,
 };
 
-const inputStyle = {
-  width: "100%",
-  border: "1px solid #d1d5db",
-  borderRadius: 14,
-  padding: "14px 15px",
-  fontSize: 15,
+const itemCardStyle = {
+  border: "1px solid #e5e7eb",
+  borderRadius: 22,
+  padding: 22,
+  background: "#ffffff",
+  boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
+};
+
+const iconStyle = {
+  width: 58,
+  height: 58,
+  borderRadius: 18,
   background: "#f8fafc",
-  outline: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 30,
+  marginBottom: 16,
 };
 
-const textareaStyle = {
-  ...inputStyle,
-  gridColumn: "1 / -1",
-  minHeight: 160,
-  resize: "vertical",
+const itemTitleStyle = {
+  fontSize: 20,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 12,
+};
+
+const splitLayoutStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gap: 24,
+  alignItems: "start",
+};
+
+const benefitListStyle = {
+  display: "grid",
+  gap: 10,
+};
+
+const benefitItemStyle = {
+  background: "#f8fafc",
+  padding: "13px 15px",
+  borderRadius: 16,
+  color: "#0f172a",
+  fontWeight: 800,
+};
+
+const actionsStyle = {
+  display: "flex",
+  gap: 10,
+  flexWrap: "wrap",
+  marginTop: 18,
 };
 
 const buttonBlue = {
@@ -387,10 +353,14 @@ const buttonOrange = {
   display: "inline-block",
 };
 
-const submitButtonStyle = {
+const buttonBlueSmall = {
+  ...buttonBlue,
+  padding: "10px 14px",
+  fontSize: 14,
+};
+
+const buttonOrangeSmall = {
   ...buttonOrange,
-  border: "none",
-  cursor: "pointer",
-  gridColumn: "1 / -1",
-  fontSize: 16,
+  padding: "10px 14px",
+  fontSize: 14,
 };
