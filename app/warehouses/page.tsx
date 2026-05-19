@@ -2,15 +2,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PageHero from "@/app/components/PageHero";
-import DashboardCard from "@/app/components/DashboardCard";
-import SectionHeader from "@/app/components/SectionHeader";
-import EmptyState from "@/app/components/EmptyState";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
-export default function PublicWarehousesPage() {
+export default function WarehousesPage() {
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +19,6 @@ export default function PublicWarehousesPage() {
     const { data, error } = await supabase
       .from("warehouses")
       .select("*")
-      .eq("status", "active")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -36,202 +30,431 @@ export default function PublicWarehousesPage() {
     setLoading(false);
   }
 
-  const warehouseLocations = new Set(
-    warehouses.map((w) => w.location).filter(Boolean)
-  ).size;
+  const activeWarehouses = warehouses.filter(
+    (item) => item.status === "active"
+  ).length;
 
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="Warehouse Marketplace"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Warehouse Network"
-        description="Find warehouse space, storage partners, inventory support, distribution facilities, and logistics infrastructure across Namibia and Southern Africa."
-        actions={[
-          {
-            label: "🏭 View Warehouses",
-            href: "#warehouses",
-            primary: true,
-          },
-          {
-            label: "🛒 Store",
-            href: "/store",
-          },
-          {
-            label: "📦 Post Cargo",
-            href: "/request-cargo",
-          },
-          {
-            label: "👥 Suppliers",
-            href: "/suppliers",
-          },
-        ]}
-        stats={[
-          {
-            value: warehouses.length,
-            label: "Active warehouses",
-          },
-          {
-            value: warehouseLocations,
-            label: "Locations",
-          },
-          {
-            value: "Inventory",
-            label: "Stock control",
-          },
-          {
-            value: "Live",
-            label: "Warehouse network",
-          },
-        ]}
-        infoCards={[
-          {
-            title: "Storage",
-            text: "Space listing",
-          },
-          {
-            title: "Inventory",
-            text: "Stock support",
-          },
-          {
-            title: "Distribution",
-            text: "Cargo movement",
-          },
-          {
-            title: "Trade",
-            text: "Supply chain",
-          },
-        ]}
-      />
+    <div style={pageStyle}>
+      <div style={containerStyle}>
+        <section style={heroStyle}>
+          <p style={badgeStyle}>NAMLOGIX STORAGE NETWORK</p>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <DashboardCard
-            title="Warehouses"
-            value={warehouses.length}
-            subtitle="Public warehouse listings"
-            color="blue"
-          />
+          <h1 style={titleStyle}>Warehouses</h1>
 
-          <DashboardCard
-            title="Storage"
-            value="Ready"
-            subtitle="Storage marketplace"
-            color="green"
-          />
+          <p style={descStyle}>
+            Discover warehouse partners, storage facilities, inventory locations,
+            and logistics hubs that support trade movement across Namibia and
+            Southern Africa.
+          </p>
 
-          <DashboardCard
-            title="Locations"
-            value={warehouseLocations}
-            subtitle="Coverage areas"
-            color="orange"
-          />
+          <div style={buttonRowStyle}>
+            <Link href="/contact" style={buttonOrange}>
+              🏭 List Warehouse
+            </Link>
 
-          <DashboardCard
-            title="Region"
-            value="SADC"
-            subtitle="Southern Africa"
-            color="red"
-          />
-        </div>
+            <Link href="/store" style={buttonBlue}>
+              🛒 Store
+            </Link>
 
-        <AppCard className="mb-8" variant="orange">
-          <SectionHeader
-            title="⚡ Warehouse Actions"
-            subtitle="Connect warehouse capacity with suppliers, store products, and logistics."
-          />
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button href="/store" variant="primary" fullWidth>
-              🛒 Browse Store
-            </Button>
-
-            <Button href="/suppliers" variant="secondary" fullWidth>
-              👥 Suppliers
-            </Button>
-
-            <Button href="/request-cargo" variant="outline" fullWidth>
+            <Link href="/request-cargo" style={buttonWhite}>
               📦 Post Cargo
-            </Button>
-
-            <Button href="/trade-routes" variant="outline" fullWidth>
-              🛣️ Trade Routes
-            </Button>
+            </Link>
           </div>
-        </AppCard>
+        </section>
 
-        <AppCard id="warehouses" variant="blue">
-          <SectionHeader
-            title="🏭 Warehouse Listings"
-            subtitle="Public warehouse listings, storage capacity, and service providers."
-            action={
-              <button
-                onClick={fetchWarehouses}
-                className="bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-800"
-              >
-                Refresh
-              </button>
-            }
-          />
+        <section style={statsGridStyle}>
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Warehouses</p>
+            <h3 style={statValueStyle}>{warehouses.length}</h3>
+            <p style={statTextStyle}>Total listed facilities</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Active</p>
+            <h3 style={statValueStyle}>{activeWarehouses}</h3>
+            <p style={statTextStyle}>Available storage partners</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Inventory</p>
+            <h3 style={statValueStyle}>Stock</h3>
+            <p style={statTextStyle}>Product storage support</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Coverage</p>
+            <h3 style={statValueStyle}>SADC</h3>
+            <p style={statTextStyle}>Regional logistics</p>
+          </div>
+        </section>
+
+        <section style={cardStyle}>
+          <div style={sectionHeaderStyle}>
+            <div>
+              <h2 style={formTitleStyle}>🏭 Warehouse Listings</h2>
+              <p style={formDescStyle}>
+                Storage facilities and warehouse partners connected to the
+                NamLogix platform.
+              </p>
+            </div>
+
+            <button onClick={fetchWarehouses} style={smallButtonStyle}>
+              Refresh
+            </button>
+          </div>
 
           {loading ? (
-            <p>Loading warehouses...</p>
+            <p style={emptyTextStyle}>Loading warehouses...</p>
           ) : warehouses.length === 0 ? (
-            <EmptyState
-              icon="🏭"
-              title="No public warehouses yet"
-              message="Warehouse listings will appear here once active warehouses are added in the admin dashboard."
-            />
+            <div style={emptyStateStyle}>
+              <div style={{ fontSize: 44 }}>🏭</div>
+              <h3 style={{ margin: "12px 0 6px", fontSize: 24 }}>
+                No warehouses yet
+              </h3>
+              <p style={{ color: "#64748b", margin: 0 }}>
+                Warehouse listings will appear here once added to Supabase.
+              </p>
+            </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div style={gridStyle}>
               {warehouses.map((warehouse) => (
-                <AppCard key={warehouse.id} hover>
-                  <div className="flex justify-between gap-4 mb-4">
-                    <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                <article key={warehouse.id} style={itemCardStyle}>
+                  <div style={cardTopStyle}>
+                    <div>
+                      <h3 style={itemTitleStyle}>
+                        {warehouse.name || "Warehouse"}
+                      </h3>
+
+                      <p style={itemSubStyle}>
+                        {warehouse.location || "Location not added"}
+                      </p>
+                    </div>
+
+                    <span
+                      style={
+                        warehouse.status === "active"
+                          ? activeBadgeStyle
+                          : inactiveBadgeStyle
+                      }
+                    >
                       {warehouse.status || "active"}
                     </span>
-
-                    <span className="text-xs text-gray-400">
-                      Warehouse
-                    </span>
                   </div>
 
-                  <h3 className="font-bold text-lg">
-                    {warehouse.name}
-                  </h3>
+                  <div style={detailGridStyle}>
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>City</p>
+                      <p style={detailValueStyle}>{warehouse.city || "-"}</p>
+                    </div>
 
-                  <p className="text-sm text-gray-500 mt-2">
-                    {warehouse.location || "No location added"}
-                  </p>
-
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-gray-400">Capacity</p>
-                      <p className="font-semibold">
-                        {warehouse.capacity || "Not set"}
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Capacity</p>
+                      <p style={detailValueStyle}>
+                        {warehouse.capacity || "-"}
                       </p>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-gray-400">Manager</p>
-                      <p className="font-semibold">
-                        {warehouse.manager_name || "Not set"}
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Contact</p>
+                      <p style={detailValueStyle}>
+                        {warehouse.contact_name || "-"}
+                      </p>
+                    </div>
+
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Phone</p>
+                      <p style={detailValueStyle}>
+                        {warehouse.phone || "-"}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-5">
-                    <Button href="/contact" variant="outline" fullWidth>
-                      Contact Warehouse
-                    </Button>
+                  {warehouse.description && (
+                    <p style={descriptionBoxStyle}>{warehouse.description}</p>
+                  )}
+
+                  <div style={actionsStyle}>
+                    <Link href="/contact" style={buttonOrangeSmall}>
+                      Request Storage
+                    </Link>
+
+                    <Link href="/store" style={buttonBlueSmall}>
+                      View Products
+                    </Link>
                   </div>
-                </AppCard>
+                </article>
               ))}
             </div>
           )}
-        </AppCard>
+        </section>
       </div>
     </div>
   );
 }
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "#f6f8fc",
+  padding: "40px 24px",
+};
+
+const containerStyle = {
+  maxWidth: 1100,
+  margin: "0 auto",
+};
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 24,
+  boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
+};
+
+const badgeStyle = {
+  color: "#fed7aa",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: 0,
+};
+
+const titleStyle = {
+  fontSize: 42,
+  fontWeight: 900,
+  margin: "10px 0",
+};
+
+const descStyle = {
+  maxWidth: 760,
+  lineHeight: 1.7,
+  color: "rgba(255,255,255,0.85)",
+};
+
+const buttonRowStyle = {
+  display: "flex",
+  gap: 12,
+  flexWrap: "wrap",
+  marginTop: 24,
+};
+
+const statsGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: 16,
+  marginBottom: 24,
+};
+
+const statCardStyle = {
+  background: "white",
+  borderRadius: 22,
+  padding: 22,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 10px 24px rgba(15,23,42,0.08)",
+};
+
+const statLabelStyle = {
+  color: "#64748b",
+  fontWeight: 800,
+  margin: 0,
+};
+
+const statValueStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: "8px 0",
+  color: "#0f172a",
+};
+
+const statTextStyle = {
+  color: "#64748b",
+  margin: 0,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 28,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.10)",
+};
+
+const sectionHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: 16,
+  alignItems: "center",
+  marginBottom: 24,
+  flexWrap: "wrap",
+};
+
+const formTitleStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const formDescStyle = {
+  color: "#64748b",
+  marginTop: 8,
+  marginBottom: 0,
+};
+
+const smallButtonStyle = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "11px 16px",
+  borderRadius: 14,
+  fontWeight: 800,
+  border: "none",
+  cursor: "pointer",
+};
+
+const emptyTextStyle = {
+  color: "#64748b",
+};
+
+const emptyStateStyle = {
+  textAlign: "center",
+  padding: 50,
+  background: "#f8fafc",
+  borderRadius: 20,
+  border: "1px dashed #cbd5e1",
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  gap: 18,
+};
+
+const itemCardStyle = {
+  border: "1px solid #e5e7eb",
+  borderRadius: 22,
+  padding: 22,
+  background: "#ffffff",
+  boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
+};
+
+const cardTopStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: 14,
+  marginBottom: 18,
+};
+
+const itemTitleStyle = {
+  fontSize: 20,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const itemSubStyle = {
+  margin: "6px 0 0",
+  color: "#64748b",
+};
+
+const activeBadgeStyle = {
+  background: "#dcfce7",
+  color: "#15803d",
+  borderRadius: 999,
+  padding: "6px 10px",
+  height: "fit-content",
+  fontSize: 12,
+  fontWeight: 900,
+};
+
+const inactiveBadgeStyle = {
+  background: "#fee2e2",
+  color: "#b91c1c",
+  borderRadius: 999,
+  padding: "6px 10px",
+  height: "fit-content",
+  fontSize: 12,
+  fontWeight: 900,
+};
+
+const detailGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: 10,
+};
+
+const detailBoxStyle = {
+  background: "#f8fafc",
+  borderRadius: 16,
+  padding: 12,
+};
+
+const detailLabelStyle = {
+  color: "#94a3b8",
+  fontSize: 12,
+  margin: 0,
+};
+
+const detailValueStyle = {
+  color: "#0f172a",
+  fontWeight: 800,
+  margin: "4px 0 0",
+};
+
+const descriptionBoxStyle = {
+  marginTop: 14,
+  background: "#f8fafc",
+  borderRadius: 16,
+  padding: 14,
+  color: "#475569",
+  lineHeight: 1.6,
+};
+
+const actionsStyle = {
+  display: "flex",
+  gap: 10,
+  flexWrap: "wrap",
+  marginTop: 18,
+};
+
+const buttonBlue = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonWhite = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonBlueSmall = {
+  ...buttonBlue,
+  padding: "10px 14px",
+  fontSize: 14,
+};
+
+const buttonOrangeSmall = {
+  ...buttonOrange,
+  padding: "10px 14px",
+  fontSize: 14,
+};
