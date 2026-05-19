@@ -1,238 +1,232 @@
 // @ts-nocheck
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import PageHero from "@/app/components/PageHero";
-
-const emptyForm = {
-  name: "",
-  email: "",
-  phone: "",
-  subject: "",
-  message: "",
-};
+import DashboardCard from "@/app/components/DashboardCard";
+import SectionHeader from "@/app/components/SectionHeader";
+import AppCard from "@/app/components/AppCard";
+import Button from "@/app/components/Button";
 
 export default function ContactPage() {
-  const [form, setForm] = useState(emptyForm);
-  const [saving, setSaving] = useState(false);
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    if (!form.name || !form.message) {
-      alert("Name and message are required.");
-      return;
-    }
-
-    setSaving(true);
-
-    const { error } = await supabase.from("inquiries").insert([
-      {
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        subject: form.subject,
-        message: form.message,
-        status: "open",
-      },
-    ]);
-
-    setSaving(false);
-
-    if (error) {
-      alert("Failed to send inquiry: " + error.message);
-      return;
-    }
-
-    alert("Inquiry sent successfully.");
-    setForm(emptyForm);
-  }
-
   return (
     <div className="min-h-screen page-soft-bg">
       <PageHero
-        badge="Contact NamLogix"
+        badge="NamLogix Support"
         titleTop="NamLogix"
         titleHighlight="AFRICA"
-        titleBottom="Support Center"
-        description="Contact us for products, cargo, transport bookings, suppliers, warehouses, aviation, trade routes, and marketplace support."
+        titleBottom="Contact Center"
+        description="Connect with the NamLogix Africa team for logistics support, supplier onboarding, warehouse partnerships, cargo movement, trade operations, and platform assistance."
         actions={[
-          { label: "📩 Send Inquiry", href: "#contact-form", primary: true },
-          { label: "🛒 Store", href: "/store" },
-          { label: "🚕 Transport", href: "/transport" },
-          { label: "📦 Post Cargo", href: "/request-cargo" },
+          {
+            label: "📞 Contact Team",
+            href: "#contact-form",
+            primary: true,
+          },
+          {
+            label: "📦 Post Cargo",
+            href: "/request-cargo",
+          },
+          {
+            label: "🏭 Warehouses",
+            href: "/warehouses",
+          },
+          {
+            label: "🛒 Store",
+            href: "/store",
+          },
         ]}
         stats={[
-          { value: "24/7", label: "Online requests" },
-          { value: "Trade", label: "Business support" },
-          { value: "Cargo", label: "Logistics help" },
-          { value: "Live", label: "Inquiry system" },
+          {
+            value: "24/7",
+            label: "Support",
+          },
+          {
+            value: "SADC",
+            label: "Coverage",
+          },
+          {
+            value: "Trade",
+            label: "Infrastructure",
+          },
+          {
+            value: "Live",
+            label: "Platform status",
+          },
         ]}
         infoCards={[
-          { title: "Products", text: "Marketplace inquiries" },
-          { title: "Cargo", text: "Shipping support" },
-          { title: "Transport", text: "Booking help" },
-          { title: "Warehouses", text: "Storage support" },
+          {
+            title: "Cargo",
+            text: "Transport support",
+          },
+          {
+            title: "Warehouses",
+            text: "Storage network",
+          },
+          {
+            title: "Suppliers",
+            text: "Marketplace support",
+          },
+          {
+            title: "Trade",
+            text: "Regional logistics",
+          },
         ]}
       />
 
-      <section className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-[0.9fr_1.4fr] gap-8 items-start">
-          <div className="space-y-6">
-            <div className="bg-slate-950 text-white rounded-3xl p-8 shadow-xl">
-              <p className="text-orange-300 font-black uppercase text-sm">
-                Get in touch
-              </p>
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <DashboardCard
+            title="Support"
+            value="24/7"
+            subtitle="Customer assistance"
+            color="blue"
+          />
 
-              <h2 className="text-3xl font-black mt-3">
-                We are ready to help your trade move.
-              </h2>
+          <DashboardCard
+            title="Coverage"
+            value="SADC"
+            subtitle="Southern Africa"
+            color="green"
+          />
 
-              <p className="text-white/70 leading-7 mt-4">
-                Send your request and the NamLogix team can assist with cargo,
-                suppliers, products, transport, warehouse services, and trade
-                support.
-              </p>
-            </div>
+          <DashboardCard
+            title="Platform"
+            value="Live"
+            subtitle="Operations active"
+            color="orange"
+          />
 
-            <div className="grid gap-4">
-              <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <div className="text-3xl mb-3">📦</div>
-                <h3 className="font-black text-lg">Cargo & Logistics</h3>
-                <p className="text-gray-500 text-sm mt-2 leading-6">
-                  Ask about cargo requests, transport routes, deliveries, and
-                  logistics support.
-                </p>
-              </div>
+          <DashboardCard
+            title="Response"
+            value="Fast"
+            subtitle="Business support"
+            color="red"
+          />
+        </div>
 
-              <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <div className="text-3xl mb-3">🛒</div>
-                <h3 className="font-black text-lg">Products & Marketplace</h3>
-                <p className="text-gray-500 text-sm mt-2 leading-6">
-                  Request product information, supplier details, pricing, and
-                  marketplace support.
-                </p>
-              </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <AppCard id="contact-form" variant="blue">
+              <SectionHeader
+                title="📞 Contact NamLogix Africa"
+                subtitle="Send inquiries about cargo, suppliers, logistics, warehousing, partnerships, or platform operations."
+              />
 
-              <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <div className="text-3xl mb-3">🏭</div>
-                <h3 className="font-black text-lg">Warehouses & Storage</h3>
-                <p className="text-gray-500 text-sm mt-2 leading-6">
-                  Contact us for storage, stock movement, inventory, and
-                  warehouse-related support.
-                </p>
-              </div>
-            </div>
-          </div>
+              <form className="grid md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  className="border rounded-xl px-4 py-3"
+                />
 
-          <div
-            id="contact-form"
-            className="bg-white rounded-[32px] border border-gray-100 shadow-xl overflow-hidden"
-          >
-            <div className="bg-gradient-to-r from-blue-950 to-orange-500 text-white p-8">
-              <p className="text-orange-100 font-bold uppercase text-sm">
-                Inquiry Form
-              </p>
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  className="border rounded-xl px-4 py-3"
+                />
 
-              <h2 className="text-3xl font-black mt-2">
-                Send us a message
-              </h2>
+                <input
+                  type="text"
+                  placeholder="Phone Number"
+                  className="border rounded-xl px-4 py-3"
+                />
 
-              <p className="text-white/75 mt-3">
-                Fill in your details below. Your message will be saved in the
-                NamLogix admin inquiry system.
-              </p>
-            </div>
+                <input
+                  type="text"
+                  placeholder="Company Name"
+                  className="border rounded-xl px-4 py-3"
+                />
 
-            <form onSubmit={handleSubmit} className="p-6 md:p-8">
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Your Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
-                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="Enter your name"
-                  />
-                </div>
+                <select className="border rounded-xl px-4 py-3 md:col-span-2">
+                  <option>General Inquiry</option>
+                  <option>Cargo Transport</option>
+                  <option>Warehouse Partnership</option>
+                  <option>Supplier Registration</option>
+                  <option>Marketplace Support</option>
+                  <option>Trade Routes</option>
+                </select>
 
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm({ ...form, email: e.target.value })
-                    }
-                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="Enter your email"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    value={form.phone}
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
-                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="Enter phone number"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    value={form.subject}
-                    onChange={(e) =>
-                      setForm({ ...form, subject: e.target.value })
-                    }
-                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="What is this about?"
-                  />
-                </div>
+                <textarea
+                  placeholder="Your Message"
+                  className="border rounded-xl px-4 py-3 md:col-span-2 min-h-40"
+                />
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Message *
-                  </label>
-                  <textarea
-                    value={form.message}
-                    onChange={(e) =>
-                      setForm({ ...form, message: e.target.value })
-                    }
-                    className="w-full min-h-[170px] rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="Write your message here..."
-                  />
+                  <Button type="submit" variant="orange" fullWidth>
+                    📨 Send Message
+                  </Button>
+                </div>
+              </form>
+            </AppCard>
+          </div>
+
+          <div className="space-y-6">
+            <AppCard hover variant="green">
+              <h3 className="text-xl font-bold mb-4">
+                📍 Office Information
+              </h3>
+
+              <div className="space-y-4 text-sm text-gray-600">
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    NamLogix Africa
+                  </p>
+                  <p>Windhoek, Namibia</p>
+                </div>
+
+                <div>
+                  <p className="font-semibold text-gray-900">Phone</p>
+                  <p>+264 XX XXX XXXX</p>
+                </div>
+
+                <div>
+                  <p className="font-semibold text-gray-900">Email</p>
+                  <p>support@namlogixafrica.com</p>
                 </div>
               </div>
+            </AppCard>
 
-              <button
-                type="submit"
-                disabled={saving}
-                className="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white rounded-2xl px-6 py-4 font-black shadow-lg shadow-orange-200 transition"
-              >
-                {saving ? "Sending Inquiry..." : "📩 Send Inquiry"}
-              </button>
-            </form>
+            <AppCard hover variant="orange">
+              <h3 className="text-xl font-bold mb-4">
+                🚛 Logistics Services
+              </h3>
+
+              <ul className="space-y-3 text-sm text-gray-600">
+                <li>• Cargo transport coordination</li>
+                <li>• Warehouse partnerships</li>
+                <li>• Supplier onboarding</li>
+                <li>• Inventory management</li>
+                <li>• Trade route support</li>
+                <li>• Marketplace operations</li>
+              </ul>
+            </AppCard>
+
+            <AppCard hover variant="default">
+              <h3 className="text-xl font-bold mb-4">
+                ⚡ Quick Navigation
+              </h3>
+
+              <div className="space-y-3">
+                <Button href="/request-cargo" variant="primary" fullWidth>
+                  📦 Post Cargo
+                </Button>
+
+                <Button href="/cargo-requests" variant="secondary" fullWidth>
+                  🚚 Cargo Requests
+                </Button>
+
+                <Button href="/warehouses" variant="outline" fullWidth>
+                  🏭 Warehouses
+                </Button>
+
+                <Button href="/store" variant="outline" fullWidth>
+                  🛒 Marketplace
+                </Button>
+              </div>
+            </AppCard>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
