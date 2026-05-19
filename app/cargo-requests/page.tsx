@@ -2,12 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PageHero from "@/app/components/PageHero";
-import DashboardCard from "@/app/components/DashboardCard";
-import SectionHeader from "@/app/components/SectionHeader";
-import EmptyState from "@/app/components/EmptyState";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function CargoRequestsPage() {
@@ -35,196 +30,416 @@ export default function CargoRequestsPage() {
     setLoading(false);
   }
 
-  const openCargo = cargoRequests.filter((c) => c.status === "pending").length;
+  const openCargo = cargoRequests.filter(
+    (item) => item.status === "pending" || item.status === "open"
+  ).length;
 
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="Cargo Marketplace"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Available Cargo"
-        description="Browse cargo requests, discover transport opportunities, and connect cargo owners with logistics operators across Southern Africa."
-        actions={[
-          {
-            label: "📦 Post Cargo",
-            href: "/request-cargo",
-            primary: true,
-          },
-          {
-            label: "💰 Cargo Bids",
-            href: "/bids",
-          },
-          {
-            label: "🚛 Trip Offers",
-            href: "/trip-offers",
-          },
-          {
-            label: "🛣️ Trade Routes",
-            href: "/trade-routes",
-          },
-        ]}
-        stats={[
-          {
-            value: cargoRequests.length,
-            label: "Cargo requests",
-          },
-          {
-            value: openCargo,
-            label: "Open cargo",
-          },
-          {
-            value: "SADC",
-            label: "Coverage",
-          },
-          {
-            value: "Live",
-            label: "Marketplace",
-          },
-        ]}
-        infoCards={[
-          {
-            title: "Cargo",
-            text: "Available loads",
-          },
-          {
-            title: "Bidding",
-            text: "Transport quotes",
-          },
-          {
-            title: "Routes",
-            text: "Regional lanes",
-          },
-          {
-            title: "Tracking",
-            text: "Delivery visibility",
-          },
-        ]}
-      />
+    <div style={pageStyle}>
+      <div style={containerStyle}>
+        <section style={heroStyle}>
+          <p style={badgeStyle}>CARGO MARKETPLACE</p>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <DashboardCard
-            title="Cargo Requests"
-            value={cargoRequests.length}
-            subtitle="Total posted cargo"
-            color="blue"
-          />
+          <h1 style={titleStyle}>Available Cargo</h1>
 
-          <DashboardCard
-            title="Open Cargo"
-            value={openCargo}
-            subtitle="Ready for bidding"
-            color="orange"
-          />
+          <p style={descStyle}>
+            Browse cargo requests, discover transport opportunities, and connect
+            cargo owners with logistics operators across Southern Africa.
+          </p>
 
-          <DashboardCard
-            title="Routes"
-            value="SADC"
-            subtitle="Regional network"
-            color="green"
-          />
-
-          <DashboardCard
-            title="Status"
-            value="Live"
-            subtitle="Supabase connected"
-            color="red"
-          />
-        </div>
-
-        <AppCard className="mb-8" variant="orange">
-          <SectionHeader
-            title="⚡ Cargo Marketplace Actions"
-            subtitle="Move cargo requests through the logistics workflow."
-          />
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button href="/request-cargo" variant="orange" fullWidth>
+          <div style={buttonRowStyle}>
+            <Link href="/request-cargo" style={buttonOrange}>
               📦 Post Cargo
-            </Button>
+            </Link>
 
-            <Button href="/bids" variant="primary" fullWidth>
-              💰 View Bids
-            </Button>
+            <Link href="/trip-offers" style={buttonBlue}>
+              🚚 Trip Offers
+            </Link>
 
-            <Button href="/trip-offers" variant="outline" fullWidth>
-              🚛 Find Trips
-            </Button>
-
-            <Button href="/trade-routes" variant="outline" fullWidth>
+            <Link href="/trade-routes" style={buttonWhite}>
               🛣️ Trade Routes
-            </Button>
+            </Link>
           </div>
-        </AppCard>
+        </section>
 
-        <AppCard id="cargo" variant="blue">
-          <SectionHeader
-            title="📦 Available Cargo Requests"
-            subtitle="Cargo requests from traders, warehouses, businesses, and customers."
-            action={
-              <button
-                onClick={fetchCargoRequests}
-                className="bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-800"
-              >
-                Refresh
-              </button>
-            }
-          />
+        <section style={statsGridStyle}>
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Cargo Requests</p>
+            <h3 style={statValueStyle}>{cargoRequests.length}</h3>
+            <p style={statTextStyle}>Total posted cargo</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Open Cargo</p>
+            <h3 style={statValueStyle}>{openCargo}</h3>
+            <p style={statTextStyle}>Ready for bidding</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Coverage</p>
+            <h3 style={statValueStyle}>SADC</h3>
+            <p style={statTextStyle}>Regional network</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Status</p>
+            <h3 style={statValueStyle}>Live</h3>
+            <p style={statTextStyle}>Marketplace active</p>
+          </div>
+        </section>
+
+        <section style={cardStyle}>
+          <div style={sectionHeaderStyle}>
+            <div>
+              <h2 style={formTitleStyle}>📦 Cargo Requests</h2>
+              <p style={formDescStyle}>
+                Cargo posted by customers and businesses looking for transport.
+              </p>
+            </div>
+
+            <button onClick={fetchCargoRequests} style={smallButtonStyle}>
+              Refresh
+            </button>
+          </div>
 
           {loading ? (
-            <p>Loading cargo requests...</p>
+            <p style={emptyTextStyle}>Loading cargo requests...</p>
           ) : cargoRequests.length === 0 ? (
-            <EmptyState
-              icon="📦"
-              title="No cargo requests yet"
-              message="Cargo requests will appear here once users post goods that need transportation."
-            />
+            <div style={emptyStateStyle}>
+              <div style={{ fontSize: 44 }}>📦</div>
+              <h3 style={{ margin: "12px 0 6px", fontSize: 24 }}>
+                No cargo requests yet
+              </h3>
+              <p style={{ color: "#64748b", margin: 0 }}>
+                Cargo posted from the request page will appear here.
+              </p>
+            </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div style={cargoGridStyle}>
               {cargoRequests.map((cargo) => (
-                <AppCard key={cargo.id} hover variant="default">
-                  <div className="flex justify-between gap-4 mb-4">
-                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                <article key={cargo.id} style={cargoCardStyle}>
+                  <div style={cargoTopStyle}>
+                    <div>
+                      <h3 style={cargoTitleStyle}>
+                        {cargo.pickup_location || "Pickup"} →{" "}
+                        {cargo.delivery_location || "Delivery"}
+                      </h3>
+
+                      <p style={cargoSubStyle}>
+                        {cargo.cargo_type || "General Cargo"}
+                      </p>
+                    </div>
+
+                    <span style={statusBadgeStyle}>
                       {cargo.status || "pending"}
                     </span>
-
-                    <span className="text-xs text-gray-400">
-                      {cargo.request_number}
-                    </span>
                   </div>
 
-                  <h3 className="font-bold text-lg">
-                    {cargo.pickup_location} → {cargo.delivery_location}
-                  </h3>
-
-                  <p className="text-sm text-gray-500 mt-3 leading-6">
-                    {cargo.description || "No description provided."}
-                  </p>
-
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-gray-400">Weight</p>
-                      <p className="font-semibold">{cargo.weight_kg || 0} kg</p>
+                  <div style={detailGridStyle}>
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Weight</p>
+                      <p style={detailValueStyle}>
+                        {cargo.weight_kg || 0} KG
+                      </p>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-gray-400">Budget</p>
-                      <p className="font-semibold">N${cargo.budget || 0}</p>
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Budget</p>
+                      <p style={detailValueStyle}>
+                        N${cargo.budget || 0}
+                      </p>
+                    </div>
+
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Contact</p>
+                      <p style={detailValueStyle}>
+                        {cargo.contact_name || "-"}
+                      </p>
+                    </div>
+
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Phone</p>
+                      <p style={detailValueStyle}>
+                        {cargo.contact_phone || "-"}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="mt-5">
-                    <Button href="/bids" variant="primary" fullWidth>
-                      💰 View / Submit Bid
-                    </Button>
+                  {cargo.description && (
+                    <p style={descriptionBoxStyle}>{cargo.description}</p>
+                  )}
+
+                  <div style={cargoActionsStyle}>
+                    <Link href="/contact" style={buttonBlueSmall}>
+                      Contact Owner
+                    </Link>
+
+                    <Link href="/trip-offers" style={buttonOrangeSmall}>
+                      Submit Bid
+                    </Link>
                   </div>
-                </AppCard>
+                </article>
               ))}
             </div>
           )}
-        </AppCard>
+        </section>
       </div>
     </div>
   );
 }
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "#f6f8fc",
+  padding: "40px 24px",
+};
+
+const containerStyle = {
+  maxWidth: 1100,
+  margin: "0 auto",
+};
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 24,
+  boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
+};
+
+const badgeStyle = {
+  color: "#fed7aa",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: 0,
+};
+
+const titleStyle = {
+  fontSize: 42,
+  fontWeight: 900,
+  margin: "10px 0",
+};
+
+const descStyle = {
+  maxWidth: 760,
+  lineHeight: 1.7,
+  color: "rgba(255,255,255,0.85)",
+};
+
+const buttonRowStyle = {
+  display: "flex",
+  gap: 12,
+  flexWrap: "wrap",
+  marginTop: 24,
+};
+
+const statsGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: 16,
+  marginBottom: 24,
+};
+
+const statCardStyle = {
+  background: "white",
+  borderRadius: 22,
+  padding: 22,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 10px 24px rgba(15,23,42,0.08)",
+};
+
+const statLabelStyle = {
+  color: "#64748b",
+  fontWeight: 800,
+  margin: 0,
+};
+
+const statValueStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: "8px 0",
+  color: "#0f172a",
+};
+
+const statTextStyle = {
+  color: "#64748b",
+  margin: 0,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 28,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.10)",
+};
+
+const sectionHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: 16,
+  alignItems: "center",
+  marginBottom: 24,
+  flexWrap: "wrap",
+};
+
+const formTitleStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const formDescStyle = {
+  color: "#64748b",
+  marginTop: 8,
+  marginBottom: 0,
+};
+
+const smallButtonStyle = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "11px 16px",
+  borderRadius: 14,
+  fontWeight: 800,
+  border: "none",
+  cursor: "pointer",
+};
+
+const emptyTextStyle = {
+  color: "#64748b",
+};
+
+const emptyStateStyle = {
+  textAlign: "center",
+  padding: 50,
+  background: "#f8fafc",
+  borderRadius: 20,
+  border: "1px dashed #cbd5e1",
+};
+
+const cargoGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  gap: 18,
+};
+
+const cargoCardStyle = {
+  border: "1px solid #e5e7eb",
+  borderRadius: 22,
+  padding: 22,
+  background: "#ffffff",
+  boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
+};
+
+const cargoTopStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: 14,
+  marginBottom: 18,
+};
+
+const cargoTitleStyle = {
+  fontSize: 20,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const cargoSubStyle = {
+  margin: "6px 0 0",
+  color: "#64748b",
+};
+
+const statusBadgeStyle = {
+  background: "#ffedd5",
+  color: "#c2410c",
+  borderRadius: 999,
+  padding: "6px 10px",
+  height: "fit-content",
+  fontSize: 12,
+  fontWeight: 900,
+};
+
+const detailGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: 10,
+};
+
+const detailBoxStyle = {
+  background: "#f8fafc",
+  borderRadius: 16,
+  padding: 12,
+};
+
+const detailLabelStyle = {
+  color: "#94a3b8",
+  fontSize: 12,
+  margin: 0,
+};
+
+const detailValueStyle = {
+  color: "#0f172a",
+  fontWeight: 800,
+  margin: "4px 0 0",
+};
+
+const descriptionBoxStyle = {
+  marginTop: 14,
+  background: "#f8fafc",
+  borderRadius: 16,
+  padding: 14,
+  color: "#475569",
+  lineHeight: 1.6,
+};
+
+const cargoActionsStyle = {
+  display: "flex",
+  gap: 10,
+  flexWrap: "wrap",
+  marginTop: 18,
+};
+
+const buttonBlue = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonWhite = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonBlueSmall = {
+  ...buttonBlue,
+  padding: "10px 14px",
+  fontSize: 14,
+};
+
+const buttonOrangeSmall = {
+  ...buttonOrange,
+  padding: "10px 14px",
+  fontSize: 14,
+};
