@@ -13,6 +13,7 @@ export default function Navbar() {
   const links = [
     { label: "Home", href: "/" },
     { label: "Store", href: "/store" },
+    { label: "Suppliers", href: "/admin/suppliers" },
     { label: "Companies", href: "/companies" },
     { label: "Post Cargo", href: "/request-cargo" },
     { label: "Cargo", href: "/cargo-requests" },

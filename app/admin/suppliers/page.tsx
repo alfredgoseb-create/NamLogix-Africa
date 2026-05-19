@@ -2,27 +2,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
-import PageHero from "@/app/components/PageHero";
-import DashboardCard from "@/app/components/DashboardCard";
-import SectionHeader from "@/app/components/SectionHeader";
-import EmptyState from "@/app/components/EmptyState";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
 
 const emptyForm = {
   name: "",
   contact_name: "",
   email: "",
   phone: "",
+  location: "",
   category: "",
+  status: "active",
+  description: "",
 };
 
-export default function SuppliersPage() {
+export default function AdminSuppliersPage() {
   const [suppliers, setSuppliers] = useState([]);
+  const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
     fetchSuppliers();
@@ -37,7 +35,7 @@ export default function SuppliersPage() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      alert(error.message);
+      alert("Failed to load suppliers: " + error.message);
     } else {
       setSuppliers(data || []);
     }
@@ -45,171 +43,113 @@ export default function SuppliersPage() {
     setLoading(false);
   }
 
-  async function handleCreate(e) {
+  async function createSupplier(e) {
     e.preventDefault();
 
-    if (!form.name.trim()) {
-      alert("Supplier name required");
+    if (!form.name) {
+      alert("Supplier name is required.");
       return;
     }
 
     setSaving(true);
 
-    const { error } = await supabase.from("suppliers").insert([
-      {
-        name: form.name,
-        contact_name: form.contact_name,
-        email: form.email,
-        phone: form.phone,
-        category: form.category,
-      },
-    ]);
+    const { error } = await supabase.from("suppliers").insert([form]);
 
     setSaving(false);
 
     if (error) {
-      alert(error.message);
+      alert("Failed to create supplier: " + error.message);
       return;
     }
 
+    alert("Supplier added successfully.");
     setForm(emptyForm);
     fetchSuppliers();
   }
 
-  async function handleDelete(id) {
-    if (!confirm("Delete supplier?")) return;
+  async function deleteSupplier(id) {
+    if (!confirm("Delete this supplier?")) return;
 
-    const { error } = await supabase
-      .from("suppliers")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("suppliers").delete().eq("id", id);
 
     if (error) {
-      alert(error.message);
+      alert("Failed to delete supplier: " + error.message);
     } else {
       fetchSuppliers();
     }
   }
 
+  const active = suppliers.filter((s) => s.status === "active").length;
+
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="Supplier Network"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Supplier Management"
-        description="Manage suppliers, procurement networks, warehouse providers, and marketplace businesses across Southern Africa."
-        actions={[
-          {
-            label: "➕ Add Supplier",
-            href: "#supplier-form",
-            primary: true,
-          },
-          {
-            label: "🛒 Marketplace",
-            href: "/store",
-          },
-          {
-            label: "🏭 Warehouses",
-            href: "/admin/warehouses",
-          },
-          {
-            label: "📦 Inventory",
-            href: "/admin/dashboard",
-          },
-        ]}
-        stats={[
-          {
-            value: suppliers.length,
-            label: "Suppliers",
-          },
-          {
-            value: "B2B",
-            label: "Business Network",
-          },
-          {
-            value: "Live",
-            label: "Connected",
-          },
-          {
-            value: "SADC",
-            label: "Coverage",
-          },
-        ]}
-        infoCards={[
-          {
-            title: "Suppliers",
-            text: "Business partners",
-          },
-          {
-            title: "Products",
-            text: "Inventory sourcing",
-          },
-          {
-            title: "Warehouses",
-            text: "Storage support",
-          },
-          {
-            title: "Trade",
-            text: "Regional commerce",
-          },
-        ]}
-      />
+    <div style={pageStyle}>
+      <div style={containerStyle}>
+        <section style={heroStyle}>
+          <p style={badgeStyle}>SUPPLIER OPERATIONS</p>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
+          <h1 style={titleStyle}>Supplier Management</h1>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <DashboardCard
-            title="Suppliers"
-            value={suppliers.length}
-            subtitle="Registered businesses"
-            color="blue"
-          />
+          <p style={descStyle}>
+            Register suppliers, manage contact details, product categories,
+            marketplace partners, and business relationships for NamLogix Africa.
+          </p>
 
-          <DashboardCard
-            title="Marketplace"
-            value="Live"
-            subtitle="Store integration"
-            color="green"
-          />
+          <div style={buttonRowStyle}>
+            <Link href="/store" style={buttonOrange}>
+              🛒 Store
+            </Link>
 
-          <DashboardCard
-            title="Warehouses"
-            value="Connected"
-            subtitle="Inventory support"
-            color="orange"
-          />
+            <Link href="/admin/dashboard" style={buttonBlue}>
+              📦 Inventory
+            </Link>
 
-          <DashboardCard
-            title="Coverage"
-            value="SADC"
-            subtitle="Regional suppliers"
-            color="red"
-          />
-        </div>
+            <Link href="/companies" style={buttonWhite}>
+              🏢 Companies
+            </Link>
+          </div>
+        </section>
 
-        <AppCard
-          id="supplier-form"
-          className="mb-8"
-          variant="blue"
-        >
-          <SectionHeader
-            title="➕ Add Supplier"
-            subtitle="Register suppliers and businesses into the NamLogix network."
-          />
+        <section style={statsGridStyle}>
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Suppliers</p>
+            <h3 style={statValueStyle}>{suppliers.length}</h3>
+            <p style={statTextStyle}>Total partners</p>
+          </div>
 
-          <form
-            onSubmit={handleCreate}
-            className="grid md:grid-cols-2 gap-4"
-          >
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Active</p>
+            <h3 style={statValueStyle}>{active}</h3>
+            <p style={statTextStyle}>Available suppliers</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Marketplace</p>
+            <h3 style={statValueStyle}>Trade</h3>
+            <p style={statTextStyle}>Product sourcing</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Network</p>
+            <h3 style={statValueStyle}>SADC</h3>
+            <p style={statTextStyle}>Regional supply</p>
+          </div>
+        </section>
+
+        <section style={cardStyle}>
+          <h2 style={formTitleStyle}>🏢 Add Supplier</h2>
+
+          <p style={formDescStyle}>
+            Add supplier companies that can provide products, stock, materials,
+            or marketplace goods.
+          </p>
+
+          <form onSubmit={createSupplier} style={formGridStyle}>
             <input
               type="text"
               placeholder="Supplier Name *"
               value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
-              className="border rounded-xl px-4 py-3"
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              style={inputStyle}
             />
 
             <input
@@ -217,122 +157,475 @@ export default function SuppliersPage() {
               placeholder="Contact Person"
               value={form.contact_name}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  contact_name: e.target.value,
-                })
+                setForm({ ...form, contact_name: e.target.value })
               }
-              className="border rounded-xl px-4 py-3"
+              style={inputStyle}
             />
 
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Email Address"
               value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
-              className="border rounded-xl px-4 py-3"
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              style={inputStyle}
             />
 
             <input
               type="text"
-              placeholder="Phone"
+              placeholder="Phone Number"
               value={form.phone}
-              onChange={(e) =>
-                setForm({ ...form, phone: e.target.value })
-              }
-              className="border rounded-xl px-4 py-3"
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              style={inputStyle}
             />
 
             <input
               type="text"
-              placeholder="Business Category"
-              value={form.category}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  category: e.target.value,
-                })
-              }
-              className="border rounded-xl px-4 py-3 md:col-span-2"
+              placeholder="Location"
+              value={form.location}
+              onChange={(e) => setForm({ ...form, location: e.target.value })}
+              style={inputStyle}
             />
 
-            <div className="md:col-span-2">
-              <Button
-                type="submit"
-                variant="orange"
-                fullWidth
-              >
-                {saving
-                  ? "Saving Supplier..."
-                  : "➕ Create Supplier"}
-              </Button>
-            </div>
-          </form>
-        </AppCard>
+            <input
+              type="text"
+              placeholder="Category"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              style={inputStyle}
+            />
 
-        <AppCard variant="green">
-          <SectionHeader
-            title="🏢 Registered Suppliers"
-            subtitle="Businesses currently connected to the NamLogix trade network."
-          />
+            <select
+              value={form.status}
+              onChange={(e) => setForm({ ...form, status: e.target.value })}
+              style={{
+                ...inputStyle,
+                gridColumn: "1 / -1",
+              }}
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+
+            <textarea
+              placeholder="Supplier Description"
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              style={textareaStyle}
+            />
+
+            <button type="submit" disabled={saving} style={submitButtonStyle}>
+              {saving ? "Saving Supplier..." : "🏢 Add Supplier"}
+            </button>
+          </form>
+        </section>
+
+        <section style={{ ...cardStyle, marginTop: 24 }}>
+          <div style={sectionHeaderStyle}>
+            <div>
+              <h2 style={formTitleStyle}>🤝 Registered Suppliers</h2>
+              <p style={formDescStyle}>
+                Supplier companies connected to your NamLogix marketplace.
+              </p>
+            </div>
+
+            <button onClick={fetchSuppliers} style={smallButtonStyle}>
+              Refresh
+            </button>
+          </div>
 
           {loading ? (
-            <p>Loading suppliers...</p>
+            <p style={emptyTextStyle}>Loading suppliers...</p>
           ) : suppliers.length === 0 ? (
-            <EmptyState
-              icon="🏢"
-              title="No suppliers yet"
-              message="Supplier businesses will appear here once added."
-            />
+            <div style={emptyStateStyle}>
+              <div style={{ fontSize: 44 }}>🏢</div>
+              <h3 style={{ margin: "12px 0 6px", fontSize: 24 }}>
+                No suppliers yet
+              </h3>
+              <p style={{ color: "#64748b", margin: 0 }}>
+                Add your first supplier above to start building the marketplace
+                supply network.
+              </p>
+            </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div style={gridStyle}>
               {suppliers.map((supplier) => (
-                <AppCard key={supplier.id} hover>
-                  <div className="flex justify-between mb-4">
-                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                      {supplier.category || "General"}
+                <article key={supplier.id} style={itemCardStyle}>
+                  <div style={cardTopStyle}>
+                    <div>
+                      <h3 style={itemTitleStyle}>{supplier.name}</h3>
+                      <p style={itemSubStyle}>
+                        {supplier.category || "General Supplier"}
+                      </p>
+                    </div>
+
+                    <span
+                      style={
+                        supplier.status === "active"
+                          ? activeBadgeStyle
+                          : inactiveBadgeStyle
+                      }
+                    >
+                      {supplier.status || "active"}
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-lg">
-                    {supplier.name}
-                  </h3>
+                  <div style={detailGridStyle}>
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Contact</p>
+                      <p style={detailValueStyle}>
+                        {supplier.contact_name || "-"}
+                      </p>
+                    </div>
 
-                  <div className="mt-4 space-y-2 text-sm text-gray-500">
-                    <p>
-                      Contact:{" "}
-                      {supplier.contact_name || "N/A"}
-                    </p>
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Phone</p>
+                      <p style={detailValueStyle}>{supplier.phone || "-"}</p>
+                    </div>
 
-                    <p>
-                      Email: {supplier.email || "N/A"}
-                    </p>
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Email</p>
+                      <p style={detailValueStyle}>{supplier.email || "-"}</p>
+                    </div>
 
-                    <p>
-                      Phone: {supplier.phone || "N/A"}
-                    </p>
+                    <div style={detailBoxStyle}>
+                      <p style={detailLabelStyle}>Location</p>
+                      <p style={detailValueStyle}>
+                        {supplier.location || "-"}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="mt-5">
-                    <Button
-                      type="button"
-                      variant="danger"
-                      fullWidth
-                      onClick={() =>
-                        handleDelete(supplier.id)
-                      }
+                  {supplier.description && (
+                    <p style={descriptionBoxStyle}>{supplier.description}</p>
+                  )}
+
+                  <div style={actionsStyle}>
+                    <Link href="/admin/dashboard" style={buttonBlueSmall}>
+                      Add Products
+                    </Link>
+
+                    <button
+                      onClick={() => deleteSupplier(supplier.id)}
+                      style={buttonDangerSmall}
                     >
-                      Delete Supplier
-                    </Button>
+                      Delete
+                    </button>
                   </div>
-                </AppCard>
+                </article>
               ))}
             </div>
           )}
-        </AppCard>
+        </section>
       </div>
     </div>
   );
 }
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "#f6f8fc",
+  padding: "40px 24px",
+};
+
+const containerStyle = {
+  maxWidth: 1100,
+  margin: "0 auto",
+};
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 24,
+  boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
+};
+
+const badgeStyle = {
+  color: "#fed7aa",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: 0,
+};
+
+const titleStyle = {
+  fontSize: 42,
+  fontWeight: 900,
+  margin: "10px 0",
+};
+
+const descStyle = {
+  maxWidth: 760,
+  lineHeight: 1.7,
+  color: "rgba(255,255,255,0.85)",
+};
+
+const buttonRowStyle = {
+  display: "flex",
+  gap: 12,
+  flexWrap: "wrap",
+  marginTop: 24,
+};
+
+const statsGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: 16,
+  marginBottom: 24,
+};
+
+const statCardStyle = {
+  background: "white",
+  borderRadius: 22,
+  padding: 22,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 10px 24px rgba(15,23,42,0.08)",
+};
+
+const statLabelStyle = {
+  color: "#64748b",
+  fontWeight: 800,
+  margin: 0,
+};
+
+const statValueStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: "8px 0",
+  color: "#0f172a",
+};
+
+const statTextStyle = {
+  color: "#64748b",
+  margin: 0,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 28,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.10)",
+};
+
+const formTitleStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const formDescStyle = {
+  color: "#64748b",
+  marginTop: 8,
+  marginBottom: 0,
+};
+
+const formGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gap: 16,
+  marginTop: 24,
+};
+
+const inputStyle = {
+  width: "100%",
+  border: "1px solid #d1d5db",
+  borderRadius: 14,
+  padding: "14px 15px",
+  fontSize: 15,
+  background: "#f8fafc",
+  outline: "none",
+};
+
+const textareaStyle = {
+  ...inputStyle,
+  gridColumn: "1 / -1",
+  minHeight: 160,
+  resize: "vertical",
+};
+
+const submitButtonStyle = {
+  background: "#f97316",
+  color: "white",
+  padding: "14px 18px",
+  borderRadius: 14,
+  fontWeight: 900,
+  border: "none",
+  cursor: "pointer",
+  gridColumn: "1 / -1",
+  fontSize: 16,
+};
+
+const sectionHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: 16,
+  alignItems: "center",
+  marginBottom: 24,
+  flexWrap: "wrap",
+};
+
+const smallButtonStyle = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "11px 16px",
+  borderRadius: 14,
+  fontWeight: 800,
+  border: "none",
+  cursor: "pointer",
+};
+
+const emptyTextStyle = {
+  color: "#64748b",
+};
+
+const emptyStateStyle = {
+  textAlign: "center",
+  padding: 50,
+  background: "#f8fafc",
+  borderRadius: 20,
+  border: "1px dashed #cbd5e1",
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  gap: 18,
+};
+
+const itemCardStyle = {
+  border: "1px solid #e5e7eb",
+  borderRadius: 22,
+  padding: 22,
+  background: "#ffffff",
+  boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
+};
+
+const cardTopStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: 14,
+  marginBottom: 18,
+};
+
+const itemTitleStyle = {
+  fontSize: 20,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const itemSubStyle = {
+  margin: "6px 0 0",
+  color: "#64748b",
+};
+
+const activeBadgeStyle = {
+  background: "#dcfce7",
+  color: "#15803d",
+  borderRadius: 999,
+  padding: "6px 10px",
+  height: "fit-content",
+  fontSize: 12,
+  fontWeight: 900,
+};
+
+const inactiveBadgeStyle = {
+  background: "#fee2e2",
+  color: "#b91c1c",
+  borderRadius: 999,
+  padding: "6px 10px",
+  height: "fit-content",
+  fontSize: 12,
+  fontWeight: 900,
+};
+
+const detailGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: 10,
+};
+
+const detailBoxStyle = {
+  background: "#f8fafc",
+  borderRadius: 16,
+  padding: 12,
+};
+
+const detailLabelStyle = {
+  color: "#94a3b8",
+  fontSize: 12,
+  margin: 0,
+};
+
+const detailValueStyle = {
+  color: "#0f172a",
+  fontWeight: 800,
+  margin: "4px 0 0",
+};
+
+const descriptionBoxStyle = {
+  marginTop: 14,
+  background: "#f8fafc",
+  borderRadius: 16,
+  padding: 14,
+  color: "#475569",
+  lineHeight: 1.6,
+};
+
+const actionsStyle = {
+  display: "flex",
+  gap: 10,
+  flexWrap: "wrap",
+  marginTop: 18,
+};
+
+const buttonBlue = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonWhite = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonBlueSmall = {
+  ...buttonBlue,
+  padding: "10px 14px",
+  fontSize: 14,
+};
+
+const buttonDangerSmall = {
+  background: "#dc2626",
+  color: "white",
+  padding: "10px 14px",
+  borderRadius: 14,
+  fontWeight: 800,
+  border: "none",
+  cursor: "pointer",
+  fontSize: 14,
+};
