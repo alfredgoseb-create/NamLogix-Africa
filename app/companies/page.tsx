@@ -1,203 +1,157 @@
 // @ts-nocheck
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
+
+const companyTypes = [
+  {
+    title: "Suppliers",
+    icon: "🏢",
+    text: "Businesses that list products, materials, and trade goods on the NamLogix marketplace.",
+  },
+  {
+    title: "Warehouses",
+    icon: "🏭",
+    text: "Storage partners that support inventory, stock movement, and regional distribution.",
+  },
+  {
+    title: "Transporters",
+    icon: "🚚",
+    text: "Fleet operators and logistics providers that move cargo across towns and borders.",
+  },
+  {
+    title: "Service Providers",
+    icon: "🛠️",
+    text: "Companies offering customs, aviation, handling, trade support, and operational services.",
+  },
+];
 
 export default function CompaniesPage() {
-  const [companies, setCompanies] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
-
-  async function fetchCompanies() {
-    setLoading(true);
-
-    const { data, error } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      alert("Failed to load companies: " + error.message);
-    } else {
-      setCompanies(data || []);
-    }
-
-    setLoading(false);
-  }
-
-  const suppliers = companies.filter((c) => c.role === "supplier").length;
-  const warehouses = companies.filter((c) => c.role === "warehouse").length;
-  const transporters = companies.filter((c) => c.role === "transporter").length;
-
   return (
-    <div style={{ minHeight: "100vh", background: "#f6f8fc", padding: "40px 24px" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+    <div style={pageStyle}>
+      <div style={containerStyle}>
         <section style={heroStyle}>
-          <p style={{ color: "#fed7aa", fontWeight: 800 }}>BUSINESS DIRECTORY</p>
+          <p style={badgeStyle}>NAMLOGIX BUSINESS NETWORK</p>
 
-          <h1 style={{ fontSize: 42, fontWeight: 900, margin: "10px 0" }}>
-            NamLogix AFRICA Company Network
-          </h1>
+          <h1 style={titleStyle}>Companies & Partners</h1>
 
-          <p style={{ maxWidth: 760, lineHeight: 1.7 }}>
-            Explore registered suppliers, warehouses, transporters, and trade partners on the NamLogix Africa platform.
+          <p style={descStyle}>
+            Connect suppliers, warehouses, transporters, and trade service
+            providers into one regional logistics and marketplace platform.
           </p>
 
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
-            <Link href="/signup" style={buttonOrange}>
-              Create Profile
+          <div style={buttonRowStyle}>
+            <Link href="/contact" style={buttonOrange}>
+              🤝 Join Network
             </Link>
 
-            <Link href="/profile" style={buttonPrimary}>
-              My Profile
+            <Link href="/store" style={buttonBlue}>
+              🛒 Marketplace
             </Link>
 
-            <Link href="/store" style={buttonSecondary}>
-              Marketplace
+            <Link href="/warehouses" style={buttonWhite}>
+              🏭 Warehouses
             </Link>
           </div>
         </section>
 
-        <section style={statsGrid}>
-          <StatCard title="Companies" value={companies.length} />
-          <StatCard title="Suppliers" value={suppliers} />
-          <StatCard title="Warehouses" value={warehouses} />
-          <StatCard title="Transporters" value={transporters} />
+        <section style={statsGridStyle}>
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Suppliers</p>
+            <h3 style={statValueStyle}>Trade</h3>
+            <p style={statTextStyle}>Product listings</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Warehouses</p>
+            <h3 style={statValueStyle}>Stock</h3>
+            <p style={statTextStyle}>Storage support</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Transport</p>
+            <h3 style={statValueStyle}>Cargo</h3>
+            <p style={statTextStyle}>Movement network</p>
+          </div>
+
+          <div style={statCardStyle}>
+            <p style={statLabelStyle}>Coverage</p>
+            <h3 style={statValueStyle}>SADC</h3>
+            <p style={statTextStyle}>Regional trade</p>
+          </div>
         </section>
 
         <section style={cardStyle}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
+          <h2 style={formTitleStyle}>🌍 Company Categories</h2>
+
+          <p style={formDescStyle}>
+            NamLogix Africa is designed to support multiple company types
+            working together through logistics, storage, transport, and trade.
+          </p>
+
+          <div style={gridStyle}>
+            {companyTypes.map((company) => (
+              <article key={company.title} style={itemCardStyle}>
+                <div style={iconStyle}>{company.icon}</div>
+
+                <h3 style={itemTitleStyle}>{company.title}</h3>
+
+                <p style={descriptionStyle}>{company.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section style={{ ...cardStyle, marginTop: 24 }}>
+          <div style={splitLayoutStyle}>
             <div>
-              <h2 style={{ fontSize: 30, fontWeight: 900, margin: 0 }}>
-                🏢 Registered Companies
+              <p style={badgeDarkStyle}>WHY JOIN NAMLOGIX</p>
+
+              <h2 style={formTitleStyle}>
+                Build a connected trade ecosystem.
               </h2>
 
-              <p style={{ color: "#64748b", marginTop: 8 }}>
-                Business profiles created by platform users.
+              <p style={descriptionStyle}>
+                Companies can use NamLogix to reach buyers, connect with cargo
+                owners, list products, manage inventory, and access transport
+                and warehouse support.
               </p>
             </div>
 
-            <button onClick={fetchCompanies} style={refreshButton}>
-              Refresh
-            </button>
+            <div style={benefitListStyle}>
+              <div style={benefitItemStyle}>✅ List company services</div>
+              <div style={benefitItemStyle}>✅ Connect with customers</div>
+              <div style={benefitItemStyle}>✅ Support cargo movement</div>
+              <div style={benefitItemStyle}>✅ Join marketplace trade</div>
+              <div style={benefitItemStyle}>✅ Build regional visibility</div>
+            </div>
           </div>
 
-          {loading ? (
-            <p>Loading company profiles...</p>
-          ) : companies.length === 0 ? (
-            <div style={emptyBox}>
-              <div style={{ fontSize: 52 }}>🏢</div>
-              <h3>No companies yet</h3>
-              <p>Company profiles will appear here once users create and update their profiles.</p>
-            </div>
-          ) : (
-            <div style={companyGrid}>
-              {companies.map((company) => (
-                <div key={company.id} style={companyCard}>
-                  <div style={{ position: "relative", height: 140, background: "#e5e7eb" }}>
-                    {company.banner_url ? (
-                      <img
-                        src={company.banner_url}
-                        alt="Company banner"
-                        style={{
-                          width: "100%",
-                          height: 140,
-                          objectFit: "cover",
-                          display: "block",
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          height: 140,
-                          background: "linear-gradient(135deg, #1e3a8a, #f97316)",
-                        }}
-                      />
-                    )}
+          <div style={actionsStyle}>
+            <Link href="/contact" style={buttonOrangeSmall}>
+              Register Interest
+            </Link>
 
-                    <div style={{ position: "absolute", left: 16, bottom: -36 }}>
-                      {company.logo_url ? (
-                        <img
-                          src={company.logo_url}
-                          alt="Company logo"
-                          style={{
-                            width: 72,
-                            height: 72,
-                            objectFit: "cover",
-                            borderRadius: 16,
-                            border: "4px solid white",
-                            background: "white",
-                            boxShadow: "0 10px 22px rgba(15,23,42,0.2)",
-                          }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: 72,
-                            height: 72,
-                            borderRadius: 16,
-                            border: "4px solid white",
-                            background: "white",
-                            boxShadow: "0 10px 22px rgba(15,23,42,0.2)",
-                            display: "grid",
-                            placeItems: "center",
-                            fontSize: 30,
-                          }}
-                        >
-                          🏢
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div style={{ padding: "48px 18px 18px" }}>
-                    <span style={pillStyle}>{company.role || "customer"}</span>
-
-                    <h3 style={{ fontSize: 19, fontWeight: 900, margin: "12px 0 6px" }}>
-                      {company.company_name || company.full_name || "Unnamed Company"}
-                    </h3>
-
-                    <p style={{ color: "#64748b", fontSize: 14, margin: "4px 0" }}>
-                      Contact: {company.full_name || "Not provided"}
-                    </p>
-
-                    <p style={{ color: "#64748b", fontSize: 14, margin: "4px 0" }}>
-                      Phone: {company.phone || "Not provided"}
-                    </p>
-
-                    <div style={{ display: "grid", gap: 10, marginTop: 16 }}>
-                      <Link href={`/companies/${company.id}`} style={buttonPrimary}>
-                        View Company Profile
-                      </Link>
-
-                      <Link href={`/companies/${company.id}/products`} style={buttonSecondary}>
-                        Company Products
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+            <Link href="/request-cargo" style={buttonBlueSmall}>
+              Post Cargo
+            </Link>
+          </div>
         </section>
       </div>
     </div>
   );
 }
 
-function StatCard({ title, value }) {
-  return (
-    <div style={statCard}>
-      <p style={{ color: "#64748b", fontSize: 13, margin: 0 }}>{title}</p>
-      <p style={{ fontSize: 30, fontWeight: 900, margin: "6px 0 0" }}>{value}</p>
-    </div>
-  );
-}
+const pageStyle = {
+  minHeight: "100vh",
+  background: "#f6f8fc",
+  padding: "40px 24px",
+};
+
+const containerStyle = {
+  maxWidth: 1100,
+  margin: "0 auto",
+};
 
 const heroStyle = {
   background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
@@ -205,103 +159,200 @@ const heroStyle = {
   borderRadius: 28,
   padding: 36,
   marginBottom: 24,
+  boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
 };
 
-const statsGrid = {
+const badgeStyle = {
+  color: "#fed7aa",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: 0,
+};
+
+const badgeDarkStyle = {
+  color: "#f97316",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: "0 0 10px",
+};
+
+const titleStyle = {
+  fontSize: 42,
+  fontWeight: 900,
+  margin: "10px 0",
+};
+
+const descStyle = {
+  maxWidth: 760,
+  lineHeight: 1.7,
+  color: "rgba(255,255,255,0.85)",
+};
+
+const buttonRowStyle = {
+  display: "flex",
+  gap: 12,
+  flexWrap: "wrap",
+  marginTop: 24,
+};
+
+const statsGridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
   gap: 16,
   marginBottom: 24,
 };
 
-const statCard = {
+const statCardStyle = {
   background: "white",
   borderRadius: 22,
-  padding: 20,
+  padding: 22,
   border: "1px solid #e5e7eb",
-  boxShadow: "0 8px 22px rgba(15,23,42,0.06)",
+  boxShadow: "0 10px 24px rgba(15,23,42,0.08)",
+};
+
+const statLabelStyle = {
+  color: "#64748b",
+  fontWeight: 800,
+  margin: 0,
+};
+
+const statValueStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: "8px 0",
+  color: "#0f172a",
+};
+
+const statTextStyle = {
+  color: "#64748b",
+  margin: 0,
 };
 
 const cardStyle = {
   background: "white",
   borderRadius: 24,
-  padding: 24,
+  padding: 28,
   border: "1px solid #e5e7eb",
-  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.10)",
 };
 
-const companyGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-  gap: 22,
+const formTitleStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
 };
 
-const companyCard = {
-  background: "white",
-  borderRadius: 22,
-  overflow: "hidden",
-  border: "1px solid #e5e7eb",
-  boxShadow: "0 8px 22px rgba(15, 23, 42, 0.08)",
-};
-
-const emptyBox = {
-  textAlign: "center",
-  padding: 50,
-  borderRadius: 20,
-  background: "#f8fafc",
+const formDescStyle = {
   color: "#64748b",
+  marginTop: 8,
+  marginBottom: 24,
 };
 
-const refreshButton = {
-  background: "white",
-  border: "1px solid #d1d5db",
-  borderRadius: 14,
-  padding: "10px 16px",
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+  gap: 18,
+};
+
+const itemCardStyle = {
+  border: "1px solid #e5e7eb",
+  borderRadius: 22,
+  padding: 22,
+  background: "#ffffff",
+  boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
+};
+
+const iconStyle = {
+  width: 58,
+  height: 58,
+  borderRadius: 18,
+  background: "#f8fafc",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 30,
+  marginBottom: 16,
+};
+
+const itemTitleStyle = {
+  fontSize: 20,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 12,
+};
+
+const splitLayoutStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gap: 24,
+  alignItems: "start",
+};
+
+const benefitListStyle = {
+  display: "grid",
+  gap: 10,
+};
+
+const benefitItemStyle = {
+  background: "#f8fafc",
+  padding: "13px 15px",
+  borderRadius: 16,
+  color: "#0f172a",
   fontWeight: 800,
-  cursor: "pointer",
 };
 
-const pillStyle = {
-  display: "inline-block",
-  background: "#dbeafe",
-  color: "#1d4ed8",
-  padding: "6px 12px",
-  borderRadius: 999,
-  fontSize: 12,
-  fontWeight: 800,
-  textTransform: "capitalize",
+const actionsStyle = {
+  display: "flex",
+  gap: 10,
+  flexWrap: "wrap",
+  marginTop: 22,
 };
 
-const buttonPrimary = {
+const buttonBlue = {
   background: "#1d4ed8",
   color: "white",
-  padding: "11px 14px",
-  borderRadius: 12,
-  textAlign: "center",
+  padding: "12px 18px",
+  borderRadius: 14,
   fontWeight: 800,
   textDecoration: "none",
-  display: "block",
+  display: "inline-block",
 };
 
-const buttonSecondary = {
+const buttonWhite = {
   background: "white",
   color: "#1d4ed8",
-  padding: "11px 14px",
-  borderRadius: 12,
-  textAlign: "center",
+  padding: "12px 18px",
+  borderRadius: 14,
   fontWeight: 800,
   textDecoration: "none",
-  display: "block",
-  border: "1px solid #bfdbfe",
+  display: "inline-block",
 };
 
 const buttonOrange = {
   background: "#f97316",
   color: "white",
-  padding: "11px 14px",
-  borderRadius: 12,
-  textAlign: "center",
+  padding: "12px 18px",
+  borderRadius: 14,
   fontWeight: 800,
   textDecoration: "none",
-  display: "block",
+  display: "inline-block",
+};
+
+const buttonBlueSmall = {
+  ...buttonBlue,
+  padding: "10px 14px",
+  fontSize: 14,
+};
+
+const buttonOrangeSmall = {
+  ...buttonOrange,
+  padding: "10px 14px",
+  fontSize: 14,
 };
