@@ -1,232 +1,265 @@
 // @ts-nocheck
 "use client";
 
-import PageHero from "@/app/components/PageHero";
-import DashboardCard from "@/app/components/DashboardCard";
-import SectionHeader from "@/app/components/SectionHeader";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
+import { useState } from "react";
+import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
+
+const emptyForm = {
+  name: "",
+  email: "",
+  phone: "",
+  subject: "",
+  message: "",
+};
 
 export default function ContactPage() {
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!form.name || !form.message) {
+      alert("Name and message are required.");
+      return;
+    }
+
+    setSaving(true);
+
+    const { error } = await supabase.from("inquiries").insert([
+      {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        subject: form.subject,
+        message: form.message,
+        status: "open",
+      },
+    ]);
+
+    setSaving(false);
+
+    if (error) {
+      alert("Failed to send inquiry: " + error.message);
+      return;
+    }
+
+    alert("Inquiry sent successfully.");
+    setForm(emptyForm);
+  }
+
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="NamLogix Support"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Contact Center"
-        description="Connect with the NamLogix Africa team for logistics support, supplier onboarding, warehouse partnerships, cargo movement, trade operations, and platform assistance."
-        actions={[
-          {
-            label: "📞 Contact Team",
-            href: "#contact-form",
-            primary: true,
-          },
-          {
-            label: "📦 Post Cargo",
-            href: "/request-cargo",
-          },
-          {
-            label: "🏭 Warehouses",
-            href: "/warehouses",
-          },
-          {
-            label: "🛒 Store",
-            href: "/store",
-          },
-        ]}
-        stats={[
-          {
-            value: "24/7",
-            label: "Support",
-          },
-          {
-            value: "SADC",
-            label: "Coverage",
-          },
-          {
-            value: "Trade",
-            label: "Infrastructure",
-          },
-          {
-            value: "Live",
-            label: "Platform status",
-          },
-        ]}
-        infoCards={[
-          {
-            title: "Cargo",
-            text: "Transport support",
-          },
-          {
-            title: "Warehouses",
-            text: "Storage network",
-          },
-          {
-            title: "Suppliers",
-            text: "Marketplace support",
-          },
-          {
-            title: "Trade",
-            text: "Regional logistics",
-          },
-        ]}
-      />
+    <div style={pageStyle}>
+      <div style={containerStyle}>
+        <section style={heroStyle}>
+          <p style={badgeStyle}>CONTACT NAMLOGIX</p>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <DashboardCard
-            title="Support"
-            value="24/7"
-            subtitle="Customer assistance"
-            color="blue"
-          />
+          <h1 style={titleStyle}>Send Inquiry</h1>
 
-          <DashboardCard
-            title="Coverage"
-            value="SADC"
-            subtitle="Southern Africa"
-            color="green"
-          />
+          <p style={descStyle}>
+            Contact NamLogix Africa about products, cargo, transport,
+            suppliers, warehouses, aviation, or trade routes.
+          </p>
 
-          <DashboardCard
-            title="Platform"
-            value="Live"
-            subtitle="Operations active"
-            color="orange"
-          />
+          <div style={buttonRowStyle}>
+            <Link href="/store" style={buttonBlue}>
+              Marketplace
+            </Link>
 
-          <DashboardCard
-            title="Response"
-            value="Fast"
-            subtitle="Business support"
-            color="red"
-          />
-        </div>
+            <Link href="/companies" style={buttonWhite}>
+              Companies
+            </Link>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <AppCard id="contact-form" variant="blue">
-              <SectionHeader
-                title="📞 Contact NamLogix Africa"
-                subtitle="Send inquiries about cargo, suppliers, logistics, warehousing, partnerships, or platform operations."
-              />
-
-              <form className="grid md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  className="border rounded-xl px-4 py-3"
-                />
-
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  className="border rounded-xl px-4 py-3"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Phone Number"
-                  className="border rounded-xl px-4 py-3"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Company Name"
-                  className="border rounded-xl px-4 py-3"
-                />
-
-                <select className="border rounded-xl px-4 py-3 md:col-span-2">
-                  <option>General Inquiry</option>
-                  <option>Cargo Transport</option>
-                  <option>Warehouse Partnership</option>
-                  <option>Supplier Registration</option>
-                  <option>Marketplace Support</option>
-                  <option>Trade Routes</option>
-                </select>
-
-                <textarea
-                  placeholder="Your Message"
-                  className="border rounded-xl px-4 py-3 md:col-span-2 min-h-40"
-                />
-
-                <div className="md:col-span-2">
-                  <Button type="submit" variant="orange" fullWidth>
-                    📨 Send Message
-                  </Button>
-                </div>
-              </form>
-            </AppCard>
+            <Link href="/request-cargo" style={buttonOrange}>
+              Post Cargo
+            </Link>
           </div>
+        </section>
 
-          <div className="space-y-6">
-            <AppCard hover variant="green">
-              <h3 className="text-xl font-bold mb-4">
-                📍 Office Information
-              </h3>
+        <section style={cardStyle}>
+          <h2 style={formTitleStyle}>📩 Inquiry Form</h2>
 
-              <div className="space-y-4 text-sm text-gray-600">
-                <div>
-                  <p className="font-semibold text-gray-900">
-                    NamLogix Africa
-                  </p>
-                  <p>Windhoek, Namibia</p>
-                </div>
+          <p style={formDescStyle}>
+            Fill in your details and message. The inquiry will be saved inside
+            Supabase.
+          </p>
 
-                <div>
-                  <p className="font-semibold text-gray-900">Phone</p>
-                  <p>+264 XX XXX XXXX</p>
-                </div>
+          <form onSubmit={handleSubmit} style={formGridStyle}>
+            <input
+              type="text"
+              placeholder="Your Name *"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              style={inputStyle}
+            />
 
-                <div>
-                  <p className="font-semibold text-gray-900">Email</p>
-                  <p>support@namlogixafrica.com</p>
-                </div>
-              </div>
-            </AppCard>
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              style={inputStyle}
+            />
 
-            <AppCard hover variant="orange">
-              <h3 className="text-xl font-bold mb-4">
-                🚛 Logistics Services
-              </h3>
+            <input
+              type="text"
+              placeholder="Phone Number"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              style={inputStyle}
+            />
 
-              <ul className="space-y-3 text-sm text-gray-600">
-                <li>• Cargo transport coordination</li>
-                <li>• Warehouse partnerships</li>
-                <li>• Supplier onboarding</li>
-                <li>• Inventory management</li>
-                <li>• Trade route support</li>
-                <li>• Marketplace operations</li>
-              </ul>
-            </AppCard>
+            <input
+              type="text"
+              placeholder="Subject"
+              value={form.subject}
+              onChange={(e) => setForm({ ...form, subject: e.target.value })}
+              style={inputStyle}
+            />
 
-            <AppCard hover variant="default">
-              <h3 className="text-xl font-bold mb-4">
-                ⚡ Quick Navigation
-              </h3>
+            <textarea
+              placeholder="Message *"
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              style={textareaStyle}
+            />
 
-              <div className="space-y-3">
-                <Button href="/request-cargo" variant="primary" fullWidth>
-                  📦 Post Cargo
-                </Button>
-
-                <Button href="/cargo-requests" variant="secondary" fullWidth>
-                  🚚 Cargo Requests
-                </Button>
-
-                <Button href="/warehouses" variant="outline" fullWidth>
-                  🏭 Warehouses
-                </Button>
-
-                <Button href="/store" variant="outline" fullWidth>
-                  🛒 Marketplace
-                </Button>
-              </div>
-            </AppCard>
-          </div>
-        </div>
+            <button type="submit" disabled={saving} style={submitButtonStyle}>
+              {saving ? "Sending Inquiry..." : "Send Inquiry"}
+            </button>
+          </form>
+        </section>
       </div>
     </div>
   );
 }
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "#f6f8fc",
+  padding: "40px 24px",
+};
+
+const containerStyle = {
+  maxWidth: 1000,
+  margin: "0 auto",
+};
+
+const heroStyle = {
+  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
+  color: "white",
+  borderRadius: 28,
+  padding: 36,
+  marginBottom: 24,
+  boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
+};
+
+const badgeStyle = {
+  color: "#fed7aa",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: 0,
+};
+
+const titleStyle = {
+  fontSize: 42,
+  fontWeight: 900,
+  margin: "10px 0",
+};
+
+const descStyle = {
+  maxWidth: 720,
+  lineHeight: 1.7,
+  color: "rgba(255,255,255,0.85)",
+};
+
+const buttonRowStyle = {
+  display: "flex",
+  gap: 12,
+  flexWrap: "wrap",
+  marginTop: 24,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 28,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.10)",
+};
+
+const formTitleStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const formDescStyle = {
+  color: "#64748b",
+  marginTop: 8,
+  marginBottom: 0,
+};
+
+const formGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gap: 16,
+  marginTop: 24,
+};
+
+const inputStyle = {
+  width: "100%",
+  border: "1px solid #d1d5db",
+  borderRadius: 14,
+  padding: "14px 15px",
+  fontSize: 15,
+  background: "#f8fafc",
+  outline: "none",
+};
+
+const textareaStyle = {
+  ...inputStyle,
+  gridColumn: "1 / -1",
+  minHeight: 160,
+  resize: "vertical",
+};
+
+const buttonBlue = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonWhite = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const buttonOrange = {
+  background: "#f97316",
+  color: "white",
+  padding: "12px 18px",
+  borderRadius: 14,
+  fontWeight: 800,
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const submitButtonStyle = {
+  ...buttonOrange,
+  border: "none",
+  cursor: "pointer",
+  gridColumn: "1 / -1",
+  fontSize: 16,
+};
