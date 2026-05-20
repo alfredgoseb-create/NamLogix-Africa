@@ -21,6 +21,7 @@ export default function Navbar() {
     { label: "Transport", href: "/transport" },
     { label: "Aviation", href: "/aviation" },
     { label: "Store", href: "/store" },
+    { label: "Bookings", href: "/admin/bookings" },
     { label: "Contact", href: "/contact" },
   ];
 
