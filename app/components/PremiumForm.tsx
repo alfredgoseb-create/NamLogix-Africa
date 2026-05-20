@@ -1,59 +1,26 @@
+"use client";
+
 import { CSSProperties, ReactNode } from "react";
 
-export function PremiumInput({
-  type = "text",
-  placeholder,
-  value,
-  onChange,
-}: {
-  type?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: any) => void;
-}) {
-  return (
-    <input
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      style={inputStyle}
-    />
-  );
+export function PremiumInput(props: any) {
+  return <input {...props} style={{ ...inputStyle, ...props.style }} />;
+}
+
+export function PremiumTextarea(props: any) {
+  return <textarea {...props} style={{ ...textareaStyle, ...props.style }} />;
 }
 
 export function PremiumSelect({
-  value,
-  onChange,
   children,
+  ...props
 }: {
-  value?: string;
-  onChange?: (e: any) => void;
   children: ReactNode;
+  [key: string]: any;
 }) {
   return (
-    <select value={value} onChange={onChange} style={inputStyle}>
+    <select {...props} style={{ ...inputStyle, ...props.style }}>
       {children}
     </select>
-  );
-}
-
-export function PremiumTextarea({
-  placeholder,
-  value,
-  onChange,
-}: {
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: any) => void;
-}) {
-  return (
-    <textarea
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      style={textareaStyle}
-    />
   );
 }
 
@@ -65,7 +32,15 @@ export function PremiumSubmitButton({
   disabled?: boolean;
 }) {
   return (
-    <button type="submit" disabled={disabled} style={submitButtonStyle}>
+    <button
+      type="submit"
+      disabled={disabled}
+      style={{
+        ...submitButtonStyle,
+        opacity: disabled ? 0.7 : 1,
+        cursor: disabled ? "not-allowed" : "pointer",
+      }}
+    >
       {children}
     </button>
   );
@@ -73,36 +48,38 @@ export function PremiumSubmitButton({
 
 export const formGridStyle: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
   gap: 16,
   marginTop: 24,
 };
 
 const inputStyle: CSSProperties = {
   width: "100%",
-  border: "1px solid #d1d5db",
-  borderRadius: 14,
-  padding: "14px 15px",
-  fontSize: 15,
+  padding: "15px 16px",
+  borderRadius: 16,
+  border: "1px solid #cbd5e1",
   background: "#f8fafc",
+  color: "#0f172a",
+  fontSize: 15,
   outline: "none",
+  boxSizing: "border-box",
 };
 
 const textareaStyle: CSSProperties = {
   ...inputStyle,
-  gridColumn: "1 / -1",
-  minHeight: 160,
+  minHeight: 130,
   resize: "vertical",
+  gridColumn: "1 / -1",
 };
 
 const submitButtonStyle: CSSProperties = {
-  background: "#f97316",
-  color: "white",
-  padding: "14px 18px",
-  borderRadius: 14,
-  fontWeight: 900,
-  border: "none",
-  cursor: "pointer",
   gridColumn: "1 / -1",
+  background: "linear-gradient(135deg, #1d4ed8, #f97316)",
+  color: "white",
+  border: "none",
+  padding: "16px 20px",
+  borderRadius: 18,
+  fontWeight: 900,
   fontSize: 16,
+  boxShadow: "0 14px 28px rgba(29,78,216,0.25)",
 };

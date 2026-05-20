@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Navbar() {
@@ -46,9 +46,11 @@ export default function Navbar() {
           <Link href="/login" style={loginStyle}>
             Login
           </Link>
+
           <Link href="/register" style={registerStyle}>
             Register
           </Link>
+
           <button onClick={handleLogout} style={logoutStyle}>
             Logout
           </button>
@@ -89,7 +91,7 @@ export default function Navbar() {
   );
 }
 
-const headerStyle = {
+const headerStyle: CSSProperties = {
   position: "sticky",
   top: 0,
   zIndex: 50,
@@ -98,7 +100,7 @@ const headerStyle = {
   borderBottom: "1px solid #e5e7eb",
 };
 
-const navStyle = {
+const navStyle: CSSProperties = {
   maxWidth: 1200,
   margin: "0 auto",
   padding: "14px 24px",
@@ -108,7 +110,7 @@ const navStyle = {
   gap: 20,
 };
 
-const brandStyle = {
+const brandStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 10,
@@ -117,7 +119,7 @@ const brandStyle = {
   fontSize: 18,
 };
 
-const logoStyle = {
+const logoStyle: CSSProperties = {
   width: 42,
   height: 42,
   borderRadius: 14,
@@ -128,40 +130,40 @@ const logoStyle = {
   fontWeight: 900,
 };
 
-const smallStyle = {
+const smallStyle: CSSProperties = {
   display: "block",
   color: "#64748b",
   fontSize: 12,
   marginTop: -2,
 };
 
-const desktopLinksStyle = {
+const desktopLinksStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 16,
   flexWrap: "wrap",
 };
 
-const linkStyle = {
+const linkStyle: CSSProperties = {
   color: "#334155",
   textDecoration: "none",
   fontWeight: 700,
   fontSize: 14,
 };
 
-const desktopActionsStyle = {
+const desktopActionsStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 10,
 };
 
-const loginStyle = {
+const loginStyle: CSSProperties = {
   color: "#1d4ed8",
   textDecoration: "none",
   fontWeight: 800,
 };
 
-const registerStyle = {
+const registerStyle: CSSProperties = {
   background: "#1d4ed8",
   color: "white",
   padding: "10px 14px",
@@ -170,7 +172,7 @@ const registerStyle = {
   fontWeight: 800,
 };
 
-const logoutStyle = {
+const logoutStyle: CSSProperties = {
   background: "#f97316",
   color: "white",
   border: "none",
@@ -180,7 +182,7 @@ const logoutStyle = {
   cursor: "pointer",
 };
 
-const menuButtonStyle = {
+const menuButtonStyle: CSSProperties = {
   display: "none",
   background: "#0f172a",
   color: "white",
@@ -191,7 +193,7 @@ const menuButtonStyle = {
   cursor: "pointer",
 };
 
-const mobileMenuStyle = {
+const mobileMenuStyle: CSSProperties = {
   display: "grid",
   gap: 10,
   padding: "16px 24px 22px",
@@ -199,7 +201,7 @@ const mobileMenuStyle = {
   background: "white",
 };
 
-const mobileLinkStyle = {
+const mobileLinkStyle: CSSProperties = {
   color: "#0f172a",
   textDecoration: "none",
   fontWeight: 800,
@@ -208,18 +210,18 @@ const mobileLinkStyle = {
   background: "#f8fafc",
 };
 
-const mobileLoginStyle = {
+const mobileLoginStyle: CSSProperties = {
   ...mobileLinkStyle,
   color: "#1d4ed8",
 };
 
-const mobileRegisterStyle = {
+const mobileRegisterStyle: CSSProperties = {
   ...mobileLinkStyle,
   background: "#1d4ed8",
   color: "white",
 };
 
-const mobileLogoutStyle = {
+const mobileLogoutStyle: CSSProperties = {
   background: "#f97316",
   color: "white",
   border: "none",
