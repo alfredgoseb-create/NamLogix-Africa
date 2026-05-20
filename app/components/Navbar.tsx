@@ -18,10 +18,10 @@ export default function Navbar() {
     { label: "Post Cargo", href: "/request-cargo" },
     { label: "Trips", href: "/trip-offers" },
     { label: "Create Trip", href: "/create-trip" },
+    { label: "Bookings", href: "/admin/bookings" },
     { label: "Transport", href: "/transport" },
     { label: "Aviation", href: "/aviation" },
     { label: "Store", href: "/store" },
-    { label: "Bookings", href: "/admin/bookings" },
     { label: "Contact", href: "/contact" },
   ];
 
@@ -111,7 +111,7 @@ const headerStyle: CSSProperties = {
 };
 
 const navStyle: CSSProperties = {
-  maxWidth: 1320,
+  maxWidth: 1400,
   margin: "0 auto",
   padding: "14px 24px",
   display: "flex",
@@ -152,7 +152,7 @@ const desktopLinksStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  gap: 14,
+  gap: 12,
   flexWrap: "wrap",
 };
 
@@ -160,7 +160,7 @@ const linkStyle: CSSProperties = {
   color: "#334155",
   textDecoration: "none",
   fontWeight: 800,
-  fontSize: 14,
+  fontSize: 13,
 };
 
 const desktopActionsStyle: CSSProperties = {
