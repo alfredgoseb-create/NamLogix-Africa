@@ -40,9 +40,15 @@ export default function RequestCargoPage() {
 
     const { error } = await supabase.from("cargo_requests").insert([
       {
-        ...form,
+        pickup_location: form.pickup_location,
+        delivery_location: form.delivery_location,
+        cargo_type: form.cargo_type,
         weight_kg: Number(form.weight_kg) || 0,
         budget: Number(form.budget) || 0,
+        contact_name: form.contact_name,
+        contact_phone: form.contact_phone,
+        contact_email: form.contact_email,
+        description: form.description,
         status: "pending",
       },
     ]);
@@ -86,7 +92,7 @@ export default function RequestCargoPage() {
 
         <p style={formDescStyle}>
           Fill in the cargo details below. Your request will be saved in
-          NamLogix and can be used for transport bidding.
+          NamLogix and can later be used for transporter bidding.
         </p>
 
         <form onSubmit={handleSubmit} style={formGridStyle}>
