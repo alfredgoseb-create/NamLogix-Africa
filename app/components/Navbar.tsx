@@ -16,8 +16,8 @@ export default function Navbar() {
     { label: "Home", href: "/" },
     { label: "Cargo", href: "/cargo-requests" },
     { label: "Post Cargo", href: "/request-cargo" },
-    { label: "Create Trip", href: "/create-trip" },
     { label: "Trips", href: "/trip-offers" },
+    { label: "Create Trip", href: "/create-trip" },
     { label: "Transport", href: "/transport" },
     { label: "Aviation", href: "/aviation" },
     { label: "Store", href: "/store" },
@@ -75,11 +75,19 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <Link href="/login" style={mobileLoginStyle}>
+          <Link
+            href="/login"
+            style={mobileLoginStyle}
+            onClick={() => setOpen(false)}
+          >
             Login
           </Link>
 
-          <Link href="/register" style={mobileRegisterStyle}>
+          <Link
+            href="/register"
+            style={mobileRegisterStyle}
+            onClick={() => setOpen(false)}
+          >
             Register
           </Link>
 
@@ -102,13 +110,13 @@ const headerStyle: CSSProperties = {
 };
 
 const navStyle: CSSProperties = {
-  maxWidth: 1200,
+  maxWidth: 1320,
   margin: "0 auto",
   padding: "14px 24px",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: 20,
+  gap: 18,
 };
 
 const brandStyle: CSSProperties = {
@@ -118,6 +126,7 @@ const brandStyle: CSSProperties = {
   color: "#0f172a",
   textDecoration: "none",
   fontSize: 18,
+  flexShrink: 0,
 };
 
 const logoStyle: CSSProperties = {
@@ -141,14 +150,15 @@ const smallStyle: CSSProperties = {
 const desktopLinksStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
-  gap: 16,
+  justifyContent: "center",
+  gap: 14,
   flexWrap: "wrap",
 };
 
 const linkStyle: CSSProperties = {
   color: "#334155",
   textDecoration: "none",
-  fontWeight: 700,
+  fontWeight: 800,
   fontSize: 14,
 };
 
@@ -156,12 +166,13 @@ const desktopActionsStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 10,
+  flexShrink: 0,
 };
 
 const loginStyle: CSSProperties = {
   color: "#1d4ed8",
   textDecoration: "none",
-  fontWeight: 800,
+  fontWeight: 900,
 };
 
 const registerStyle: CSSProperties = {
@@ -170,7 +181,7 @@ const registerStyle: CSSProperties = {
   padding: "10px 14px",
   borderRadius: 12,
   textDecoration: "none",
-  fontWeight: 800,
+  fontWeight: 900,
 };
 
 const logoutStyle: CSSProperties = {
@@ -179,7 +190,7 @@ const logoutStyle: CSSProperties = {
   border: "none",
   padding: "10px 14px",
   borderRadius: 12,
-  fontWeight: 800,
+  fontWeight: 900,
   cursor: "pointer",
 };
 
