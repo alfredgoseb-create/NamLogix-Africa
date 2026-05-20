@@ -3,6 +3,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import PremiumPageShell from "@/app/components/PremiumPageShell";
+import PremiumCard from "@/app/components/PremiumCard";
+import {
+  PremiumInput,
+  PremiumSubmitButton,
+  formGridStyle,
+} from "@/app/components/PremiumForm";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
@@ -36,128 +43,54 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={pageStyle}>
-      <div style={containerStyle}>
-        <section style={heroStyle}>
-          <p style={badgeStyle}>NAMLOGIX ACCESS</p>
+    <PremiumPageShell
+      badge="NAMLOGIX ACCESS"
+      title="Login"
+      description="Access your NamLogix Africa dashboard to manage cargo, products, warehouses, transport bookings, drivers, and inquiries."
+      actions={[
+        { label: "Home", href: "/", variant: "white" },
+        { label: "Store", href: "/store", variant: "blue" },
+        { label: "Contact Support", href: "/contact", variant: "orange" },
+      ]}
+    >
+      <PremiumCard>
+        <h2 style={formTitleStyle}>🔐 Sign in to your account</h2>
 
-          <h1 style={titleStyle}>Login</h1>
+        <p style={formDescStyle}>
+          Enter your email and password to continue to the NamLogix control
+          center.
+        </p>
 
-          <p style={descStyle}>
-            Access your NamLogix Africa dashboard to manage cargo, products,
-            warehouses, transport bookings, drivers, and inquiries.
-          </p>
+        <form onSubmit={handleLogin} style={formGridStyle}>
+          <PremiumInput
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          <div style={buttonRowStyle}>
-            <Link href="/" style={buttonWhite}>
-              Home
-            </Link>
+          <PremiumInput
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-            <Link href="/store" style={buttonBlue}>
-              Store
-            </Link>
+          <PremiumSubmitButton disabled={saving}>
+            {saving ? "Signing in..." : "Login"}
+          </PremiumSubmitButton>
+        </form>
 
-            <Link href="/contact" style={buttonOrange}>
-              Contact Support
-            </Link>
-          </div>
-        </section>
-
-        <section style={cardStyle}>
-          <h2 style={formTitleStyle}>🔐 Sign in to your account</h2>
-
-          <p style={formDescStyle}>
-            Enter your email and password to continue to the NamLogix control
-            center.
-          </p>
-
-          <form onSubmit={handleLogin} style={formGridStyle}>
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={inputStyle}
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={inputStyle}
-            />
-
-            <button type="submit" disabled={saving} style={submitButtonStyle}>
-              {saving ? "Signing in..." : "Login"}
-            </button>
-          </form>
-
-          <p style={bottomTextStyle}>
-            No account yet?{" "}
-            <Link href="/register" style={inlineLinkStyle}>
-              Create account
-            </Link>
-          </p>
-        </section>
-      </div>
-    </div>
+        <p style={bottomTextStyle}>
+          No account yet?{" "}
+          <Link href="/register" style={inlineLinkStyle}>
+            Create account
+          </Link>
+        </p>
+      </PremiumCard>
+    </PremiumPageShell>
   );
 }
-
-const pageStyle = {
-  minHeight: "100vh",
-  background: "#f6f8fc",
-  padding: "40px 24px",
-};
-
-const containerStyle = {
-  maxWidth: 900,
-  margin: "0 auto",
-};
-
-const heroStyle = {
-  background: "linear-gradient(135deg, #0b1220, #1e3a8a, #f97316)",
-  color: "white",
-  borderRadius: 28,
-  padding: 36,
-  marginBottom: 24,
-  boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
-};
-
-const badgeStyle = {
-  color: "#fed7aa",
-  fontWeight: 900,
-  letterSpacing: 1,
-  margin: 0,
-};
-
-const titleStyle = {
-  fontSize: 42,
-  fontWeight: 900,
-  margin: "10px 0",
-};
-
-const descStyle = {
-  maxWidth: 720,
-  lineHeight: 1.7,
-  color: "rgba(255,255,255,0.85)",
-};
-
-const buttonRowStyle = {
-  display: "flex",
-  gap: 12,
-  flexWrap: "wrap",
-  marginTop: 24,
-};
-
-const cardStyle = {
-  background: "white",
-  borderRadius: 24,
-  padding: 28,
-  border: "1px solid #e5e7eb",
-  boxShadow: "0 12px 30px rgba(15,23,42,0.10)",
-};
 
 const formTitleStyle = {
   fontSize: 30,
@@ -172,33 +105,6 @@ const formDescStyle = {
   marginBottom: 0,
 };
 
-const formGridStyle = {
-  display: "grid",
-  gap: 16,
-  marginTop: 24,
-};
-
-const inputStyle = {
-  width: "100%",
-  border: "1px solid #d1d5db",
-  borderRadius: 14,
-  padding: "14px 15px",
-  fontSize: 15,
-  background: "#f8fafc",
-  outline: "none",
-};
-
-const submitButtonStyle = {
-  background: "#f97316",
-  color: "white",
-  padding: "14px 18px",
-  borderRadius: 14,
-  fontWeight: 900,
-  border: "none",
-  cursor: "pointer",
-  fontSize: 16,
-};
-
 const bottomTextStyle = {
   color: "#64748b",
   marginTop: 18,
@@ -208,34 +114,4 @@ const inlineLinkStyle = {
   color: "#1d4ed8",
   fontWeight: 900,
   textDecoration: "none",
-};
-
-const buttonBlue = {
-  background: "#1d4ed8",
-  color: "white",
-  padding: "12px 18px",
-  borderRadius: 14,
-  fontWeight: 800,
-  textDecoration: "none",
-  display: "inline-block",
-};
-
-const buttonWhite = {
-  background: "white",
-  color: "#1d4ed8",
-  padding: "12px 18px",
-  borderRadius: 14,
-  fontWeight: 800,
-  textDecoration: "none",
-  display: "inline-block",
-};
-
-const buttonOrange = {
-  background: "#f97316",
-  color: "white",
-  padding: "12px 18px",
-  borderRadius: 14,
-  fontWeight: 800,
-  textDecoration: "none",
-  display: "inline-block",
 };
