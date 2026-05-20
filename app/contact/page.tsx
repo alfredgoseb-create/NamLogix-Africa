@@ -6,6 +6,7 @@ import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumCard from "@/app/components/PremiumCard";
 import {
   PremiumInput,
+  PremiumSelect,
   PremiumTextarea,
   PremiumSubmitButton,
   formGridStyle,
@@ -16,7 +17,7 @@ const emptyForm = {
   name: "",
   email: "",
   phone: "",
-  subject: "",
+  inquiry_type: "general",
   message: "",
 };
 
@@ -36,12 +37,8 @@ export default function ContactPage() {
 
     const { error } = await supabase.from("inquiries").insert([
       {
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        subject: form.subject,
-        message: form.message,
-        status: "open",
+        ...form,
+        status: "new",
       },
     ]);
 
@@ -58,38 +55,26 @@ export default function ContactPage() {
 
   return (
     <PremiumPageShell
-      badge="CONTACT NAMLOGIX"
-      title="Send Inquiry"
-      description="Contact NamLogix Africa about products, cargo, transport, suppliers, warehouses, aviation, or trade routes."
+      badge="NAMLOGIX SUPPORT"
+      title="Contact NamLogix Africa"
+      description="Send inquiries about cargo, transport, aviation, warehouse products, suppliers, partnerships, support, and platform onboarding."
       actions={[
-        {
-          label: "Marketplace",
-          href: "/store",
-          variant: "blue",
-        },
-        {
-          label: "Companies",
-          href: "/companies",
-          variant: "white",
-        },
-        {
-          label: "Post Cargo",
-          href: "/request-cargo",
-          variant: "orange",
-        },
+        { label: "Post Cargo", href: "/request-cargo", variant: "blue" },
+        { label: "Book Transport", href: "/transport", variant: "orange" },
+        { label: "Back Home", href: "/", variant: "white" },
       ]}
     >
       <PremiumCard>
-        <h2 style={formTitleStyle}>📩 Inquiry Form</h2>
+        <h2 style={formTitleStyle}>📩 Send Inquiry</h2>
 
         <p style={formDescStyle}>
-          Fill in your details and message. The inquiry will be saved inside
-          Supabase.
+          Use this form for customer support, supplier onboarding, aviation
+          requests, warehouse listings, cargo help, or partnership discussions.
         </p>
 
         <form onSubmit={handleSubmit} style={formGridStyle}>
           <PremiumInput
-            placeholder="Your Name *"
+            placeholder="Full Name *"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
@@ -107,20 +92,29 @@ export default function ContactPage() {
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
 
-          <PremiumInput
-            placeholder="Subject"
-            value={form.subject}
-            onChange={(e) => setForm({ ...form, subject: e.target.value })}
-          />
+          <PremiumSelect
+            value={form.inquiry_type}
+            onChange={(e) =>
+              setForm({ ...form, inquiry_type: e.target.value })
+            }
+          >
+            <option value="general">General Inquiry</option>
+            <option value="cargo">Cargo / Logistics</option>
+            <option value="transport">Transport Booking</option>
+            <option value="aviation">Aviation Service</option>
+            <option value="warehouse">Warehouse / Store</option>
+            <option value="supplier">Supplier Onboarding</option>
+            <option value="partnership">Partnership</option>
+          </PremiumSelect>
 
           <PremiumTextarea
-            placeholder="Message *"
+            placeholder="Write your message here *"
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
 
           <PremiumSubmitButton disabled={saving}>
-            {saving ? "Sending Inquiry..." : "Send Inquiry"}
+            {saving ? "Sending..." : "Send Inquiry"}
           </PremiumSubmitButton>
         </form>
       </PremiumCard>
