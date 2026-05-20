@@ -56,12 +56,14 @@ export default async function TripOffersPage() {
       {!error && (!trips || trips.length === 0) && (
         <PremiumCard>
           <h2 style={emptyTitleStyle}>No active trip offers yet</h2>
+
           <p style={emptyTextStyle}>
             Trip offers will appear here when drivers or logistics providers
             add available routes.
           </p>
-          <Link href="/transport" style={buttonStyle}>
-            Request Transport
+
+          <Link href="/create-trip" style={buttonStyle}>
+            Create First Trip Offer
           </Link>
         </PremiumCard>
       )}
@@ -70,7 +72,9 @@ export default async function TripOffersPage() {
         <section style={gridStyle}>
           {trips.map((trip) => (
             <PremiumCard key={trip.id}>
-              <p style={badgeStyle}>{trip.offer_number || "TRIP OFFER"}</p>
+              <p style={badgeStyle}>
+                {trip.offer_number || "TRIP OFFER"}
+              </p>
 
               <h2 style={cardTitleStyle}>
                 {trip.origin} → {trip.destination}
@@ -95,9 +99,13 @@ export default async function TripOffersPage() {
                     ? `NAD ${trip.price_per_seat}`
                     : "Contact for price"}
                 </p>
+
+                <p>
+                  <strong>Status:</strong> {trip.status}
+                </p>
               </div>
 
-              <Link href="/transport" style={buttonStyle}>
+              <Link href="/book-trip" style={buttonStyle}>
                 Book This Trip
               </Link>
             </PremiumCard>
