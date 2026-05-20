@@ -21,9 +21,21 @@ export default async function CargoRequestsPage() {
       title="Cargo Requests"
       description="Browse active cargo requests from customers, businesses, warehouses, and traders looking for transport and logistics support."
       actions={[
-        { label: "Post Cargo Request", href: "/request-cargo", variant: "orange" },
-        { label: "Available Trips", href: "/trip-offers", variant: "blue" },
-        { label: "Back Home", href: "/", variant: "white" },
+        {
+          label: "Post Cargo Request",
+          href: "/request-cargo",
+          variant: "orange",
+        },
+        {
+          label: "Available Trips",
+          href: "/trip-offers",
+          variant: "blue",
+        },
+        {
+          label: "Back Home",
+          href: "/",
+          variant: "white",
+        },
       ]}
     >
       <PremiumStats
@@ -56,10 +68,12 @@ export default async function CargoRequestsPage() {
       {!error && (!requests || requests.length === 0) && (
         <PremiumCard>
           <h2 style={emptyTitleStyle}>No pending cargo requests yet</h2>
+
           <p style={emptyTextStyle}>
             Cargo requests will appear here when customers or businesses post
             shipments that need transport.
           </p>
+
           <Link href="/request-cargo" style={buttonStyle}>
             Post First Cargo Request
           </Link>
@@ -86,12 +100,16 @@ export default async function CargoRequestsPage() {
 
                 <p>
                   <strong>Weight:</strong>{" "}
-                  {request.weight_kg ? `${request.weight_kg} KG` : "Not specified"}
+                  {request.weight_kg
+                    ? `${request.weight_kg} KG`
+                    : "Not specified"}
                 </p>
 
                 <p>
                   <strong>Budget:</strong>{" "}
-                  {request.budget ? `NAD ${request.budget}` : "Contact for price"}
+                  {request.budget
+                    ? `NAD ${request.budget}`
+                    : "Contact for price"}
                 </p>
 
                 <p>
