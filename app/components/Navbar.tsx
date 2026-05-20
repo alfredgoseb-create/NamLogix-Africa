@@ -19,10 +19,10 @@ export default function Navbar() {
     { label: "Trips", href: "/trip-offers" },
     { label: "Create Trip", href: "/create-trip" },
     { label: "Bookings", href: "/admin/bookings" },
+    { label: "Inquiries", href: "/admin/inquiries" },
     { label: "Transport", href: "/transport" },
     { label: "Aviation", href: "/aviation" },
     { label: "Store", href: "/store" },
-    { label: "Inquiries", href: "/admin/inquiries" },
     { label: "Contact", href: "/contact" },
   ];
 
@@ -77,11 +77,7 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <Link
-            href="/login"
-            style={mobileLoginStyle}
-            onClick={() => setOpen(false)}
-          >
+          <Link href="/login" style={mobileLoginStyle} onClick={() => setOpen(false)}>
             Login
           </Link>
 
@@ -112,13 +108,13 @@ const headerStyle: CSSProperties = {
 };
 
 const navStyle: CSSProperties = {
-  maxWidth: 1400,
+  maxWidth: 1500,
   margin: "0 auto",
-  padding: "14px 24px",
+  padding: "14px 20px",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: 18,
+  gap: 14,
 };
 
 const brandStyle: CSSProperties = {
@@ -153,7 +149,7 @@ const desktopLinksStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  gap: 12,
+  gap: 10,
   flexWrap: "wrap",
 };
 
@@ -161,13 +157,13 @@ const linkStyle: CSSProperties = {
   color: "#334155",
   textDecoration: "none",
   fontWeight: 800,
-  fontSize: 13,
+  fontSize: 12,
 };
 
 const desktopActionsStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
-  gap: 10,
+  gap: 8,
   flexShrink: 0,
 };
 
@@ -175,25 +171,28 @@ const loginStyle: CSSProperties = {
   color: "#1d4ed8",
   textDecoration: "none",
   fontWeight: 900,
+  fontSize: 13,
 };
 
 const registerStyle: CSSProperties = {
   background: "#1d4ed8",
   color: "white",
-  padding: "10px 14px",
+  padding: "9px 12px",
   borderRadius: 12,
   textDecoration: "none",
   fontWeight: 900,
+  fontSize: 13,
 };
 
 const logoutStyle: CSSProperties = {
   background: "#f97316",
   color: "white",
   border: "none",
-  padding: "10px 14px",
+  padding: "9px 12px",
   borderRadius: 12,
   fontWeight: 900,
   cursor: "pointer",
+  fontSize: 13,
 };
 
 const menuButtonStyle: CSSProperties = {
