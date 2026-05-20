@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { CSSProperties } from "react";
+import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Navbar() {
+  const [open, setOpen] = useState(false);
+
   async function handleLogout() {
     await supabase.auth.signOut();
     window.location.href = "/login";
@@ -12,103 +14,217 @@ export default function Navbar() {
 
   const links = [
     { label: "Home", href: "/" },
-    { label: "Store", href: "/store" },
-    { label: "Suppliers", href: "/admin/suppliers" },
-    { label: "Companies", href: "/companies" },
-    { label: "Post Cargo", href: "/request-cargo" },
     { label: "Cargo", href: "/cargo-requests" },
-    { label: "Routes", href: "/trade-routes" },
-    { label: "Aviation", href: "/aviation" },
-    { label: "Warehouses", href: "/warehouses" },
+    { label: "Post Cargo", href: "/request-cargo" },
+    { label: "Trips", href: "/trip-offers" },
     { label: "Transport", href: "/transport" },
+    { label: "Aviation", href: "/aviation" },
+    { label: "Store", href: "/store" },
     { label: "Contact", href: "/contact" },
-    { label: "Register", href: "/register" },
-    { label: "Profile", href: "/profile" },
-    { label: "Admin", href: "/admin/dashboard" },
-    { label: "Admin Transport", href: "/admin/transport" },
-    { label: "Drivers", href: "/admin/drivers" },
-    { label: "Admin Warehouses", href: "/admin/warehouses" },
-    { label: "Inquiries", href: "/admin/inquiries" },
   ];
 
   return (
     <header style={headerStyle}>
       <nav style={navStyle}>
         <Link href="/" style={brandStyle}>
-          NamLogix <span style={brandAccentStyle}>AFRICA</span>
+          <span style={logoStyle}>NL</span>
+          <span>
+            <strong>NamLogix</strong>
+            <small style={smallStyle}>Africa</small>
+          </span>
         </Link>
 
-        <div style={linksWrapStyle}>
+        <div style={desktopLinksStyle}>
           {links.map((link) => (
-            <Link key={link.href} href={link.href} style={navLinkStyle}>
+            <Link key={link.href} href={link.href} style={linkStyle}>
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        <div style={desktopActionsStyle}>
+          <Link href="/login" style={loginStyle}>
+            Login
+          </Link>
+          <Link href="/register" style={registerStyle}>
+            Register
+          </Link>
+          <button onClick={handleLogout} style={logoutStyle}>
+            Logout
+          </button>
+        </div>
+
+        <button onClick={() => setOpen(!open)} style={menuButtonStyle}>
+          {open ? "✕" : "☰"}
+        </button>
+      </nav>
+
+      {open && (
+        <div style={mobileMenuStyle}>
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              style={mobileLinkStyle}
+              onClick={() => setOpen(false)}
+            >
               {link.label}
             </Link>
           ))}
 
-          <button onClick={handleLogout} style={logoutButtonStyle}>
+          <Link href="/login" style={mobileLoginStyle}>
+            Login
+          </Link>
+
+          <Link href="/register" style={mobileRegisterStyle}>
+            Register
+          </Link>
+
+          <button onClick={handleLogout} style={mobileLogoutStyle}>
             Logout
           </button>
         </div>
-      </nav>
+      )}
     </header>
   );
 }
 
-const headerStyle: CSSProperties = {
+const headerStyle = {
   position: "sticky",
   top: 0,
   zIndex: 50,
-  background: "#0b1220",
-  borderBottom: "1px solid #1e3a8a",
-  boxShadow: "0 8px 20px rgba(15,23,42,0.25)",
+  background: "rgba(255,255,255,0.94)",
+  backdropFilter: "blur(14px)",
+  borderBottom: "1px solid #e5e7eb",
 };
 
-const navStyle: CSSProperties = {
+const navStyle = {
   maxWidth: 1200,
   margin: "0 auto",
-  padding: "12px 24px",
+  padding: "14px 24px",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  gap: 20,
+};
+
+const brandStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+  color: "#0f172a",
+  textDecoration: "none",
+  fontSize: 18,
+};
+
+const logoStyle = {
+  width: 42,
+  height: 42,
+  borderRadius: 14,
+  background: "linear-gradient(135deg, #1d4ed8, #f97316)",
+  color: "white",
+  display: "grid",
+  placeItems: "center",
+  fontWeight: 900,
+};
+
+const smallStyle = {
+  display: "block",
+  color: "#64748b",
+  fontSize: 12,
+  marginTop: -2,
+};
+
+const desktopLinksStyle = {
+  display: "flex",
+  alignItems: "center",
   gap: 16,
   flexWrap: "wrap",
 };
 
-const brandStyle: CSSProperties = {
-  color: "white",
-  fontWeight: 900,
-  fontSize: 22,
+const linkStyle = {
+  color: "#334155",
   textDecoration: "none",
-  whiteSpace: "nowrap",
+  fontWeight: 700,
+  fontSize: 14,
 };
 
-const brandAccentStyle: CSSProperties = {
-  color: "#fb923c",
-};
-
-const linksWrapStyle: CSSProperties = {
+const desktopActionsStyle = {
   display: "flex",
   alignItems: "center",
-  gap: 8,
-  flexWrap: "wrap",
-  justifyContent: "flex-end",
+  gap: 10,
 };
 
-const navLinkStyle: CSSProperties = {
-  color: "#e5e7eb",
+const loginStyle = {
+  color: "#1d4ed8",
   textDecoration: "none",
-  fontSize: 13,
   fontWeight: 800,
-  padding: "8px 10px",
-  borderRadius: 12,
 };
 
-const logoutButtonStyle: CSSProperties = {
+const registerStyle = {
+  background: "#1d4ed8",
+  color: "white",
+  padding: "10px 14px",
+  borderRadius: 12,
+  textDecoration: "none",
+  fontWeight: 800,
+};
+
+const logoutStyle = {
   background: "#f97316",
   color: "white",
   border: "none",
+  padding: "10px 14px",
   borderRadius: 12,
-  padding: "8px 12px",
+  fontWeight: 800,
+  cursor: "pointer",
+};
+
+const menuButtonStyle = {
+  display: "none",
+  background: "#0f172a",
+  color: "white",
+  border: "none",
+  borderRadius: 12,
+  padding: "10px 13px",
+  fontSize: 18,
+  cursor: "pointer",
+};
+
+const mobileMenuStyle = {
+  display: "grid",
+  gap: 10,
+  padding: "16px 24px 22px",
+  borderTop: "1px solid #e5e7eb",
+  background: "white",
+};
+
+const mobileLinkStyle = {
+  color: "#0f172a",
+  textDecoration: "none",
+  fontWeight: 800,
+  padding: "12px",
+  borderRadius: 12,
+  background: "#f8fafc",
+};
+
+const mobileLoginStyle = {
+  ...mobileLinkStyle,
+  color: "#1d4ed8",
+};
+
+const mobileRegisterStyle = {
+  ...mobileLinkStyle,
+  background: "#1d4ed8",
+  color: "white",
+};
+
+const mobileLogoutStyle = {
+  background: "#f97316",
+  color: "white",
+  border: "none",
+  padding: "12px",
+  borderRadius: 12,
   fontWeight: 900,
   cursor: "pointer",
 };

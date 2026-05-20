@@ -25,4 +25,13 @@ a {
     radial-gradient(circle at top right, rgba(249,115,22,0.08), transparent 30%),
     #f8fafc;
   min-height: 100vh;
+}@media (max-width: 900px) {
+  header nav > div:nth-of-type(1),
+  header nav > div:nth-of-type(2) {
+    display: none !important;
+  }
+
+  header nav > button {
+    display: block !important;
+  }
 }
