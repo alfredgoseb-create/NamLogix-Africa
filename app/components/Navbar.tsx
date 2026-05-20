@@ -16,6 +16,7 @@ export default function Navbar() {
     { label: "Home", href: "/" },
     { label: "Cargo", href: "/cargo-requests" },
     { label: "Post Cargo", href: "/request-cargo" },
+    { label: "Create Trip", href: "/create-trip" },
     { label: "Trips", href: "/trip-offers" },
     { label: "Transport", href: "/transport" },
     { label: "Aviation", href: "/aviation" },
