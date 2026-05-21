@@ -34,4 +34,13 @@ a {
   header nav > button {
     display: block !important;
   }
+  @media (max-width: 900px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .admin-sidebar {
+    display: none !important;
+  }
+}
 }

@@ -3,20 +3,14 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div style={layoutStyle}>
-      <aside style={sidebarStyle}>
+      <aside style={sidebarStyle} className="admin-sidebar">
         <div>
           <h2 style={logoStyle}>NamLogix Admin</h2>
 
-          <p style={subTextStyle}>
-            Logistics & Marketplace Control Center
-          </p>
+          <p style={subTextStyle}>Logistics & Marketplace Control Center</p>
         </div>
 
         <nav style={navStyle}>
@@ -76,8 +70,9 @@ const sidebarStyle = {
   padding: "28px 20px",
   display: "flex",
   flexDirection: "column" as const,
-  justifyContent: "space-between",
+  justifyContent: "flex-start",
   borderRight: "1px solid rgba(255,255,255,0.08)",
+  gap: 24,
 };
 
 const logoStyle = {
@@ -95,7 +90,6 @@ const subTextStyle = {
 const navStyle = {
   display: "grid",
   gap: 10,
-  marginTop: 34,
 };
 
 const linkStyle = {
