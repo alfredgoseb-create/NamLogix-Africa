@@ -4,6 +4,7 @@ import Link from "next/link";
 import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumCard from "@/app/components/PremiumCard";
 import { supabase } from "@/lib/supabaseClient";
+import BookingStatusActions from "./BookingStatusActions";
 
 export default async function BookingDetailPage({ params }) {
   const { id } = params;
@@ -18,7 +19,7 @@ export default async function BookingDetailPage({ params }) {
     <PremiumPageShell
       badge="BOOKING DETAIL"
       title="Trip Booking Details"
-      description="View full customer booking information and follow up with the customer."
+      description="View full customer booking information, confirm bookings, cancel requests, and manage trip status."
       actions={[
         { label: "All Bookings", href: "/admin/bookings", variant: "blue" },
         { label: "Trip Offers", href: "/trip-offers", variant: "orange" },
@@ -44,6 +45,7 @@ export default async function BookingDetailPage({ params }) {
             <Info label="Phone" value={booking.phone || "Not provided"} />
             <Info label="Email" value={booking.email || "Not provided"} />
             <Info label="Passengers" value={booking.passengers || 1} />
+
             <Info
               label="Created"
               value={
@@ -56,7 +58,21 @@ export default async function BookingDetailPage({ params }) {
 
           <div style={messageBoxStyle}>
             <h3 style={sectionTitleStyle}>Customer Message</h3>
-            <p style={messageStyle}>{booking.message || "No message provided."}</p>
+
+            <p style={messageStyle}>
+              {booking.message || "No message provided."}
+            </p>
+          </div>
+
+          <div style={messageBoxStyle}>
+            <h3 style={sectionTitleStyle}>Booking Actions</h3>
+
+            <p style={messageStyle}>
+              Update this booking after confirming trip availability with the
+              customer or transporter.
+            </p>
+
+            <BookingStatusActions bookingId={booking.id} />
           </div>
 
           <div style={buttonRowStyle}>
@@ -64,8 +80,8 @@ export default async function BookingDetailPage({ params }) {
               Back to Bookings
             </Link>
 
-            <Link href="/contact" style={secondaryButtonStyle}>
-              Contact Support
+            <Link href="/trip-offers" style={secondaryButtonStyle}>
+              View Trips
             </Link>
           </div>
         </PremiumCard>
