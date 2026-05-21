@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import PremiumPageShell from "@/app/components/PremiumPageShell";
-import PremiumCard from "@/app/components/PremiumCard";
 import PremiumStats from "@/app/components/PremiumStats";
+import AdminTable from "@/app/components/AdminTable";
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function AdminBookingsPage() {
@@ -15,10 +15,10 @@ export default async function AdminBookingsPage() {
     <PremiumPageShell
       badge="ADMIN BOOKINGS"
       title="Trip Booking Requests"
-      description="Manage customer booking requests, passengers, transport inquiries, and trip reservations."
+      description="Manage customer booking requests, passenger details, and transport inquiries."
       actions={[
         {
-          label: "View Trips",
+          label: "Trip Offers",
           href: "/trip-offers",
           variant: "blue",
         },
@@ -39,130 +39,102 @@ export default async function AdminBookingsPage() {
           {
             label: "Bookings",
             value: bookings?.length || 0,
-            text: "Total booking requests",
+            text: "Customer booking requests",
           },
           {
             label: "Status",
             value: "Live",
-            text: "Customer inquiries incoming",
+            text: "Real-time booking pipeline",
           },
           {
-            label: "Management",
+            label: "Operations",
             value: "Admin",
-            text: "Booking operations center",
+            text: "Transport management",
           },
         ]}
       />
 
       {error && (
-        <PremiumCard>
-          <h2 style={errorTitleStyle}>Could not load bookings</h2>
-          <p style={errorTextStyle}>{error.message}</p>
-        </PremiumCard>
+        <div style={errorBoxStyle}>
+          <h2>Could not load bookings</h2>
+          <p>{error.message}</p>
+        </div>
       )}
 
-      {!error && (!bookings || bookings.length === 0) && (
-        <PremiumCard>
-          <h2 style={emptyTitleStyle}>No bookings yet</h2>
+      {!error && bookings && (
+        <AdminTable
+          headers={[
+            "Customer",
+            "Phone",
+            "Email",
+            "Passengers",
+            "Message",
+            "Status",
+            "Created",
+          ]}
+          rows={bookings.map((booking) => (
+            <tr key={booking.id} style={rowStyle}>
+              <td style={cellStyle}>
+                {booking.customer_name || "Unknown"}
+              </td>
 
-          <p style={emptyTextStyle}>
-            Booking requests submitted by customers will appear here.
-          </p>
-        </PremiumCard>
-      )}
+              <td style={cellStyle}>
+                {booking.phone || "Not provided"}
+              </td>
 
-      {!error && bookings && bookings.length > 0 && (
-        <section style={gridStyle}>
-          {bookings.map((booking) => (
-            <PremiumCard key={booking.id}>
-              <p style={badgeStyle}>
-                {booking.status?.toUpperCase() || "PENDING"}
-              </p>
+              <td style={cellStyle}>
+                {booking.email || "Not provided"}
+              </td>
 
-              <h2 style={cardTitleStyle}>
-                {booking.customer_name || "Customer"}
-              </h2>
+              <td style={cellStyle}>
+                {booking.passengers || 1}
+              </td>
 
-              <div style={detailsStyle}>
-                <p>
-                  <strong>Phone:</strong>{" "}
-                  {booking.phone || "Not provided"}
-                </p>
+              <td style={cellStyle}>
+                {booking.message || "No message"}
+              </td>
 
-                <p>
-                  <strong>Email:</strong>{" "}
-                  {booking.email || "Not provided"}
-                </p>
+              <td style={cellStyle}>
+                <span style={statusStyle}>
+                  {booking.status || "pending"}
+                </span>
+              </td>
 
-                <p>
-                  <strong>Passengers:</strong>{" "}
-                  {booking.passengers || 1}
-                </p>
-
-                <p>
-                  <strong>Message:</strong>{" "}
-                  {booking.message || "No message"}
-                </p>
-
-                <p>
-                  <strong>Created:</strong>{" "}
-                  {booking.created_at
-                    ? new Date(booking.created_at).toLocaleString()
-                    : "Unknown"}
-                </p>
-              </div>
-            </PremiumCard>
+              <td style={cellStyle}>
+                {booking.created_at
+                  ? new Date(booking.created_at).toLocaleString()
+                  : "Unknown"}
+              </td>
+            </tr>
           ))}
-        </section>
+        />
       )}
     </PremiumPageShell>
   );
 }
 
-const gridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-  gap: 22,
+const rowStyle = {
+  borderBottom: "1px solid #f1f5f9",
 };
 
-const badgeStyle = {
-  color: "#f97316",
-  fontWeight: 900,
-  letterSpacing: 1,
-  margin: 0,
+const cellStyle = {
+  padding: "18px 20px",
+  color: "#334155",
+  fontSize: 14,
 };
 
-const cardTitleStyle = {
-  fontSize: 24,
-  fontWeight: 900,
-  color: "#0f172a",
-  margin: "10px 0 16px",
+const statusStyle = {
+  background: "#dbeafe",
+  color: "#1d4ed8",
+  padding: "6px 10px",
+  borderRadius: 999,
+  fontWeight: 800,
+  fontSize: 12,
 };
 
-const detailsStyle = {
-  color: "#475569",
-  lineHeight: 1.8,
-};
-
-const emptyTitleStyle = {
-  fontSize: 28,
-  fontWeight: 900,
-  color: "#0f172a",
-  margin: 0,
-};
-
-const emptyTextStyle = {
-  color: "#64748b",
-  lineHeight: 1.7,
-};
-
-const errorTitleStyle = {
-  fontSize: 26,
-  fontWeight: 900,
+const errorBoxStyle = {
+  background: "#fee2e2",
   color: "#991b1b",
-  margin: 0,
-};
-
-const errorTextStyle = {
-  color: "#7f1d1d",
+  padding: 24,
+  borderRadius: 20,
 };
