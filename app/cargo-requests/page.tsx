@@ -5,6 +5,7 @@ import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumCard from "@/app/components/PremiumCard";
 import PremiumStats from "@/app/components/PremiumStats";
 import AdminTable from "@/app/components/AdminTable";
+import StatusBadge from "@/app/components/StatusBadge";
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function CargoRequestsPage() {
@@ -122,7 +123,7 @@ export default async function CargoRequestsPage() {
               </td>
 
               <td style={cellStyle}>
-                <span style={statusStyle}>{request.status || "pending"}</span>
+                <StatusBadge status={request.status || "pending"} />
               </td>
 
               <td style={cellStyle}>
@@ -158,15 +159,6 @@ const cellStyle = {
 const mutedStyle = {
   color: "#64748b",
   fontSize: 13,
-};
-
-const statusStyle = {
-  background: "#ffedd5",
-  color: "#c2410c",
-  padding: "6px 10px",
-  borderRadius: 999,
-  fontWeight: 800,
-  fontSize: 12,
 };
 
 const buttonStyle = {
