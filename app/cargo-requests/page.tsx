@@ -4,6 +4,7 @@ import Link from "next/link";
 import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumCard from "@/app/components/PremiumCard";
 import PremiumStats from "@/app/components/PremiumStats";
+import AdminTable from "@/app/components/AdminTable";
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function CargoRequestsPage() {
@@ -81,87 +82,102 @@ export default async function CargoRequestsPage() {
       )}
 
       {!error && requests && requests.length > 0 && (
-        <section style={gridStyle}>
-          {requests.map((request) => (
-            <PremiumCard key={request.id}>
-              <p style={badgeStyle}>
-                {request.request_number || "CARGO REQUEST"}
-              </p>
+        <AdminTable
+          headers={[
+            "Route",
+            "Cargo Type",
+            "Weight",
+            "Budget",
+            "Status",
+            "Created",
+            "Action",
+          ]}
+          rows={requests.map((request) => (
+            <tr key={request.id} style={rowStyle}>
+              <td style={cellStyle}>
+                <strong>
+                  {request.pickup_location || "Unknown"} →{" "}
+                  {request.delivery_location || "Unknown"}
+                </strong>
+                <br />
+                <span style={mutedStyle}>
+                  {request.request_number || "Cargo Request"}
+                </span>
+              </td>
 
-              <h2 style={cardTitleStyle}>
-                {request.pickup_location} → {request.delivery_location}
-              </h2>
+              <td style={cellStyle}>
+                {request.cargo_type || "Not specified"}
+              </td>
 
-              <div style={detailsStyle}>
-                <p>
-                  <strong>Cargo Type:</strong>{" "}
-                  {request.cargo_type || "Not specified"}
-                </p>
+              <td style={cellStyle}>
+                {request.weight_kg
+                  ? `${request.weight_kg} KG`
+                  : "Not specified"}
+              </td>
 
-                <p>
-                  <strong>Weight:</strong>{" "}
-                  {request.weight_kg
-                    ? `${request.weight_kg} KG`
-                    : "Not specified"}
-                </p>
+              <td style={cellStyle}>
+                {request.budget
+                  ? `NAD ${request.budget}`
+                  : "Contact for price"}
+              </td>
 
-                <p>
-                  <strong>Budget:</strong>{" "}
-                  {request.budget
-                    ? `NAD ${request.budget}`
-                    : "Contact for price"}
-                </p>
+              <td style={cellStyle}>
+                <span style={statusStyle}>{request.status || "pending"}</span>
+              </td>
 
-                <p>
-                  <strong>Status:</strong> {request.status}
-                </p>
-              </div>
+              <td style={cellStyle}>
+                {request.created_at
+                  ? new Date(request.created_at).toLocaleString()
+                  : "Unknown"}
+              </td>
 
-              <Link href="/contact" style={buttonStyle}>
-                Contact About Cargo
-              </Link>
-            </PremiumCard>
+              <td style={cellStyle}>
+                <Link href="/contact" style={buttonStyle}>
+                  Contact
+                </Link>
+              </td>
+            </tr>
           ))}
-        </section>
+        />
       )}
     </PremiumPageShell>
   );
 }
 
-const gridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-  gap: 22,
+const rowStyle = {
+  borderBottom: "1px solid #f1f5f9",
 };
 
-const badgeStyle = {
-  color: "#f97316",
-  fontWeight: 900,
-  letterSpacing: 1,
-  margin: 0,
+const cellStyle = {
+  padding: "18px 20px",
+  color: "#334155",
+  fontSize: 14,
+  verticalAlign: "top",
 };
 
-const cardTitleStyle = {
-  fontSize: 24,
-  fontWeight: 900,
-  color: "#0f172a",
-  margin: "10px 0 16px",
+const mutedStyle = {
+  color: "#64748b",
+  fontSize: 13,
 };
 
-const detailsStyle = {
-  color: "#475569",
-  lineHeight: 1.8,
-  marginBottom: 22,
+const statusStyle = {
+  background: "#ffedd5",
+  color: "#c2410c",
+  padding: "6px 10px",
+  borderRadius: 999,
+  fontWeight: 800,
+  fontSize: 12,
 };
 
 const buttonStyle = {
   display: "inline-block",
   background: "#1d4ed8",
   color: "white",
-  padding: "12px 16px",
-  borderRadius: 14,
+  padding: "10px 14px",
+  borderRadius: 12,
   fontWeight: 800,
   textDecoration: "none",
+  fontSize: 13,
 };
 
 const emptyTitleStyle = {
