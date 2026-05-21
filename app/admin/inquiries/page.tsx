@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import Link from "next/link";
 import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumStats from "@/app/components/PremiumStats";
 import AdminTable from "@/app/components/AdminTable";
@@ -59,6 +60,7 @@ export default async function AdminInquiriesPage() {
             "Message",
             "Status",
             "Created",
+            "Action",
           ]}
           rows={inquiries.map((item) => (
             <tr key={item.id} style={rowStyle}>
@@ -80,6 +82,15 @@ export default async function AdminInquiriesPage() {
                 {item.created_at
                   ? new Date(item.created_at).toLocaleString()
                   : "Unknown"}
+              </td>
+
+              <td style={cellStyle}>
+                <Link
+                  href={`/admin/inquiries/${item.id}`}
+                  style={buttonStyle}
+                >
+                  View
+                </Link>
               </td>
             </tr>
           ))}
@@ -107,6 +118,17 @@ const statusStyle = {
   borderRadius: 999,
   fontWeight: 800,
   fontSize: 12,
+};
+
+const buttonStyle = {
+  display: "inline-block",
+  background: "#1d4ed8",
+  color: "white",
+  padding: "10px 14px",
+  borderRadius: 12,
+  fontWeight: 800,
+  textDecoration: "none",
+  fontSize: 13,
 };
 
 const errorBoxStyle = {
