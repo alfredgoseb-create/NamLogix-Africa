@@ -4,6 +4,7 @@ import Link from "next/link";
 import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumCard from "@/app/components/PremiumCard";
 import PremiumStats from "@/app/components/PremiumStats";
+import AdminTable from "@/app/components/AdminTable";
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function TripOffersPage() {
@@ -21,8 +22,8 @@ export default async function TripOffersPage() {
       title="Available Trip Offers"
       description="Browse active trip offers from transporters, drivers, logistics operators, and service providers moving people or cargo across routes."
       actions={[
-        { label: "Post Cargo", href: "/request-cargo", variant: "blue" },
-        { label: "Book Transport", href: "/transport", variant: "orange" },
+        { label: "Create Trip", href: "/create-trip", variant: "orange" },
+        { label: "Book Transport", href: "/transport", variant: "blue" },
         { label: "Back Home", href: "/", variant: "white" },
       ]}
     >
@@ -69,87 +70,94 @@ export default async function TripOffersPage() {
       )}
 
       {!error && trips && trips.length > 0 && (
-        <section style={gridStyle}>
-          {trips.map((trip) => (
-            <PremiumCard key={trip.id}>
-              <p style={badgeStyle}>
-                {trip.offer_number || "TRIP OFFER"}
-              </p>
+        <AdminTable
+          headers={[
+            "Route",
+            "Departure",
+            "Seats",
+            "Price",
+            "Status",
+            "Action",
+          ]}
+          rows={trips.map((trip) => (
+            <tr key={trip.id} style={rowStyle}>
+              <td style={cellStyle}>
+                <strong>
+                  {trip.origin || "Unknown"} → {trip.destination || "Unknown"}
+                </strong>
+                <br />
+                <span style={mutedStyle}>
+                  {trip.offer_number || "Trip Offer"}
+                </span>
+              </td>
 
-              <h2 style={cardTitleStyle}>
-                {trip.origin} → {trip.destination}
-              </h2>
+              <td style={cellStyle}>
+                {trip.departure_time
+                  ? new Date(trip.departure_time).toLocaleString()
+                  : "Not specified"}
+              </td>
 
-              <div style={detailsStyle}>
-                <p>
-                  <strong>Departure:</strong>{" "}
-                  {trip.departure_time
-                    ? new Date(trip.departure_time).toLocaleString()
-                    : "Not specified"}
-                </p>
+              <td style={cellStyle}>
+                {trip.available_seats ?? "Not specified"}
+              </td>
 
-                <p>
-                  <strong>Available Seats:</strong>{" "}
-                  {trip.available_seats ?? "Not specified"}
-                </p>
+              <td style={cellStyle}>
+                {trip.price_per_seat
+                  ? `NAD ${trip.price_per_seat}`
+                  : "Contact for price"}
+              </td>
 
-                <p>
-                  <strong>Price:</strong>{" "}
-                  {trip.price_per_seat
-                    ? `NAD ${trip.price_per_seat}`
-                    : "Contact for price"}
-                </p>
+              <td style={cellStyle}>
+                <span style={statusStyle}>{trip.status || "active"}</span>
+              </td>
 
-                <p>
-                  <strong>Status:</strong> {trip.status}
-                </p>
-              </div>
-
-              <Link href="/book-trip" style={buttonStyle}>
-                Book This Trip
-              </Link>
-            </PremiumCard>
+              <td style={cellStyle}>
+                <Link href="/book-trip" style={buttonStyle}>
+                  Book
+                </Link>
+              </td>
+            </tr>
           ))}
-        </section>
+        />
       )}
     </PremiumPageShell>
   );
 }
 
-const gridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-  gap: 22,
+const rowStyle = {
+  borderBottom: "1px solid #f1f5f9",
 };
 
-const badgeStyle = {
-  color: "#f97316",
-  fontWeight: 900,
-  letterSpacing: 1,
-  margin: 0,
+const cellStyle = {
+  padding: "18px 20px",
+  color: "#334155",
+  fontSize: 14,
+  verticalAlign: "top",
 };
 
-const cardTitleStyle = {
-  fontSize: 24,
-  fontWeight: 900,
-  color: "#0f172a",
-  margin: "10px 0 16px",
+const mutedStyle = {
+  color: "#64748b",
+  fontSize: 13,
 };
 
-const detailsStyle = {
-  color: "#475569",
-  lineHeight: 1.8,
-  marginBottom: 22,
+const statusStyle = {
+  background: "#dcfce7",
+  color: "#166534",
+  padding: "6px 10px",
+  borderRadius: 999,
+  fontWeight: 800,
+  fontSize: 12,
 };
 
 const buttonStyle = {
   display: "inline-block",
   background: "#1d4ed8",
   color: "white",
-  padding: "12px 16px",
-  borderRadius: 14,
+  padding: "10px 14px",
+  borderRadius: 12,
   fontWeight: 800,
   textDecoration: "none",
+  fontSize: 13,
 };
 
 const emptyTitleStyle = {
