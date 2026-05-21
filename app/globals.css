@@ -44,4 +44,8 @@ a {
   .admin-sidebar {
     display: none !important;
   }
+}@media (max-width: 900px) {
+  .admin-mobile-bar {
+    display: flex !important;
+  }
 }

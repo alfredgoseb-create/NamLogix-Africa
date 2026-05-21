@@ -3,14 +3,20 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <div style={layoutStyle}>
       <aside style={sidebarStyle} className="admin-sidebar">
         <div>
           <h2 style={logoStyle}>NamLogix Admin</h2>
 
-          <p style={subTextStyle}>Logistics & Marketplace Control Center</p>
+          <p style={subTextStyle}>
+            Logistics & Marketplace Control Center
+          </p>
         </div>
 
         <nav style={navStyle}>
@@ -52,7 +58,27 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
       </aside>
 
-      <main style={contentStyle}>{children}</main>
+      <main style={contentStyle}>
+        <div className="admin-mobile-bar" style={mobileBarStyle}>
+          <Link href="/admin/dashboard" style={mobileBarLinkStyle}>
+            Dashboard
+          </Link>
+
+          <Link href="/admin/bookings" style={mobileBarLinkStyle}>
+            Bookings
+          </Link>
+
+          <Link href="/admin/inquiries" style={mobileBarLinkStyle}>
+            Inquiries
+          </Link>
+
+          <Link href="/" style={mobileBarLinkStyle}>
+            Home
+          </Link>
+        </div>
+
+        {children}
+      </main>
     </div>
   );
 }
@@ -105,4 +131,25 @@ const contentStyle = {
   flex: 1,
   padding: 0,
   overflowX: "hidden" as const,
+};
+
+const mobileBarStyle = {
+  display: "none",
+  position: "sticky" as const,
+  top: 0,
+  zIndex: 40,
+  background: "#0f172a",
+  padding: "14px 12px",
+  gap: 10,
+  overflowX: "auto" as const,
+};
+
+const mobileBarLinkStyle = {
+  color: "white",
+  textDecoration: "none",
+  fontWeight: 800,
+  background: "rgba(255,255,255,0.08)",
+  padding: "10px 14px",
+  borderRadius: 12,
+  whiteSpace: "nowrap" as const,
 };
