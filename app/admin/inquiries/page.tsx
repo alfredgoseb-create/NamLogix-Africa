@@ -4,6 +4,7 @@ import Link from "next/link";
 import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumStats from "@/app/components/PremiumStats";
 import AdminTable from "@/app/components/AdminTable";
+import StatusBadge from "@/app/components/StatusBadge";
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function AdminInquiriesPage() {
@@ -75,7 +76,7 @@ export default async function AdminInquiriesPage() {
               <td style={cellStyle}>{item.message || "No message"}</td>
 
               <td style={cellStyle}>
-                <span style={statusStyle}>{item.status || "new"}</span>
+                <StatusBadge status={item.status || "new"} />
               </td>
 
               <td style={cellStyle}>
@@ -109,15 +110,6 @@ const cellStyle = {
   color: "#334155",
   fontSize: 14,
   verticalAlign: "top",
-};
-
-const statusStyle = {
-  background: "#dcfce7",
-  color: "#166534",
-  padding: "6px 10px",
-  borderRadius: 999,
-  fontWeight: 800,
-  fontSize: 12,
 };
 
 const buttonStyle = {

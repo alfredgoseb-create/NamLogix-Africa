@@ -4,6 +4,7 @@ import Link from "next/link";
 import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumStats from "@/app/components/PremiumStats";
 import AdminTable from "@/app/components/AdminTable";
+import StatusBadge from "@/app/components/StatusBadge";
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function AdminBookingsPage() {
@@ -97,9 +98,7 @@ export default async function AdminBookingsPage() {
               </td>
 
               <td style={cellStyle}>
-                <span style={statusStyle}>
-                  {booking.status || "pending"}
-                </span>
+                <StatusBadge status={booking.status} />
               </td>
 
               <td style={cellStyle}>
@@ -133,15 +132,6 @@ const cellStyle = {
   color: "#334155",
   fontSize: 14,
   verticalAlign: "top",
-};
-
-const statusStyle = {
-  background: "#dbeafe",
-  color: "#1d4ed8",
-  padding: "6px 10px",
-  borderRadius: 999,
-  fontWeight: 800,
-  fontSize: 12,
 };
 
 const buttonStyle = {
