@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import PremiumPageShell from "@/app/components/PremiumPageShell";
-import PremiumCard from "@/app/components/PremiumCard";
 import PremiumStats from "@/app/components/PremiumStats";
+import AdminTable from "@/app/components/AdminTable";
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function AdminInquiriesPage() {
@@ -43,109 +43,75 @@ export default async function AdminInquiriesPage() {
       />
 
       {error && (
-        <PremiumCard>
-          <h2 style={errorTitleStyle}>Could not load inquiries</h2>
-          <p style={errorTextStyle}>{error.message}</p>
-        </PremiumCard>
+        <div style={errorBoxStyle}>
+          <h2>Could not load inquiries</h2>
+          <p>{error.message}</p>
+        </div>
       )}
 
-      {!error && (!inquiries || inquiries.length === 0) && (
-        <PremiumCard>
-          <h2 style={emptyTitleStyle}>No inquiries yet</h2>
-          <p style={emptyTextStyle}>
-            Contact form messages will appear here after customers submit them.
-          </p>
-        </PremiumCard>
-      )}
+      {!error && inquiries && (
+        <AdminTable
+          headers={[
+            "Name",
+            "Email",
+            "Phone",
+            "Type",
+            "Message",
+            "Status",
+            "Created",
+          ]}
+          rows={inquiries.map((item) => (
+            <tr key={item.id} style={rowStyle}>
+              <td style={cellStyle}>{item.name || "Unnamed"}</td>
 
-      {!error && inquiries && inquiries.length > 0 && (
-        <section style={gridStyle}>
-          {inquiries.map((item) => (
-            <PremiumCard key={item.id}>
-              <p style={badgeStyle}>
-                {item.inquiry_type?.toUpperCase() || "GENERAL"}
-              </p>
+              <td style={cellStyle}>{item.email || "Not provided"}</td>
 
-              <h2 style={cardTitleStyle}>
-                {item.name || "Unnamed Customer"}
-              </h2>
+              <td style={cellStyle}>{item.phone || "Not provided"}</td>
 
-              <div style={detailsStyle}>
-                <p>
-                  <strong>Status:</strong> {item.status || "new"}
-                </p>
+              <td style={cellStyle}>{item.inquiry_type || "general"}</td>
 
-                <p>
-                  <strong>Email:</strong> {item.email || "Not provided"}
-                </p>
+              <td style={cellStyle}>{item.message || "No message"}</td>
 
-                <p>
-                  <strong>Phone:</strong> {item.phone || "Not provided"}
-                </p>
+              <td style={cellStyle}>
+                <span style={statusStyle}>{item.status || "new"}</span>
+              </td>
 
-                <p>
-                  <strong>Message:</strong> {item.message || "No message"}
-                </p>
-
-                <p>
-                  <strong>Created:</strong>{" "}
-                  {item.created_at
-                    ? new Date(item.created_at).toLocaleString()
-                    : "Unknown"}
-                </p>
-              </div>
-            </PremiumCard>
+              <td style={cellStyle}>
+                {item.created_at
+                  ? new Date(item.created_at).toLocaleString()
+                  : "Unknown"}
+              </td>
+            </tr>
           ))}
-        </section>
+        />
       )}
     </PremiumPageShell>
   );
 }
 
-const gridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-  gap: 22,
+const rowStyle = {
+  borderBottom: "1px solid #f1f5f9",
 };
 
-const badgeStyle = {
-  color: "#f97316",
-  fontWeight: 900,
-  letterSpacing: 1,
-  margin: 0,
+const cellStyle = {
+  padding: "18px 20px",
+  color: "#334155",
+  fontSize: 14,
+  verticalAlign: "top",
 };
 
-const cardTitleStyle = {
-  fontSize: 24,
-  fontWeight: 900,
-  color: "#0f172a",
-  margin: "10px 0 16px",
+const statusStyle = {
+  background: "#dcfce7",
+  color: "#166534",
+  padding: "6px 10px",
+  borderRadius: 999,
+  fontWeight: 800,
+  fontSize: 12,
 };
 
-const detailsStyle = {
-  color: "#475569",
-  lineHeight: 1.8,
-};
-
-const emptyTitleStyle = {
-  fontSize: 28,
-  fontWeight: 900,
-  color: "#0f172a",
-  margin: 0,
-};
-
-const emptyTextStyle = {
-  color: "#64748b",
-  lineHeight: 1.7,
-};
-
-const errorTitleStyle = {
-  fontSize: 26,
-  fontWeight: 900,
+const errorBoxStyle = {
+  background: "#fee2e2",
   color: "#991b1b",
-  margin: 0,
-};
-
-const errorTextStyle = {
-  color: "#7f1d1d",
+  padding: 24,
+  borderRadius: 20,
 };
