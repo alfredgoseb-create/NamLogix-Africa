@@ -4,6 +4,7 @@ import Link from "next/link";
 import PremiumPageShell from "@/app/components/PremiumPageShell";
 import PremiumCard from "@/app/components/PremiumCard";
 import { supabase } from "@/lib/supabaseClient";
+import InquiryStatusActions from "./InquiryStatusActions";
 
 export default async function InquiryDetailPage({ params }) {
   const { id } = params;
@@ -18,7 +19,7 @@ export default async function InquiryDetailPage({ params }) {
     <PremiumPageShell
       badge="INQUIRY DETAIL"
       title="Customer Inquiry Details"
-      description="View full customer inquiry information and respond to support or partnership requests."
+      description="View full customer inquiry information, respond to support requests, and update inquiry status."
       actions={[
         {
           label: "All Inquiries",
@@ -46,19 +47,13 @@ export default async function InquiryDetailPage({ params }) {
 
       {!error && inquiry && (
         <PremiumCard>
-          <p style={badgeStyle}>
-            {inquiry.inquiry_type || "general"}
-          </p>
+          <p style={badgeStyle}>{inquiry.inquiry_type || "general"}</p>
 
-          <h2 style={titleStyle}>
-            {inquiry.name || "Unnamed Customer"}
-          </h2>
+          <h2 style={titleStyle}>{inquiry.name || "Unnamed Customer"}</h2>
 
           <div style={detailsGridStyle}>
             <Info label="Email" value={inquiry.email || "Not provided"} />
-
             <Info label="Phone" value={inquiry.phone || "Not provided"} />
-
             <Info label="Status" value={inquiry.status || "new"} />
 
             <Info
@@ -77,6 +72,17 @@ export default async function InquiryDetailPage({ params }) {
             <p style={messageStyle}>
               {inquiry.message || "No message provided."}
             </p>
+          </div>
+
+          <div style={messageBoxStyle}>
+            <h3 style={sectionTitleStyle}>Admin Actions</h3>
+
+            <p style={messageStyle}>
+              Update the inquiry status after reviewing or closing the customer
+              request.
+            </p>
+
+            <InquiryStatusActions inquiryId={inquiry.id} />
           </div>
 
           <div style={buttonRowStyle}>
