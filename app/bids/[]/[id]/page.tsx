@@ -49,6 +49,37 @@ export default function BidDetailPage() {
     setLoading(false);
   }
 
+  async function acceptBid() {
+    if (!bid) return;
+
+    const { error: bidError } = await supabase
+      .from("bids")
+      .update({ status: "accepted" })
+      .eq("id", id);
+
+    if (bidError) {
+      alert("Failed to accept bid: " + bidError.message);
+      return;
+    }
+
+    const { error: cargoError } = await supabase
+      .from("cargo_requests")
+      .update({
+        status: "assigned",
+        accepted_bid_id: bid.id,
+        assigned_transporter: bid.transporter_name || "Transporter",
+      })
+      .eq("id", bid.cargo_request_id);
+
+    if (cargoError) {
+      alert("Bid accepted, but cargo assignment failed: " + cargoError.message);
+      return;
+    }
+
+    alert("Bid accepted and cargo assigned.");
+    fetchBid();
+  }
+
   async function updateBidStatus(status) {
     const { error } = await supabase
       .from("bids")
@@ -104,7 +135,7 @@ export default function BidDetailPage() {
     <PremiumPageShell
       badge="BID DETAIL"
       title="Transport Bid Details"
-      description="Review transporter offer details, cargo route, bid amount, delivery time, and bid status."
+      description="Review transporter offer details, accept bids, reject bids, and assign cargo to a transporter."
       actions={[
         { label: "All Bids", href: "/bids", variant: "blue" },
         { label: "Cargo Requests", href: "/cargo-requests", variant: "orange" },
@@ -115,9 +146,7 @@ export default function BidDetailPage() {
         <div style={topRowStyle}>
           <StatusBadge status={bid.status || "pending"} />
 
-          <span style={mutedStyle}>
-            Bid ID: {bid.id}
-          </span>
+          <span style={mutedStyle}>Bid ID: {bid.id}</span>
         </div>
 
         <h2 style={titleStyle}>
@@ -136,7 +165,9 @@ export default function BidDetailPage() {
 
         <div style={messageBoxStyle}>
           <h3 style={sectionTitleStyle}>Bid Notes</h3>
-          <p style={messageStyle}>{bid.notes || bid.message || "No notes provided."}</p>
+          <p style={messageStyle}>
+            {bid.notes || bid.message || "No notes provided."}
+          </p>
         </div>
 
         <div style={messageBoxStyle}>
@@ -166,21 +197,24 @@ export default function BidDetailPage() {
               ? `NAD ${bid.cargo_requests.budget}`
               : "Not specified"}
           </p>
+
+          <p style={messageStyle}>
+            Cargo Status:{" "}
+            <StatusBadge status={bid.cargo_requests?.status || "pending"} />
+          </p>
         </div>
 
         <div style={messageBoxStyle}>
           <h3 style={sectionTitleStyle}>Bid Actions</h3>
 
           <p style={messageStyle}>
-            Accept or reject this bid after reviewing transporter details.
+            Accepting a bid will mark the cargo request as assigned and save the
+            selected transporter.
           </p>
 
           <div style={buttonRowStyle}>
-            <button
-              onClick={() => updateBidStatus("accepted")}
-              style={greenButtonStyle}
-            >
-              Accept Bid
+            <button onClick={acceptBid} style={greenButtonStyle}>
+              Accept & Assign Cargo
             </button>
 
             <button
