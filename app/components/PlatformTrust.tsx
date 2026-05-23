@@ -1,9 +1,9 @@
-export default function TrustSection() {
+export default function PlatformTrust() {
   const items = [
     {
       icon: "✅",
-      title: "Verified Workflows",
-      text: "Cargo requests, bids, bookings, and inquiries are managed through structured platform processes.",
+      title: "Structured Workflows",
+      text: "Cargo requests, bids, bookings, and inquiries are managed through clear platform processes.",
     },
     {
       icon: "🔐",
@@ -12,8 +12,8 @@ export default function TrustSection() {
     },
     {
       icon: "🌍",
-      title: "Regional Growth",
-      text: "Built for Namibia with future expansion potential across Southern Africa and SADC trade routes.",
+      title: "Built for Regional Growth",
+      text: "Designed for Namibia with future expansion potential across Southern Africa and SADC trade routes.",
     },
   ];
 
@@ -28,9 +28,9 @@ export default function TrustSection() {
           </h2>
 
           <p style={descStyle}>
-            NamLogix Africa is designed as more than a website. It is becoming
-            a digital operating system for cargo movement, transporter bidding,
-            local transport, aviation services, warehouses, and trade.
+            NamLogix Africa is becoming a digital operating system for cargo
+            movement, transporter bidding, local transport, aviation services,
+            warehouses, and trade.
           </p>
         </div>
 
@@ -57,7 +57,7 @@ const containerStyle = {
   maxWidth: 1300,
   margin: "0 auto",
   display: "grid",
-  gridTemplateColumns: "1fr 1.2fr",
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
   gap: 40,
   alignItems: "center",
 };
