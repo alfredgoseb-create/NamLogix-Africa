@@ -4,11 +4,11 @@ export default function CompanyProfilePage() {
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
-        <p style={badgeStyle}>TRANSPORT BUSINESS PROFILE</p>
+        <p style={badgeStyle}>COMPANY PROFILE SETUP</p>
         <h1 style={titleStyle}>Create Company Profile</h1>
         <p style={descStyle}>
-          Add your transport company, warehouse business, supplier profile, logo,
-          banner, and service details for customers to trust your business.
+          Upload your company logo, banner, contact details, services, and
+          business information for customers to trust your company.
         </p>
       </section>
 
@@ -21,9 +21,9 @@ export default function CompanyProfilePage() {
             </div>
 
             <div style={fieldStyle}>
-              <label style={labelStyle}>Business Type</label>
+              <label style={labelStyle}>Company Type</label>
               <select style={inputStyle}>
-                <option>Select business type</option>
+                <option>Select company type</option>
                 <option>Transport Company</option>
                 <option>Warehouse</option>
                 <option>Supplier</option>
@@ -33,7 +33,7 @@ export default function CompanyProfilePage() {
             </div>
 
             <div style={fieldStyle}>
-              <label style={labelStyle}>Contact Number</label>
+              <label style={labelStyle}>Phone Number</label>
               <input style={inputStyle} placeholder="+264..." />
             </div>
 
@@ -63,10 +63,18 @@ export default function CompanyProfilePage() {
             </div>
 
             <div style={fullFieldStyle}>
+              <label style={labelStyle}>Services Offered</label>
+              <input
+                style={inputStyle}
+                placeholder="Cargo transport, storage, deliveries, aviation, supplies..."
+              />
+            </div>
+
+            <div style={fullFieldStyle}>
               <label style={labelStyle}>Business Description</label>
               <textarea
                 style={textareaStyle}
-                placeholder="Describe your company, services, fleet, warehouse, trade products, or aviation services..."
+                placeholder="Describe your company, fleet, warehouse, products, service area, and business experience..."
               />
             </div>
           </div>
@@ -76,8 +84,8 @@ export default function CompanyProfilePage() {
               Save Company Profile
             </button>
 
-            <Link href="/" style={secondaryButtonStyle}>
-              Back Home
+            <Link href="/companies" style={secondaryButtonStyle}>
+              View Companies
             </Link>
           </div>
         </form>
