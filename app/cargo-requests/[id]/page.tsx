@@ -60,8 +60,10 @@ export default function CargoRequestDetail() {
     const { error } = await supabase.from("bids").insert([
       {
         cargo_request_id: id,
+        transporter_name: carrierName,
         carrier_name: carrierName,
         bid_amount: Number(bidAmount) || 0,
+        notes: bidMessage,
         message: bidMessage,
         status: "pending",
       },
@@ -170,6 +172,11 @@ export default function CargoRequestDetail() {
           />
 
           <Info
+            label="Assigned Transporter"
+            value={request.assigned_transporter || "Not assigned yet"}
+          />
+
+          <Info
             label="Created"
             value={
               request.created_at
@@ -186,6 +193,24 @@ export default function CargoRequestDetail() {
             {request.description || "No description provided."}
           </p>
         </div>
+
+        {request.accepted_bid_id && (
+          <div style={messageBoxStyle}>
+            <h3 style={sectionTitleStyle}>Assigned Transporter</h3>
+
+            <p style={messageStyle}>
+              This cargo request has already been assigned to:
+            </p>
+
+            <div style={assignedBoxStyle}>
+              🚚 {request.assigned_transporter || "Transporter"}
+            </div>
+
+            <Link href={`/bids/${request.accepted_bid_id}`} style={buttonStyle}>
+              View Accepted Bid
+            </Link>
+          </div>
+        )}
       </PremiumCard>
 
       <PremiumCard style={{ marginTop: 24 }}>
@@ -316,6 +341,17 @@ const sectionTitleStyle = {
 const messageStyle = {
   color: "#475569",
   lineHeight: 1.8,
+};
+
+const assignedBoxStyle = {
+  background: "#dcfce7",
+  color: "#166534",
+  padding: "18px 20px",
+  borderRadius: 16,
+  fontWeight: 900,
+  fontSize: 18,
+  marginTop: 16,
+  marginBottom: 16,
 };
 
 const formTitleStyle = {
