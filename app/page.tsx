@@ -5,6 +5,7 @@ import QuickActions from "@/app/components/QuickActions";
 import HowItWorks from "@/app/components/HowItWorks";
 import PlatformSections from "@/app/components/PlatformSections";
 import PlatformTrust from "@/app/components/PlatformTrust";
+import BusinessMetrics from "@/app/components/BusinessMetrics";
 
 export default function HomePage() {
   return (
@@ -46,6 +47,8 @@ export default function HomePage() {
       <PlatformSections />
 
       <PlatformTrust />
+
+      <BusinessMetrics />
 
       <section style={containerStyle}>
         <PremiumStats
