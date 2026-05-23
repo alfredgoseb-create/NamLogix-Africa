@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CSSProperties, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Navbar() {
@@ -12,234 +12,183 @@ export default function Navbar() {
     window.location.href = "/login";
   }
 
-  const links = [
-    { label: "Home", href: "/" },
-    { label: "Cargo", href: "/cargo-requests" },
-    { label: "Post Cargo", href: "/request-cargo" },
-    { label: "Trips", href: "/trip-offers" },
-    { label: "Create Trip", href: "/create-trip" },
-    { label: "Bookings", href: "/admin/bookings" },
-    { label: "Inquiries", href: "/admin/inquiries" },
-    { label: "Transport", href: "/transport" },
-    { label: "Aviation", href: "/aviation" },
-    { label: "Store", href: "/store" },
-    { label: "Contact", href: "/contact" },
-  ];
-
   return (
     <header style={headerStyle}>
       <nav style={navStyle}>
-        <Link href="/" style={brandStyle}>
-          <span style={logoStyle}>NL</span>
-          <span>
-            <strong>NamLogix</strong>
-            <small style={smallStyle}>Africa</small>
-          </span>
+        <Link href="/" style={logoStyle}>
+          NamLogix Africa
         </Link>
 
         <div style={desktopLinksStyle}>
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} style={linkStyle}>
-              {link.label}
-            </Link>
-          ))}
-        </div>
-
-        <div style={desktopActionsStyle}>
-          <Link href="/login" style={loginStyle}>
-            Login
+          <Link href="/" style={linkStyle}>
+            Home
           </Link>
 
-          <Link href="/register" style={registerStyle}>
-            Register
+          <Link href="/cargo-requests" style={linkStyle}>
+            Cargo
+          </Link>
+
+          <Link href="/trip-offers" style={linkStyle}>
+            Trips
+          </Link>
+
+          <Link href="/store" style={linkStyle}>
+            Store
+          </Link>
+
+          <Link href="/bids" style={linkStyle}>
+            Bids
+          </Link>
+
+          <Link href="/aviation" style={linkStyle}>
+            Aviation
+          </Link>
+
+          <Link href="/contact" style={linkStyle}>
+            Contact
+          </Link>
+
+          <Link href="/admin/dashboard" style={linkStyle}>
+            Admin
+          </Link>
+        </div>
+
+        <div style={rightSectionStyle}>
+          <Link href="/login" style={loginStyle}>
+            Login
           </Link>
 
           <button onClick={handleLogout} style={logoutStyle}>
             Logout
           </button>
-        </div>
 
-        <button onClick={() => setOpen(!open)} style={menuButtonStyle}>
-          {open ? "✕" : "☰"}
-        </button>
+          <button
+            onClick={() => setOpen(!open)}
+            style={mobileButtonStyle}
+          >
+            ☰
+          </button>
+        </div>
       </nav>
 
       {open && (
         <div style={mobileMenuStyle}>
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              style={mobileLinkStyle}
-              onClick={() => setOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-
-          <Link href="/login" style={mobileLoginStyle} onClick={() => setOpen(false)}>
-            Login
+          <Link href="/" style={mobileLinkStyle}>
+            Home
           </Link>
 
-          <Link
-            href="/register"
-            style={mobileRegisterStyle}
-            onClick={() => setOpen(false)}
-          >
-            Register
+          <Link href="/cargo-requests" style={mobileLinkStyle}>
+            Cargo
           </Link>
 
-          <button onClick={handleLogout} style={mobileLogoutStyle}>
-            Logout
-          </button>
+          <Link href="/trip-offers" style={mobileLinkStyle}>
+            Trips
+          </Link>
+
+          <Link href="/store" style={mobileLinkStyle}>
+            Store
+          </Link>
+
+          <Link href="/bids" style={mobileLinkStyle}>
+            Bids
+          </Link>
+
+          <Link href="/aviation" style={mobileLinkStyle}>
+            Aviation
+          </Link>
+
+          <Link href="/contact" style={mobileLinkStyle}>
+            Contact
+          </Link>
+
+          <Link href="/admin/dashboard" style={mobileLinkStyle}>
+            Admin
+          </Link>
         </div>
       )}
     </header>
   );
 }
 
-const headerStyle: CSSProperties = {
-  position: "sticky",
+const headerStyle = {
+  position: "sticky" as const,
   top: 0,
   zIndex: 50,
-  background: "rgba(255,255,255,0.94)",
-  backdropFilter: "blur(14px)",
+  background: "white",
   borderBottom: "1px solid #e5e7eb",
 };
 
-const navStyle: CSSProperties = {
-  maxWidth: 1500,
+const navStyle = {
+  maxWidth: 1280,
   margin: "0 auto",
-  padding: "14px 20px",
+  padding: "16px 24px",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: 14,
+  gap: 20,
 };
 
-const brandStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
+const logoStyle = {
+  fontSize: 24,
+  fontWeight: 900,
   color: "#0f172a",
   textDecoration: "none",
-  fontSize: 18,
-  flexShrink: 0,
 };
 
-const logoStyle: CSSProperties = {
-  width: 42,
-  height: 42,
-  borderRadius: 14,
-  background: "linear-gradient(135deg, #1d4ed8, #f97316)",
-  color: "white",
-  display: "grid",
-  placeItems: "center",
-  fontWeight: 900,
-};
-
-const smallStyle: CSSProperties = {
-  display: "block",
-  color: "#64748b",
-  fontSize: 12,
-  marginTop: -2,
-};
-
-const desktopLinksStyle: CSSProperties = {
+const desktopLinksStyle = {
   display: "flex",
   alignItems: "center",
-  justifyContent: "center",
-  gap: 10,
-  flexWrap: "wrap",
+  gap: 18,
 };
 
-const linkStyle: CSSProperties = {
+const linkStyle = {
   color: "#334155",
   textDecoration: "none",
-  fontWeight: 800,
-  fontSize: 12,
+  fontWeight: 700,
 };
 
-const desktopActionsStyle: CSSProperties = {
+const rightSectionStyle = {
   display: "flex",
   alignItems: "center",
-  gap: 8,
-  flexShrink: 0,
+  gap: 12,
 };
 
-const loginStyle: CSSProperties = {
+const loginStyle = {
   color: "#1d4ed8",
-  textDecoration: "none",
-  fontWeight: 900,
-  fontSize: 13,
-};
-
-const registerStyle: CSSProperties = {
-  background: "#1d4ed8",
-  color: "white",
-  padding: "9px 12px",
-  borderRadius: 12,
-  textDecoration: "none",
-  fontWeight: 900,
-  fontSize: 13,
-};
-
-const logoutStyle: CSSProperties = {
-  background: "#f97316",
-  color: "white",
-  border: "none",
-  padding: "9px 12px",
-  borderRadius: 12,
-  fontWeight: 900,
-  cursor: "pointer",
-  fontSize: 13,
-};
-
-const menuButtonStyle: CSSProperties = {
-  display: "none",
-  background: "#0f172a",
-  color: "white",
-  border: "none",
-  borderRadius: 12,
-  padding: "10px 13px",
-  fontSize: 18,
-  cursor: "pointer",
-};
-
-const mobileMenuStyle: CSSProperties = {
-  display: "grid",
-  gap: 10,
-  padding: "16px 24px 22px",
-  borderTop: "1px solid #e5e7eb",
-  background: "white",
-};
-
-const mobileLinkStyle: CSSProperties = {
-  color: "#0f172a",
-  textDecoration: "none",
   fontWeight: 800,
-  padding: "12px",
-  borderRadius: 12,
-  background: "#f8fafc",
+  textDecoration: "none",
 };
 
-const mobileLoginStyle: CSSProperties = {
-  ...mobileLinkStyle,
-  color: "#1d4ed8",
-};
-
-const mobileRegisterStyle: CSSProperties = {
-  ...mobileLinkStyle,
-  background: "#1d4ed8",
-  color: "white",
-};
-
-const mobileLogoutStyle: CSSProperties = {
-  background: "#f97316",
+const logoutStyle = {
+  background: "#ef4444",
   color: "white",
   border: "none",
-  padding: "12px",
-  borderRadius: 12,
+  padding: "10px 14px",
+  borderRadius: 10,
+  fontWeight: 800,
+  cursor: "pointer",
+};
+
+const mobileButtonStyle = {
+  display: "none",
+  background: "#1d4ed8",
+  color: "white",
+  border: "none",
+  padding: "10px 14px",
+  borderRadius: 10,
   fontWeight: 900,
   cursor: "pointer",
+};
+
+const mobileMenuStyle = {
+  padding: 20,
+  display: "grid",
+  gap: 12,
+  borderTop: "1px solid #e5e7eb",
+};
+
+const mobileLinkStyle = {
+  color: "#334155",
+  textDecoration: "none",
+  fontWeight: 700,
 };
