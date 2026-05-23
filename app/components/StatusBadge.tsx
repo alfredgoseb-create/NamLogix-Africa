@@ -16,7 +16,12 @@ function getStatusStyle(status) {
     textTransform: "uppercase",
   };
 
-  if (status === "confirmed" || status === "reviewed" || status === "active") {
+  if (
+    status === "confirmed" ||
+    status === "reviewed" ||
+    status === "active" ||
+    status === "accepted"
+  ) {
     return {
       ...base,
       background: "#dcfce7",
@@ -24,7 +29,15 @@ function getStatusStyle(status) {
     };
   }
 
-  if (status === "cancelled" || status === "closed") {
+  if (status === "assigned") {
+    return {
+      ...base,
+      background: "#dbeafe",
+      color: "#1d4ed8",
+    };
+  }
+
+  if (status === "cancelled" || status === "closed" || status === "rejected") {
     return {
       ...base,
       background: "#fee2e2",
