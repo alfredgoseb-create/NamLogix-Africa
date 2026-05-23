@@ -2,6 +2,7 @@ import Link from "next/link";
 import PremiumStats from "@/app/components/PremiumStats";
 import PremiumCard from "@/app/components/PremiumCard";
 import QuickActions from "@/app/components/QuickActions";
+import HowItWorks from "@/app/components/HowItWorks";
 
 export default function HomePage() {
   return (
@@ -16,8 +17,8 @@ export default function HomePage() {
 
           <p style={descStyle}>
             Connect cargo owners, transporters, warehouses, suppliers,
-            aviation services, and local transport bookings across Namibia
-            and Southern Africa.
+            aviation services, and local transport bookings across Namibia and
+            Southern Africa.
           </p>
 
           <div style={buttonRowStyle}>
@@ -37,6 +38,8 @@ export default function HomePage() {
       </section>
 
       <QuickActions />
+
+      <HowItWorks />
 
       <section style={containerStyle}>
         <PremiumStats
