@@ -4,6 +4,7 @@ import PremiumCard from "@/app/components/PremiumCard";
 import QuickActions from "@/app/components/QuickActions";
 import HowItWorks from "@/app/components/HowItWorks";
 import PlatformSections from "@/app/components/PlatformSections";
+import TrustSection from "@/app/components/TrustSection";
 
 export default function HomePage() {
   return (
