@@ -14,7 +14,6 @@ export default async function CargoRequestsPage() {
     .select(
       "id, request_number, pickup_location, delivery_location, cargo_type, weight_kg, budget, status, created_at"
     )
-    .eq("status", "pending")
     .order("created_at", { ascending: false });
 
   return (
@@ -29,8 +28,8 @@ export default async function CargoRequestsPage() {
           variant: "orange",
         },
         {
-          label: "Available Trips",
-          href: "/trip-offers",
+          label: "Transporter Bids",
+          href: "/bids",
           variant: "blue",
         },
         {
@@ -43,14 +42,14 @@ export default async function CargoRequestsPage() {
       <PremiumStats
         stats={[
           {
-            label: "Pending Cargo",
+            label: "Cargo Requests",
             value: requests?.length || 0,
-            text: "Open cargo requests",
+            text: "All cargo requests",
           },
           {
-            label: "Status",
-            value: "Live",
-            text: "Ready for transporter bids",
+            label: "Bidding",
+            value: "Open",
+            text: "Transporters can submit bids",
           },
           {
             label: "Market",
@@ -69,7 +68,7 @@ export default async function CargoRequestsPage() {
 
       {!error && (!requests || requests.length === 0) && (
         <PremiumCard>
-          <h2 style={emptyTitleStyle}>No pending cargo requests yet</h2>
+          <h2 style={emptyTitleStyle}>No cargo requests yet</h2>
 
           <p style={emptyTextStyle}>
             Cargo requests will appear here when customers or businesses post
@@ -132,11 +131,11 @@ export default async function CargoRequestsPage() {
                   : "Unknown"}
               </td>
 
-             <td style={cellStyle}>
-  <Link href={`/cargo-requests/${request.id}`} style={buttonStyle}>
-    View
-  </Link>
-</td>
+              <td style={cellStyle}>
+                <Link href={`/cargo-requests/${request.id}`} style={buttonStyle}>
+                  View
+                </Link>
+              </td>
             </tr>
           ))}
         />
