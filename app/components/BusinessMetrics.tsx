@@ -42,7 +42,9 @@ export default function BusinessMetrics() {
           {metrics.map((metric) => (
             <div key={metric.label} style={cardStyle}>
               <h3 style={valueStyle}>{metric.value}</h3>
+
               <p style={labelStyle}>{metric.label}</p>
+
               <p style={textStyle}>{metric.text}</p>
             </div>
           ))}
@@ -68,9 +70,10 @@ const headerStyle = {
 };
 
 const badgeStyle = {
-  color: "#1d4ed8",
+  color: "#16a34a",
   fontWeight: 900,
   letterSpacing: 1,
+  marginBottom: 10,
 };
 
 const titleStyle = {
@@ -96,14 +99,14 @@ const gridStyle = {
 
 const cardStyle = {
   background: "#f8fafc",
-  borderRadius: 26,
-  padding: 34,
-  border: "1px solid #e2e8f0",
+  borderRadius: 28,
+  padding: 32,
   textAlign: "center" as const,
+  border: "1px solid #e2e8f0",
 };
 
 const valueStyle = {
-  fontSize: 54,
+  fontSize: 52,
   fontWeight: 900,
   color: "#1d4ed8",
   marginBottom: 10,
