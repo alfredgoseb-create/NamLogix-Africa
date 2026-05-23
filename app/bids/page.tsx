@@ -283,14 +283,11 @@ export default function BidsPage() {
                     : "Unknown"}
                 </td>
 
-                <td style={cellStyle}>
-                  <Link
-                    href={`/cargo-requests/${bid.cargo_request_id}`}
-                    style={buttonStyle}
-                  >
-                    View Cargo
-                  </Link>
-                </td>
+               <td style={cellStyle}>
+  <Link href={`/bids/${bid.id}`} style={buttonStyle}>
+    View Bid
+  </Link>
+</td>
               </tr>
             ))}
           />

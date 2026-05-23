@@ -36,6 +36,10 @@ export default function AdminLayout({
             ➕ Create Trip
           </Link>
 
+          <Link href="/bids" style={linkStyle}>
+            💰 Bids
+          </Link>
+
           <Link href="/admin/bookings" style={linkStyle}>
             🎫 Bookings
           </Link>
@@ -62,6 +66,10 @@ export default function AdminLayout({
         <div className="admin-mobile-bar" style={mobileBarStyle}>
           <Link href="/admin/dashboard" style={mobileBarLinkStyle}>
             Dashboard
+          </Link>
+
+          <Link href="/bids" style={mobileBarLinkStyle}>
+            Bids
           </Link>
 
           <Link href="/admin/bookings" style={mobileBarLinkStyle}>
