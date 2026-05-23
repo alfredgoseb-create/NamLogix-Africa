@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PremiumStats from "@/app/components/PremiumStats";
 import PremiumCard from "@/app/components/PremiumCard";
+import QuickActions from "@/app/components/QuickActions";
 
 export default function HomePage() {
   return (
@@ -24,8 +25,8 @@ export default function HomePage() {
               📦 Post Cargo
             </Link>
 
-            <Link href="/transport" style={secondaryButtonStyle}>
-              🚕 Book Transport
+            <Link href="/bids" style={secondaryButtonStyle}>
+              💰 View Bids
             </Link>
 
             <Link href="/store" style={whiteButtonStyle}>
@@ -34,6 +35,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <QuickActions />
 
       <section style={containerStyle}>
         <PremiumStats
@@ -64,44 +67,35 @@ export default function HomePage() {
         <section style={gridStyle}>
           <PremiumCard>
             <div style={iconStyle}>📦</div>
-
             <h2 style={cardTitleStyle}>Cargo Marketplace</h2>
-
             <p style={cardTextStyle}>
               Businesses and individuals can post cargo requests and receive
               transport bids from drivers and logistics companies.
             </p>
-
             <Link href="/cargo-requests" style={cardButtonStyle}>
               View Cargo Requests
             </Link>
           </PremiumCard>
 
           <PremiumCard>
-            <div style={iconStyle}>🚕</div>
-
-            <h2 style={cardTitleStyle}>Local Transport</h2>
-
+            <div style={iconStyle}>💰</div>
+            <h2 style={cardTitleStyle}>Transporter Bidding</h2>
             <p style={cardTextStyle}>
-              Book local rides for work transport, hospital trips, goods
-              delivery, and town mobility services.
+              Transporters can submit bids and cargo owners can compare offers
+              before assigning the shipment.
             </p>
-
-            <Link href="/transport" style={cardButtonStyle}>
-              Book Transport
+            <Link href="/bids" style={cardButtonStyle}>
+              View Bids
             </Link>
           </PremiumCard>
 
           <PremiumCard>
             <div style={iconStyle}>✈️</div>
-
             <h2 style={cardTitleStyle}>Aviation Services</h2>
-
             <p style={cardTextStyle}>
               Aviation operators can advertise charter flights, cargo flights,
               tourism routes, and aircraft services.
             </p>
-
             <Link href="/aviation" style={cardButtonStyle}>
               Explore Aviation
             </Link>
@@ -109,14 +103,11 @@ export default function HomePage() {
 
           <PremiumCard>
             <div style={iconStyle}>🏬</div>
-
             <h2 style={cardTitleStyle}>Warehouse & Store</h2>
-
             <p style={cardTextStyle}>
               Warehouses and suppliers can list products, manage stock, and
               sell inventory through the marketplace.
             </p>
-
             <Link href="/store" style={cardButtonStyle}>
               Open Store
             </Link>
@@ -130,8 +121,8 @@ export default function HomePage() {
 
           <p style={ctaTextStyle}>
             NamLogix Africa combines logistics, transport, trade, aviation,
-            and marketplace systems into one scalable platform for Namibia
-            and the Southern African region.
+            bidding, and marketplace systems into one scalable platform for
+            Namibia and the Southern African region.
           </p>
 
           <div style={buttonRowStyle}>
@@ -272,8 +263,7 @@ const ctaStyle = {
   marginTop: 70,
   borderRadius: 30,
   padding: "60px 28px",
-  background:
-    "linear-gradient(135deg, #0f172a, #1e40af, #f97316)",
+  background: "linear-gradient(135deg, #0f172a, #1e40af, #f97316)",
   textAlign: "center" as const,
   color: "white",
 };
