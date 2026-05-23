@@ -3,6 +3,7 @@ import PremiumStats from "@/app/components/PremiumStats";
 import PremiumCard from "@/app/components/PremiumCard";
 import QuickActions from "@/app/components/QuickActions";
 import HowItWorks from "@/app/components/HowItWorks";
+import PlatformSections from "@/app/components/PlatformSections";
 
 export default function HomePage() {
   return (
@@ -38,8 +39,8 @@ export default function HomePage() {
       </section>
 
       <QuickActions />
-
       <HowItWorks />
+      <PlatformSections />
 
       <section style={containerStyle}>
         <PremiumStats
