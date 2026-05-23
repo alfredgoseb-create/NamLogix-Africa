@@ -132,11 +132,11 @@ export default async function CargoRequestsPage() {
                   : "Unknown"}
               </td>
 
-              <td style={cellStyle}>
-                <Link href="/contact" style={buttonStyle}>
-                  Contact
-                </Link>
-              </td>
+             <td style={cellStyle}>
+  <Link href={`/cargo-requests/${request.id}`} style={buttonStyle}>
+    View
+  </Link>
+</td>
             </tr>
           ))}
         />
