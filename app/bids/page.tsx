@@ -2,12 +2,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PageHero from "@/app/components/PageHero";
-import DashboardCard from "@/app/components/DashboardCard";
-import SectionHeader from "@/app/components/SectionHeader";
-import EmptyState from "@/app/components/EmptyState";
-import AppCard from "@/app/components/AppCard";
-import Button from "@/app/components/Button";
+import Link from "next/link";
+import PremiumPageShell from "@/app/components/PremiumPageShell";
+import PremiumCard from "@/app/components/PremiumCard";
+import PremiumStats from "@/app/components/PremiumStats";
+import AdminTable from "@/app/components/AdminTable";
+import StatusBadge from "@/app/components/StatusBadge";
+import {
+  PremiumInput,
+  PremiumSelect,
+  PremiumTextarea,
+  PremiumSubmitButton,
+  formGridStyle,
+} from "@/app/components/PremiumForm";
 import { supabase } from "@/lib/supabaseClient";
 
 const emptyBidForm = {
@@ -34,12 +41,12 @@ export default function BidsPage() {
   async function fetchData() {
     setLoading(true);
 
-    const { data: cargoData, error: cargoError } = await supabase
+    const { data: cargoData } = await supabase
       .from("cargo_requests")
       .select("*")
       .order("created_at", { ascending: false });
 
-    const { data: bidsData, error: bidsError } = await supabase
+    const { data: bidsData } = await supabase
       .from("bids")
       .select(
         `
@@ -53,18 +60,8 @@ export default function BidsPage() {
       )
       .order("created_at", { ascending: false });
 
-    if (cargoError) {
-      alert("Failed to load cargo requests: " + cargoError.message);
-    } else {
-      setCargoRequests(cargoData || []);
-    }
-
-    if (bidsError) {
-      alert("Failed to load bids: " + bidsError.message);
-    } else {
-      setBids(bidsData || []);
-    }
-
+    setCargoRequests(cargoData || []);
+    setBids(bidsData || []);
     setLoading(false);
   }
 
@@ -111,315 +108,247 @@ export default function BidsPage() {
   );
 
   return (
-    <div className="min-h-screen page-soft-bg">
-      <PageHero
-        badge="Transport Bidding"
-        titleTop="NamLogix"
-        titleHighlight="AFRICA"
-        titleBottom="Cargo Bids"
-        description="Submit and manage transport bids, cargo quotes, logistics pricing, and transporter offers for cargo movement across Southern Africa."
-        actions={[
-          {
-            label: "💰 Submit Bid",
-            href: "#bid-form",
-            primary: true,
-          },
-          {
-            label: "📦 Post Cargo",
-            href: "/request-cargo",
-          },
-          {
-            label: "🚚 Cargo Requests",
-            href: "/cargo-requests",
-          },
-          {
-            label: "🚛 Trip Offers",
-            href: "/trip-offers",
-          },
-        ]}
+    <PremiumPageShell
+      badge="TRANSPORT BIDDING"
+      title="Cargo Bids"
+      description="Submit and manage transport bids, cargo quotes, logistics pricing, and transporter offers for cargo movement across Southern Africa."
+      actions={[
+        { label: "Find Cargo", href: "/cargo-requests", variant: "blue" },
+        { label: "Post Cargo", href: "/request-cargo", variant: "orange" },
+        { label: "Trip Offers", href: "/trip-offers", variant: "white" },
+      ]}
+    >
+      <PremiumStats
         stats={[
           {
+            label: "Total Bids",
             value: bids.length,
-            label: "Total bids",
+            text: "Submitted transporter offers",
           },
           {
+            label: "Pending",
             value: pendingBids,
-            label: "Pending bids",
+            text: "Awaiting decision",
           },
           {
-            value: cargoRequests.length,
-            label: "Cargo requests",
+            label: "Accepted",
+            value: acceptedBids,
+            text: "Confirmed transporters",
           },
           {
-            value: "NAD",
-            label: "Pricing",
-          },
-        ]}
-        infoCards={[
-          {
-            title: "Quotes",
-            text: "Transport offers",
-          },
-          {
-            title: "Cargo",
-            text: "Load bidding",
-          },
-          {
-            title: "Pricing",
-            text: "Best offers",
-          },
-          {
-            title: "Transport",
-            text: "Operator network",
+            label: "Bid Value",
+            value: `NAD ${totalBidValue}`,
+            text: "Total quoted value",
           },
         ]}
       />
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <DashboardCard
-            title="Total Bids"
-            value={bids.length}
-            subtitle="Submitted transporter offers"
-            color="blue"
-          />
+      <PremiumCard>
+        <h2 style={formTitleStyle}>💰 Submit Transport Bid</h2>
 
-          <DashboardCard
-            title="Pending"
-            value={pendingBids}
-            subtitle="Awaiting decision"
-            color="orange"
-          />
+        <p style={formDescStyle}>
+          Select a cargo request and submit your transporter quote.
+        </p>
 
-          <DashboardCard
-            title="Accepted"
-            value={acceptedBids}
-            subtitle="Confirmed transporters"
-            color="green"
-          />
+        <form onSubmit={handleSubmit} style={formGridStyle}>
+          <PremiumSelect
+            value={form.cargo_request_id}
+            onChange={(e) =>
+              setForm({ ...form, cargo_request_id: e.target.value })
+            }
+            style={{ gridColumn: "1 / -1" }}
+          >
+            <option value="">Select Cargo Request *</option>
 
-          <DashboardCard
-            title="Bid Value"
-            value={`N$${totalBidValue}`}
-            subtitle="Total quoted value"
-            color="red"
-          />
-        </div>
+            {cargoRequests.map((cargo) => (
+              <option key={cargo.id} value={cargo.id}>
+                {cargo.request_number || cargo.id} — {cargo.pickup_location} to{" "}
+                {cargo.delivery_location}
+              </option>
+            ))}
+          </PremiumSelect>
 
-        <AppCard className="mb-8" variant="orange">
-          <SectionHeader
-            title="⚡ Bidding Actions"
-            subtitle="Connect cargo owners and transporters through competitive offers."
-          />
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button href="/cargo-requests" variant="primary" fullWidth>
-              🚚 Find Cargo
-            </Button>
-
-            <Button href="/request-cargo" variant="orange" fullWidth>
-              📦 Post Cargo
-            </Button>
-
-            <Button href="/trip-offers" variant="outline" fullWidth>
-              🚛 Trip Offers
-            </Button>
-
-            <Button href="/trade-routes" variant="outline" fullWidth>
-              🛣️ Trade Routes
-            </Button>
-          </div>
-        </AppCard>
-
-        <AppCard id="bid-form" className="mb-8" variant="blue">
-          <SectionHeader
-            title="💰 Submit Transport Bid"
-            subtitle="Select a cargo request and submit your transporter quote."
-          />
-
-          <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
-            <select
-              value={form.cargo_request_id}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  cargo_request_id: e.target.value,
-                })
-              }
-              className="border rounded-xl px-4 py-3 md:col-span-2"
-            >
-              <option value="">Select Cargo Request *</option>
-
-              {cargoRequests.map((cargo) => (
-                <option key={cargo.id} value={cargo.id}>
-                  {cargo.request_number || cargo.id} — {cargo.pickup_location} to{" "}
-                  {cargo.delivery_location}
-                </option>
-              ))}
-            </select>
-
-            <input
-              type="text"
-              placeholder="Transporter Name *"
-              value={form.transporter_name}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  transporter_name: e.target.value,
-                })
-              }
-              className="border rounded-xl px-4 py-3"
-            />
-
-            <input
-              type="text"
-              placeholder="Transporter Phone"
-              value={form.transporter_phone}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  transporter_phone: e.target.value,
-                })
-              }
-              className="border rounded-xl px-4 py-3"
-            />
-
-            <input
-              type="email"
-              placeholder="Transporter Email"
-              value={form.transporter_email}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  transporter_email: e.target.value,
-                })
-              }
-              className="border rounded-xl px-4 py-3"
-            />
-
-            <input
-              type="number"
-              placeholder="Bid Amount NAD"
-              value={form.bid_amount}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  bid_amount: e.target.value,
-                })
-              }
-              className="border rounded-xl px-4 py-3"
-            />
-
-            <input
-              type="text"
-              placeholder="Estimated Delivery Time"
-              value={form.estimated_delivery_time}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  estimated_delivery_time: e.target.value,
-                })
-              }
-              className="border rounded-xl px-4 py-3 md:col-span-2"
-            />
-
-            <textarea
-              placeholder="Notes"
-              value={form.notes}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  notes: e.target.value,
-                })
-              }
-              className="border rounded-xl px-4 py-3 md:col-span-2 min-h-32"
-            />
-
-            <div className="md:col-span-2">
-              <Button type="submit" variant="orange" fullWidth>
-                {saving ? "Submitting Bid..." : "💰 Submit Bid"}
-              </Button>
-            </div>
-          </form>
-        </AppCard>
-
-        <AppCard id="bids" variant="green">
-          <SectionHeader
-            title="💰 Cargo Bids"
-            subtitle="Transporter bids and cargo quotes submitted on the platform."
-            action={
-              <button
-                onClick={fetchData}
-                className="bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-800"
-              >
-                Refresh
-              </button>
+          <PremiumInput
+            placeholder="Transporter Name *"
+            value={form.transporter_name}
+            onChange={(e) =>
+              setForm({ ...form, transporter_name: e.target.value })
             }
           />
 
-          {loading ? (
-            <p>Loading bids...</p>
-          ) : bids.length === 0 ? (
-            <EmptyState
-              icon="💰"
-              title="No bids yet"
-              message="When transporters submit quotes for cargo movement, those bids will appear here."
-            />
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {bids.map((bid) => (
-                <AppCard key={bid.id} hover>
-                  <div className="flex justify-between gap-4 mb-4">
-                    <span className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full">
-                      {bid.status || "pending"}
-                    </span>
+          <PremiumInput
+            placeholder="Transporter Phone"
+            value={form.transporter_phone}
+            onChange={(e) =>
+              setForm({ ...form, transporter_phone: e.target.value })
+            }
+          />
 
-                    <span className="text-xs text-gray-400">
-                      N${bid.bid_amount || 0}
-                    </span>
-                  </div>
+          <PremiumInput
+            type="email"
+            placeholder="Transporter Email"
+            value={form.transporter_email}
+            onChange={(e) =>
+              setForm({ ...form, transporter_email: e.target.value })
+            }
+          />
 
-                  <h3 className="font-bold text-lg">
-                    {bid.transporter_name}
-                  </h3>
+          <PremiumInput
+            type="number"
+            placeholder="Bid Amount NAD"
+            value={form.bid_amount}
+            onChange={(e) =>
+              setForm({ ...form, bid_amount: e.target.value })
+            }
+          />
 
-                  <p className="text-sm text-gray-500 mt-2">
-                    {bid.cargo_requests?.pickup_location || "Unknown origin"} →{" "}
-                    {bid.cargo_requests?.delivery_location ||
-                      "Unknown destination"}
-                  </p>
+          <PremiumInput
+            placeholder="Estimated Delivery Time"
+            value={form.estimated_delivery_time}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                estimated_delivery_time: e.target.value,
+              })
+            }
+          />
 
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-gray-400">Amount</p>
-                      <p className="font-semibold">N${bid.bid_amount || 0}</p>
-                    </div>
+          <PremiumTextarea
+            placeholder="Notes"
+            value={form.notes}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })}
+          />
 
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-gray-400">Delivery</p>
-                      <p className="font-semibold">
-                        {bid.estimated_delivery_time || "Not set"}
-                      </p>
-                    </div>
-                  </div>
+          <PremiumSubmitButton disabled={saving}>
+            {saving ? "Submitting Bid..." : "💰 Submit Bid"}
+          </PremiumSubmitButton>
+        </form>
+      </PremiumCard>
 
-                  {bid.notes && (
-                    <p className="text-sm text-gray-500 mt-4 leading-6">
-                      {bid.notes}
-                    </p>
-                  )}
+      <div style={{ marginTop: 24 }}>
+        {loading ? (
+          <PremiumCard>
+            <p style={mutedStyle}>Loading bids...</p>
+          </PremiumCard>
+        ) : bids.length === 0 ? (
+          <PremiumCard>
+            <h2 style={emptyTitleStyle}>No bids yet</h2>
+            <p style={emptyTextStyle}>
+              When transporters submit quotes for cargo movement, those bids
+              will appear here.
+            </p>
+            <Link href="/cargo-requests" style={buttonStyle}>
+              View Cargo Requests
+            </Link>
+          </PremiumCard>
+        ) : (
+          <AdminTable
+            headers={[
+              "Transporter",
+              "Cargo Route",
+              "Amount",
+              "Delivery",
+              "Status",
+              "Created",
+              "Action",
+            ]}
+            rows={bids.map((bid) => (
+              <tr key={bid.id} style={rowStyle}>
+                <td style={cellStyle}>
+                  <strong>{bid.transporter_name || "Unknown"}</strong>
+                  <br />
+                  <span style={mutedStyle}>
+                    {bid.transporter_phone || "No phone"}
+                  </span>
+                </td>
 
-                  <div className="mt-5">
-                    <Button href="/cargo-requests" variant="outline" fullWidth>
-                      View Cargo Request
-                    </Button>
-                  </div>
-                </AppCard>
-              ))}
-            </div>
-          )}
-        </AppCard>
+                <td style={cellStyle}>
+                  {bid.cargo_requests?.pickup_location || "Unknown"} →{" "}
+                  {bid.cargo_requests?.delivery_location || "Unknown"}
+                </td>
+
+                <td style={cellStyle}>NAD {bid.bid_amount || 0}</td>
+
+                <td style={cellStyle}>
+                  {bid.estimated_delivery_time || "Not set"}
+                </td>
+
+                <td style={cellStyle}>
+                  <StatusBadge status={bid.status || "pending"} />
+                </td>
+
+                <td style={cellStyle}>
+                  {bid.created_at
+                    ? new Date(bid.created_at).toLocaleString()
+                    : "Unknown"}
+                </td>
+
+                <td style={cellStyle}>
+                  <Link
+                    href={`/cargo-requests/${bid.cargo_request_id}`}
+                    style={buttonStyle}
+                  >
+                    View Cargo
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          />
+        )}
       </div>
-    </div>
+    </PremiumPageShell>
   );
 }
+
+const formTitleStyle = {
+  fontSize: 30,
+  fontWeight: 900,
+  margin: 0,
+  color: "#0f172a",
+};
+
+const formDescStyle = {
+  color: "#64748b",
+  marginTop: 8,
+  marginBottom: 0,
+};
+
+const rowStyle = {
+  borderBottom: "1px solid #f1f5f9",
+};
+
+const cellStyle = {
+  padding: "18px 20px",
+  color: "#334155",
+  fontSize: 14,
+  verticalAlign: "top",
+};
+
+const mutedStyle = {
+  color: "#64748b",
+  fontSize: 14,
+};
+
+const buttonStyle = {
+  display: "inline-block",
+  background: "#1d4ed8",
+  color: "white",
+  padding: "10px 14px",
+  borderRadius: 12,
+  fontWeight: 800,
+  textDecoration: "none",
+  fontSize: 13,
+};
+
+const emptyTitleStyle = {
+  fontSize: 28,
+  fontWeight: 900,
+  color: "#0f172a",
+  margin: 0,
+};
+
+const emptyTextStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginBottom: 20,
+};
