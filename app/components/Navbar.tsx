@@ -28,6 +28,7 @@ export default function Navbar() {
           <Link href="/create-trip" style={linkStyle}>Create Trip</Link>
           <Link href="/vehicle-register" style={linkStyle}>Register Vehicle</Link>
           <Link href="/my-vehicles" style={linkStyle}>My Vehicles</Link>
+          <Link href="/vehicle-documents" style={linkStyle}>Documents</Link>
           <Link href="/store" style={linkStyle}>Store</Link>
           <Link href="/aviation" style={linkStyle}>Aviation</Link>
           <Link href="/contact" style={linkStyle}>Contact</Link>
@@ -59,6 +60,9 @@ export default function Navbar() {
           <Link href="/create-trip" style={mobileLinkStyle} onClick={() => setOpen(false)}>Create Trip</Link>
           <Link href="/vehicle-register" style={mobileLinkStyle} onClick={() => setOpen(false)}>Register Vehicle</Link>
           <Link href="/my-vehicles" style={mobileLinkStyle} onClick={() => setOpen(false)}>My Vehicles</Link>
+          <Link href="/vehicle-documents" style={mobileLinkStyle} onClick={() => setOpen(false)}>
+  Documents
+</Link>
           <Link href="/store" style={mobileLinkStyle} onClick={() => setOpen(false)}>Store</Link>
           <Link href="/aviation" style={mobileLinkStyle} onClick={() => setOpen(false)}>Aviation</Link>
           <Link href="/contact" style={mobileLinkStyle} onClick={() => setOpen(false)}>Contact</Link>
