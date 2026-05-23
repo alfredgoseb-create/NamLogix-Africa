@@ -41,13 +41,9 @@ export default function HomePage() {
       </section>
 
       <QuickActions />
-
       <HowItWorks />
-
       <PlatformSections />
-
       <PlatformTrust />
-
       <BusinessMetrics />
 
       <section style={containerStyle}>
@@ -79,14 +75,11 @@ export default function HomePage() {
         <section style={gridStyle}>
           <PremiumCard>
             <div style={iconStyle}>📦</div>
-
             <h2 style={cardTitleStyle}>Cargo Marketplace</h2>
-
             <p style={cardTextStyle}>
               Businesses and individuals can post cargo requests and receive
               transport bids from drivers and logistics companies.
             </p>
-
             <Link href="/cargo-requests" style={cardButtonStyle}>
               View Cargo Requests
             </Link>
@@ -94,14 +87,11 @@ export default function HomePage() {
 
           <PremiumCard>
             <div style={iconStyle}>💰</div>
-
             <h2 style={cardTitleStyle}>Transporter Bidding</h2>
-
             <p style={cardTextStyle}>
               Transporters can submit bids and cargo owners can compare offers
               before assigning the shipment.
             </p>
-
             <Link href="/bids" style={cardButtonStyle}>
               View Bids
             </Link>
@@ -109,14 +99,11 @@ export default function HomePage() {
 
           <PremiumCard>
             <div style={iconStyle}>✈️</div>
-
             <h2 style={cardTitleStyle}>Aviation Services</h2>
-
             <p style={cardTextStyle}>
               Aviation operators can advertise charter flights, cargo flights,
               tourism routes, and aircraft services.
             </p>
-
             <Link href="/aviation" style={cardButtonStyle}>
               Explore Aviation
             </Link>
@@ -124,14 +111,11 @@ export default function HomePage() {
 
           <PremiumCard>
             <div style={iconStyle}>🏬</div>
-
             <h2 style={cardTitleStyle}>Warehouse & Store</h2>
-
             <p style={cardTextStyle}>
               Warehouses and suppliers can list products, manage stock, and
               sell inventory through the marketplace.
             </p>
-
             <Link href="/store" style={cardButtonStyle}>
               Open Store
             </Link>

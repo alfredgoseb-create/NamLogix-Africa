@@ -42,9 +42,7 @@ export default function BusinessMetrics() {
           {metrics.map((metric) => (
             <div key={metric.label} style={cardStyle}>
               <h3 style={valueStyle}>{metric.value}</h3>
-
               <p style={labelStyle}>{metric.label}</p>
-
               <p style={textStyle}>{metric.text}</p>
             </div>
           ))}
