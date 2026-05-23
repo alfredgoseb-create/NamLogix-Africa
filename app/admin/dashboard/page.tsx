@@ -11,26 +11,22 @@ export default async function AdminDashboardPage() {
     .from("cargo_requests")
     .select("id");
 
-  const { data: tripOffers } = await supabase
-    .from("trip_offers")
-    .select("id");
+  const { data: tripOffers } = await supabase.from("trip_offers").select("id");
 
-  const { data: bookings } = await supabase
-    .from("trip_bookings")
-    .select("id");
+  const { data: bookings } = await supabase.from("trip_bookings").select("id");
 
-  const { data: inquiries } = await supabase
-    .from("inquiries")
-    .select("id");
+  const { data: inquiries } = await supabase.from("inquiries").select("id");
+
+  const { data: bids } = await supabase.from("bids").select("id");
 
   return (
     <PremiumPageShell
       badge="NAMLOGIX ADMIN"
       title="Admin Dashboard"
-      description="Manage cargo requests, trip offers, bookings, customer inquiries, transport activity, and marketplace operations from one control center."
+      description="Manage cargo requests, transporter bids, trip offers, bookings, customer inquiries, transport activity, and marketplace operations from one control center."
       actions={[
         { label: "Cargo Requests", href: "/cargo-requests", variant: "blue" },
-        { label: "Trip Offers", href: "/trip-offers", variant: "orange" },
+        { label: "Bids", href: "/bids", variant: "orange" },
         { label: "Home", href: "/", variant: "white" },
       ]}
     >
@@ -40,6 +36,11 @@ export default async function AdminDashboardPage() {
             label: "Cargo Requests",
             value: cargoRequests?.length || 0,
             text: "Posted cargo requests",
+          },
+          {
+            label: "Bids",
+            value: bids?.length || 0,
+            text: "Transporter cargo bids",
           },
           {
             label: "Trip Offers",
@@ -69,6 +70,18 @@ export default async function AdminDashboardPage() {
           </p>
           <Link href="/cargo-requests" style={buttonStyle}>
             Manage Cargo
+          </Link>
+        </PremiumCard>
+
+        <PremiumCard>
+          <div style={iconStyle}>💰</div>
+          <h2 style={cardTitleStyle}>Transporter Bids</h2>
+          <p style={cardTextStyle}>
+            Review transport offers, accept bids, reject bids, and manage cargo
+            quotation workflows.
+          </p>
+          <Link href="/bids" style={buttonStyle}>
+            Manage Bids
           </Link>
         </PremiumCard>
 
