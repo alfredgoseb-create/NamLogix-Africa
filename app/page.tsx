@@ -6,6 +6,7 @@ import HowItWorks from "@/app/components/HowItWorks";
 import PlatformSections from "@/app/components/PlatformSections";
 import PlatformTrust from "@/app/components/PlatformTrust";
 import BusinessMetrics from "@/app/components/BusinessMetrics";
+import RevenueModel from "@/app/components/RevenueModel";
 
 export default function HomePage() {
   return (
@@ -45,6 +46,8 @@ export default function HomePage() {
       <PlatformSections />
       <PlatformTrust />
       <BusinessMetrics />
+      <RevenueModel />
+      
 
       <section style={containerStyle}>
         <PremiumStats
