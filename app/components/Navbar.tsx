@@ -55,6 +55,7 @@ export default function Navbar() {
           <Link href="/bids" style={mobileLinkStyle} onClick={() => setOpen(false)}>Bids</Link>
           <Link href="/trip-offers" style={mobileLinkStyle} onClick={() => setOpen(false)}>Trips</Link>
           <Link href="/create-trip" style={mobileLinkStyle} onClick={() => setOpen(false)}>Create Trip</Link>
+          <Link href="/vehicle-register" style={linkStyle}>Register Vehicle</Link>
           <Link href="/store" style={mobileLinkStyle} onClick={() => setOpen(false)}>Store</Link>
           <Link href="/aviation" style={mobileLinkStyle} onClick={() => setOpen(false)}>Aviation</Link>
           <Link href="/contact" style={mobileLinkStyle} onClick={() => setOpen(false)}>Contact</Link>
