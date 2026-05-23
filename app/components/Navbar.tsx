@@ -22,9 +22,11 @@ export default function Navbar() {
         <div style={desktopLinksStyle}>
           <Link href="/" style={linkStyle}>Home</Link>
           <Link href="/cargo-requests" style={linkStyle}>Cargo</Link>
-          <Link href="/trip-offers" style={linkStyle}>Trips</Link>
-          <Link href="/store" style={linkStyle}>Store</Link>
+          <Link href="/request-cargo" style={linkStyle}>Post Cargo</Link>
           <Link href="/bids" style={linkStyle}>Bids</Link>
+          <Link href="/trip-offers" style={linkStyle}>Trips</Link>
+          <Link href="/create-trip" style={linkStyle}>Create Trip</Link>
+          <Link href="/store" style={linkStyle}>Store</Link>
           <Link href="/aviation" style={linkStyle}>Aviation</Link>
           <Link href="/contact" style={linkStyle}>Contact</Link>
           <Link href="/admin/dashboard" style={linkStyle}>Admin</Link>
@@ -49,9 +51,11 @@ export default function Navbar() {
         <div style={mobileMenuStyle}>
           <Link href="/" style={mobileLinkStyle} onClick={() => setOpen(false)}>Home</Link>
           <Link href="/cargo-requests" style={mobileLinkStyle} onClick={() => setOpen(false)}>Cargo</Link>
-          <Link href="/trip-offers" style={mobileLinkStyle} onClick={() => setOpen(false)}>Trips</Link>
-          <Link href="/store" style={mobileLinkStyle} onClick={() => setOpen(false)}>Store</Link>
+          <Link href="/request-cargo" style={mobileLinkStyle} onClick={() => setOpen(false)}>Post Cargo</Link>
           <Link href="/bids" style={mobileLinkStyle} onClick={() => setOpen(false)}>Bids</Link>
+          <Link href="/trip-offers" style={mobileLinkStyle} onClick={() => setOpen(false)}>Trips</Link>
+          <Link href="/create-trip" style={mobileLinkStyle} onClick={() => setOpen(false)}>Create Trip</Link>
+          <Link href="/store" style={mobileLinkStyle} onClick={() => setOpen(false)}>Store</Link>
           <Link href="/aviation" style={mobileLinkStyle} onClick={() => setOpen(false)}>Aviation</Link>
           <Link href="/contact" style={mobileLinkStyle} onClick={() => setOpen(false)}>Contact</Link>
           <Link href="/admin/dashboard" style={mobileLinkStyle} onClick={() => setOpen(false)}>Admin</Link>
@@ -71,17 +75,17 @@ const headerStyle = {
 };
 
 const navStyle = {
-  maxWidth: 1280,
+  maxWidth: 1500,
   margin: "0 auto",
-  padding: "14px 24px",
+  padding: "14px 18px",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: 18,
+  gap: 14,
 };
 
 const logoStyle = {
-  fontSize: 24,
+  fontSize: 22,
   fontWeight: 900,
   color: "#0f172a",
   textDecoration: "none",
@@ -91,23 +95,26 @@ const logoStyle = {
 const desktopLinksStyle = {
   display: "flex",
   alignItems: "center",
-  gap: 10,
+  gap: 6,
+  flexWrap: "wrap" as const,
 };
 
 const linkStyle = {
   color: "#334155",
   textDecoration: "none",
   fontWeight: 800,
-  padding: "10px 14px",
+  padding: "9px 10px",
   borderRadius: 12,
   transition: "all 0.2s ease",
   background: "transparent",
+  fontSize: 13,
 };
 
 const rightSectionStyle = {
   display: "flex",
   alignItems: "center",
-  gap: 12,
+  gap: 10,
+  flexShrink: 0,
 };
 
 const loginStyle = {
@@ -115,18 +122,20 @@ const loginStyle = {
   fontWeight: 900,
   textDecoration: "none",
   background: "#eff6ff",
-  padding: "10px 14px",
+  padding: "9px 12px",
   borderRadius: 12,
+  fontSize: 13,
 };
 
 const logoutStyle = {
   background: "#ef4444",
   color: "white",
   border: "none",
-  padding: "10px 14px",
+  padding: "9px 12px",
   borderRadius: 12,
   fontWeight: 900,
   cursor: "pointer",
+  fontSize: 13,
 };
 
 const mobileButtonStyle = {
