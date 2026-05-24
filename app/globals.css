@@ -27,13 +27,21 @@ a {
   min-height: 100vh;
 }
 
+.admin-dropdown:hover .admin-dropdown-menu {
+  display: grid !important;
+  gap: 6px;
+}
+
+.admin-dropdown-menu a:hover {
+  background: #f8fafc;
+}
+
 @media (max-width: 900px) {
-  header nav > div:nth-of-type(1),
-  header nav > div:nth-of-type(2) {
+  .desktop-nav-links {
     display: none !important;
   }
 
-  header nav > button {
+  .mobile-menu-button {
     display: block !important;
   }
 
@@ -44,13 +52,8 @@ a {
   .admin-sidebar {
     display: none !important;
   }
-}@media (max-width: 900px) {
+
   .admin-mobile-bar {
     display: flex !important;
   }
-}
-
-header div[style*="position: relative"]:hover div[style*="position: absolute"] {
-  display: grid !important;
-  gap: 6px;
 }

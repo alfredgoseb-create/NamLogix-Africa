@@ -28,7 +28,7 @@ const adminLinks = [
   { href: "/admin/shipments", label: "Shipments" },
   { href: "/admin/vehicles", label: "Vehicles" },
   { href: "/admin/companies", label: "Companies Admin" },
-  { href: "/admin/documents", label: "Docs Admin" },
+  { href: "/admin/documents", label: "Documents Admin" },
   { href: "/admin/uploads", label: "Uploads" },
   { href: "/admin/notifications", label: "Notifications" },
   { href: "/admin/support", label: "Support" },
@@ -58,19 +58,19 @@ export default function Navbar() {
           NamLogix Africa
         </Link>
 
-        <div style={desktopLinksStyle}>
+        <div className="desktop-nav-links" style={desktopLinksStyle}>
           {mainLinks.map((link) => (
             <Link key={link.href} href={link.href} style={linkStyle}>
               {link.label}
             </Link>
           ))}
 
-          <div style={adminDropdownStyle}>
+          <div className="admin-dropdown" style={adminDropdownStyle}>
             <Link href="/admin/dashboard" style={adminButtonStyle}>
               Admin ▾
             </Link>
 
-            <div style={adminMenuStyle}>
+            <div className="admin-dropdown-menu" style={adminMenuStyle}>
               {adminLinks.map((link) => (
                 <Link key={link.href} href={link.href} style={adminMenuLinkStyle}>
                   {link.label}
@@ -89,7 +89,11 @@ export default function Navbar() {
             Logout
           </button>
 
-          <button onClick={() => setOpen(!open)} style={mobileButtonStyle}>
+          <button
+            className="mobile-menu-button"
+            onClick={() => setOpen(!open)}
+            style={mobileButtonStyle}
+          >
             {open ? "✕" : "☰"}
           </button>
         </div>
@@ -175,8 +179,6 @@ const linkStyle = {
   fontWeight: 800,
   padding: "9px 10px",
   borderRadius: 12,
-  transition: "all 0.2s ease",
-  background: "transparent",
   fontSize: 13,
 };
 
@@ -200,7 +202,7 @@ const adminMenuStyle = {
   position: "absolute" as const,
   right: 0,
   top: "100%",
-  minWidth: 210,
+  minWidth: 220,
   background: "white",
   border: "1px solid #e5e7eb",
   borderRadius: 16,
@@ -247,6 +249,7 @@ const logoutStyle = {
 };
 
 const mobileButtonStyle = {
+  display: "none",
   background: "#1d4ed8",
   color: "white",
   border: "none",
