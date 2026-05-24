@@ -4,12 +4,51 @@ import Link from "next/link";
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
+const mainLinks = [
+  { href: "/", label: "Home" },
+  { href: "/cargo-requests", label: "Cargo" },
+  { href: "/request-cargo", label: "Post Cargo" },
+  { href: "/bids", label: "Bids" },
+  { href: "/trip-offers", label: "Trips" },
+  { href: "/create-trip", label: "Create Trip" },
+  { href: "/vehicle-register", label: "Register Vehicle" },
+  { href: "/my-vehicles", label: "My Vehicles" },
+  { href: "/vehicle-documents", label: "Documents" },
+  { href: "/companies", label: "Companies" },
+  { href: "/company-profile", label: "Company Profile" },
+  { href: "/store", label: "Store" },
+  { href: "/aviation", label: "Aviation" },
+  { href: "/contact", label: "Contact" },
+];
+
+const adminLinks = [
+  { href: "/admin/dashboard", label: "Dashboard" },
+  { href: "/admin/users", label: "Users" },
+  { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/shipments", label: "Shipments" },
+  { href: "/admin/vehicles", label: "Vehicles" },
+  { href: "/admin/companies", label: "Companies Admin" },
+  { href: "/admin/documents", label: "Docs Admin" },
+  { href: "/admin/uploads", label: "Uploads" },
+  { href: "/admin/notifications", label: "Notifications" },
+  { href: "/admin/support", label: "Support" },
+  { href: "/admin/reports", label: "Reports" },
+  { href: "/admin/analytics", label: "Analytics" },
+  { href: "/admin/settings", label: "Settings" },
+];
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
 
   async function handleLogout() {
     await supabase.auth.signOut();
     window.location.href = "/login";
+  }
+
+  function closeMobileMenu() {
+    setOpen(false);
+    setAdminOpen(false);
   }
 
   return (
@@ -20,21 +59,25 @@ export default function Navbar() {
         </Link>
 
         <div style={desktopLinksStyle}>
-          <Link href="/" style={linkStyle}>Home</Link>
-          <Link href="/cargo-requests" style={linkStyle}>Cargo</Link>
-          <Link href="/request-cargo" style={linkStyle}>Post Cargo</Link>
-          <Link href="/bids" style={linkStyle}>Bids</Link>
-          <Link href="/trip-offers" style={linkStyle}>Trips</Link>
-          <Link href="/create-trip" style={linkStyle}>Create Trip</Link>
-          <Link href="/vehicle-register" style={linkStyle}>Register Vehicle</Link>
-          <Link href="/my-vehicles" style={linkStyle}>My Vehicles</Link>
-          <Link href="/vehicle-documents" style={linkStyle}>Documents</Link>
-          <Link href="/companies" style={linkStyle}>Companies</Link>
-          <Link href="/company-profile" style={linkStyle}>Company Profile</Link>
-          <Link href="/store" style={linkStyle}>Store</Link>
-          <Link href="/aviation" style={linkStyle}>Aviation</Link>
-          <Link href="/contact" style={linkStyle}>Contact</Link>
-          <Link href="/admin/dashboard" style={linkStyle}>Admin</Link>
+          {mainLinks.map((link) => (
+            <Link key={link.href} href={link.href} style={linkStyle}>
+              {link.label}
+            </Link>
+          ))}
+
+          <div style={adminDropdownStyle}>
+            <Link href="/admin/dashboard" style={adminButtonStyle}>
+              Admin ▾
+            </Link>
+
+            <div style={adminMenuStyle}>
+              {adminLinks.map((link) => (
+                <Link key={link.href} href={link.href} style={adminMenuLinkStyle}>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div style={rightSectionStyle}>
@@ -54,29 +97,38 @@ export default function Navbar() {
 
       {open && (
         <div style={mobileMenuStyle}>
-          <Link href="/" style={mobileLinkStyle} onClick={() => setOpen(false)}>Home</Link>
-          <Link href="/cargo-requests" style={mobileLinkStyle} onClick={() => setOpen(false)}>Cargo</Link>
-          <Link href="/request-cargo" style={mobileLinkStyle} onClick={() => setOpen(false)}>Post Cargo</Link>
-          <Link href="/bids" style={mobileLinkStyle} onClick={() => setOpen(false)}>Bids</Link>
-          <Link href="/trip-offers" style={mobileLinkStyle} onClick={() => setOpen(false)}>Trips</Link>
-          <Link href="/create-trip" style={mobileLinkStyle} onClick={() => setOpen(false)}>Create Trip</Link>
-          <Link href="/vehicle-register" style={mobileLinkStyle} onClick={() => setOpen(false)}>Register Vehicle</Link>
-          <Link href="/my-vehicles" style={mobileLinkStyle} onClick={() => setOpen(false)}>My Vehicles</Link>
-          <Link href="/companies" style={mobileLinkStyle} onClick={() => setOpen(false)}>
-  Companies
-</Link><Link href="/companies" style={mobileLinkStyle} onClick={() => setOpen(false)}>
-  Companies
-</Link>
-          <Link href="/company-profile" style={mobileLinkStyle} onClick={() => setOpen(false)}>
-  Company Profile
-</Link>
-          <Link href="/vehicle-documents" style={mobileLinkStyle} onClick={() => setOpen(false)}>
-  Documents
-</Link>
-          <Link href="/store" style={mobileLinkStyle} onClick={() => setOpen(false)}>Store</Link>
-          <Link href="/aviation" style={mobileLinkStyle} onClick={() => setOpen(false)}>Aviation</Link>
-          <Link href="/contact" style={mobileLinkStyle} onClick={() => setOpen(false)}>Contact</Link>
-          <Link href="/admin/dashboard" style={mobileLinkStyle} onClick={() => setOpen(false)}>Admin</Link>
+          {mainLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              style={mobileLinkStyle}
+              onClick={closeMobileMenu}
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          <button
+            onClick={() => setAdminOpen(!adminOpen)}
+            style={mobileAdminButtonStyle}
+          >
+            Admin Menu {adminOpen ? "▲" : "▼"}
+          </button>
+
+          {adminOpen && (
+            <div style={mobileAdminMenuStyle}>
+              {adminLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  style={mobileAdminLinkStyle}
+                  onClick={closeMobileMenu}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </header>
@@ -128,6 +180,44 @@ const linkStyle = {
   fontSize: 13,
 };
 
+const adminDropdownStyle = {
+  position: "relative" as const,
+  display: "inline-block",
+};
+
+const adminButtonStyle = {
+  background: "#0f172a",
+  color: "white",
+  textDecoration: "none",
+  fontWeight: 900,
+  padding: "9px 12px",
+  borderRadius: 12,
+  fontSize: 13,
+};
+
+const adminMenuStyle = {
+  display: "none",
+  position: "absolute" as const,
+  right: 0,
+  top: "100%",
+  minWidth: 210,
+  background: "white",
+  border: "1px solid #e5e7eb",
+  borderRadius: 16,
+  padding: 10,
+  boxShadow: "0 18px 40px rgba(15,23,42,0.16)",
+};
+
+const adminMenuLinkStyle = {
+  display: "block",
+  color: "#334155",
+  textDecoration: "none",
+  fontWeight: 800,
+  padding: "10px 12px",
+  borderRadius: 12,
+  fontSize: 13,
+};
+
 const rightSectionStyle = {
   display: "flex",
   alignItems: "center",
@@ -157,7 +247,6 @@ const logoutStyle = {
 };
 
 const mobileButtonStyle = {
-  display: "none",
   background: "#1d4ed8",
   color: "white",
   border: "none",
@@ -181,6 +270,36 @@ const mobileLinkStyle = {
   fontWeight: 800,
   background: "#f8fafc",
   padding: "12px 14px",
+  borderRadius: 12,
+  border: "1px solid #e2e8f0",
+};
+
+const mobileAdminButtonStyle = {
+  background: "#0f172a",
+  color: "white",
+  border: "none",
+  padding: "12px 14px",
+  borderRadius: 12,
+  fontWeight: 900,
+  cursor: "pointer",
+  textAlign: "left" as const,
+};
+
+const mobileAdminMenuStyle = {
+  display: "grid",
+  gap: 10,
+  padding: 12,
+  background: "#f8fafc",
+  borderRadius: 14,
+  border: "1px solid #e2e8f0",
+};
+
+const mobileAdminLinkStyle = {
+  color: "#334155",
+  textDecoration: "none",
+  fontWeight: 800,
+  background: "white",
+  padding: "11px 13px",
   borderRadius: 12,
   border: "1px solid #e2e8f0",
 };

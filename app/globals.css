@@ -49,3 +49,8 @@ a {
     display: flex !important;
   }
 }
+
+header div[style*="position: relative"]:hover div[style*="position: absolute"] {
+  display: grid !important;
+  gap: 6px;
+}
