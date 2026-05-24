@@ -119,6 +119,22 @@ export default function SettingsPage() {
               👤 Users
             </Button>
 
+            <Button href="/admin/vehicles" variant="outline" fullWidth>
+              🚚 Vehicles
+            </Button>
+
+            <Button href="/admin/companies" variant="outline" fullWidth>
+              🏢 Companies
+            </Button>
+
+            <Button href="/admin/documents" variant="outline" fullWidth>
+              📄 Documents
+            </Button>
+
+            <Button href="/admin/trips" variant="outline" fullWidth>
+              🚌 Trips
+            </Button>
+
             <Button href="/admin/analytics" variant="outline" fullWidth>
               📈 Analytics
             </Button>
@@ -135,11 +151,71 @@ export default function SettingsPage() {
             subtitle="Business profile, notifications, roles, and security settings will appear here."
           />
 
-          <EmptyState
-            icon="⚙️"
-            title="Settings module coming soon"
-            message="This section is prepared for company profile, user permissions, notification settings, security controls, and platform preferences."
-          />
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="border rounded-2xl p-5 bg-gray-50">
+              <h3 className="text-lg font-bold mb-4 text-gray-900">
+                Approval Settings
+              </h3>
+
+              <div className="space-y-3 text-sm font-medium text-gray-700">
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" defaultChecked />
+                  Require vehicle approval
+                </label>
+
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" defaultChecked />
+                  Require company approval
+                </label>
+
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" defaultChecked />
+                  Require document verification
+                </label>
+
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" defaultChecked />
+                  Require trip review
+                </label>
+              </div>
+            </div>
+
+            <div className="border rounded-2xl p-5 bg-gray-50">
+              <h3 className="text-lg font-bold mb-4 text-gray-900">
+                Upload Settings
+              </h3>
+
+              <div className="space-y-3 text-sm font-medium text-gray-700">
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" defaultChecked />
+                  Allow logo uploads
+                </label>
+
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" defaultChecked />
+                  Allow banner uploads
+                </label>
+
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" defaultChecked />
+                  Allow vehicle image uploads
+                </label>
+
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" defaultChecked />
+                  Allow document uploads
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <EmptyState
+              icon="⚙️"
+              title="Advanced settings coming soon"
+              message="Future updates will include notifications, AI moderation, analytics, escrow settings, payment controls, and platform automation."
+            />
+          </div>
         </AppCard>
       </div>
     </div>
