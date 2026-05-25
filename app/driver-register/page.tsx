@@ -36,6 +36,7 @@ export default function DriverRegisterPage() {
 
     const { error } = await supabase.from("drivers").insert([
       {
+        name: form.full_name,
         full_name: form.full_name,
         license_number: form.license_number,
         experience_years: form.experience_years,
@@ -49,6 +50,7 @@ export default function DriverRegisterPage() {
       setMessage(error.message);
     } else {
       setMessage("Driver registered successfully.");
+
       setForm({
         full_name: "",
         license_number: "",
@@ -66,10 +68,13 @@ export default function DriverRegisterPage() {
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>DRIVER REGISTRATION</p>
+
         <h1 style={titleStyle}>Register a Driver</h1>
+
         <p style={descStyle}>
-          Add transport drivers, delivery operators, cargo drivers, and regional
-          logistics professionals to the NamLogix Africa network.
+          Add transport drivers, delivery operators, cargo drivers,
+          and regional logistics professionals to the
+          NamLogix Africa network.
         </p>
 
         <div style={buttonRowStyle}>
@@ -91,7 +96,9 @@ export default function DriverRegisterPage() {
               <input
                 style={inputStyle}
                 value={form.full_name}
-                onChange={(e) => updateField("full_name", e.target.value)}
+                onChange={(e) =>
+                  updateField("full_name", e.target.value)
+                }
                 placeholder="Driver full name"
               />
             </label>
@@ -101,7 +108,9 @@ export default function DriverRegisterPage() {
               <input
                 style={inputStyle}
                 value={form.license_number}
-                onChange={(e) => updateField("license_number", e.target.value)}
+                onChange={(e) =>
+                  updateField("license_number", e.target.value)
+                }
                 placeholder="License number"
               />
             </label>
@@ -111,7 +120,12 @@ export default function DriverRegisterPage() {
               <input
                 style={inputStyle}
                 value={form.experience_years}
-                onChange={(e) => updateField("experience_years", e.target.value)}
+                onChange={(e) =>
+                  updateField(
+                    "experience_years",
+                    e.target.value
+                  )
+                }
                 placeholder="Example: 5"
               />
             </label>
@@ -121,7 +135,9 @@ export default function DriverRegisterPage() {
               <input
                 style={inputStyle}
                 value={form.phone}
-                onChange={(e) => updateField("phone", e.target.value)}
+                onChange={(e) =>
+                  updateField("phone", e.target.value)
+                }
                 placeholder="+264..."
               />
             </label>
@@ -131,8 +147,13 @@ export default function DriverRegisterPage() {
               <input
                 style={inputStyle}
                 value={form.route_region}
-                onChange={(e) => updateField("route_region", e.target.value)}
-                placeholder="Windhoek, Walvis Bay, Northern Routes..."
+                onChange={(e) =>
+                  updateField(
+                    "route_region",
+                    e.target.value
+                  )
+                }
+                placeholder="Windhoek, Walvis Bay..."
               />
             </label>
 
@@ -141,7 +162,9 @@ export default function DriverRegisterPage() {
               <select
                 style={inputStyle}
                 value={form.status}
-                onChange={(e) => updateField("status", e.target.value)}
+                onChange={(e) =>
+                  updateField("status", e.target.value)
+                }
               >
                 <option value="pending">Pending</option>
                 <option value="active">Active</option>
@@ -151,7 +174,9 @@ export default function DriverRegisterPage() {
             </label>
           </div>
 
-          {message && <div style={messageStyle}>{message}</div>}
+          {message && (
+            <div style={messageStyle}>{message}</div>
+          )}
 
           <button
             type="button"
@@ -237,12 +262,14 @@ const formStyle = {
   borderRadius: 30,
   padding: 30,
   border: "1px solid #e5e7eb",
-  boxShadow: "0 14px 35px rgba(15,23,42,0.07)",
+  boxShadow:
+    "0 14px 35px rgba(15,23,42,0.07)",
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gridTemplateColumns:
+    "repeat(auto-fit, minmax(260px, 1fr))",
   gap: 20,
 };
 
