@@ -1,6 +1,61 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { uploadFileToBucket } from "@/lib/uploadFile";
 
 export default function VehicleRegisterPage() {
+  const [uploading, setUploading] = useState(false);
+
+  const [form, setForm] = useState({
+    owner_name: "",
+    vehicle_type: "",
+    vehicle_make: "",
+    vehicle_model: "",
+    registration_number: "",
+    load_capacity: "",
+    route: "",
+    contact_number: "",
+    description: "",
+    image_url: "",
+  });
+
+  async function handleImageUpload(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setUploading(true);
+
+    const result = await uploadFileToBucket(
+      "vehicle-images",
+      "vehicles",
+      file
+    );
+
+    setUploading(false);
+
+    if (result.error) {
+      alert(result.error);
+      return;
+    }
+
+    setForm({
+      ...form,
+      image_url: result.url || "",
+    });
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    console.log(form);
+
+    alert("Vehicle registered successfully!");
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
@@ -16,17 +71,38 @@ export default function VehicleRegisterPage() {
       </section>
 
       <section style={containerStyle}>
-        <form style={formStyle}>
+        <form style={formStyle} onSubmit={handleSubmit}>
           <div style={gridStyle}>
             <div style={fieldStyle}>
               <label style={labelStyle}>Vehicle Owner Name</label>
-              <input style={inputStyle} placeholder="Enter owner name" />
+
+              <input
+                style={inputStyle}
+                placeholder="Enter owner name"
+                value={form.owner_name}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    owner_name: e.target.value,
+                  })
+                }
+              />
             </div>
 
             <div style={fieldStyle}>
               <label style={labelStyle}>Vehicle Type</label>
-              <select style={inputStyle}>
-                <option>Select vehicle type</option>
+
+              <select
+                style={inputStyle}
+                value={form.vehicle_type}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    vehicle_type: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select vehicle type</option>
                 <option>Truck</option>
                 <option>Bakkie</option>
                 <option>Taxi</option>
@@ -38,45 +114,153 @@ export default function VehicleRegisterPage() {
 
             <div style={fieldStyle}>
               <label style={labelStyle}>Vehicle Make</label>
-              <input style={inputStyle} placeholder="Toyota, Nissan, MAN..." />
+
+              <input
+                style={inputStyle}
+                placeholder="Toyota, Nissan, MAN..."
+                value={form.vehicle_make}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    vehicle_make: e.target.value,
+                  })
+                }
+              />
             </div>
 
             <div style={fieldStyle}>
               <label style={labelStyle}>Vehicle Model</label>
-              <input style={inputStyle} placeholder="Enter model" />
+
+              <input
+                style={inputStyle}
+                placeholder="Enter model"
+                value={form.vehicle_model}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    vehicle_model: e.target.value,
+                  })
+                }
+              />
             </div>
 
             <div style={fieldStyle}>
               <label style={labelStyle}>Registration Number</label>
-              <input style={inputStyle} placeholder="N 12345 W" />
+
+              <input
+                style={inputStyle}
+                placeholder="N 12345 W"
+                value={form.registration_number}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    registration_number: e.target.value,
+                  })
+                }
+              />
             </div>
 
             <div style={fieldStyle}>
               <label style={labelStyle}>Load Capacity</label>
-              <input style={inputStyle} placeholder="Example: 3 tons / 15 seats" />
+
+              <input
+                style={inputStyle}
+                placeholder="Example: 3 tons / 15 seats"
+                value={form.load_capacity}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    load_capacity: e.target.value,
+                  })
+                }
+              />
             </div>
 
             <div style={fieldStyle}>
               <label style={labelStyle}>Operating Route</label>
-              <input style={inputStyle} placeholder="Windhoek to Walvis Bay" />
+
+              <input
+                style={inputStyle}
+                placeholder="Windhoek to Walvis Bay"
+                value={form.route}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    route: e.target.value,
+                  })
+                }
+              />
             </div>
 
             <div style={fieldStyle}>
               <label style={labelStyle}>Contact Number</label>
-              <input style={inputStyle} placeholder="+264..." />
+
+              <input
+                style={inputStyle}
+                placeholder="+264..."
+                value={form.contact_number}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    contact_number: e.target.value,
+                  })
+                }
+              />
             </div>
 
             <div style={fullFieldStyle}>
               <label style={labelStyle}>Vehicle Description</label>
+
               <textarea
                 style={textareaStyle}
                 placeholder="Describe the vehicle condition, services, cargo type, or passenger capacity..."
+                value={form.description}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    description: e.target.value,
+                  })
+                }
               />
             </div>
 
             <div style={fullFieldStyle}>
               <label style={labelStyle}>Vehicle Photo Upload</label>
-              <input type="file" style={inputStyle} />
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={inputStyle}
+              />
+
+              {uploading && (
+                <p
+                  style={{
+                    color: "#f97316",
+                    fontWeight: 800,
+                  }}
+                >
+                  Uploading image...
+                </p>
+              )}
+
+              {form.image_url && (
+                <div style={{ marginTop: 14 }}>
+                  <img
+                    src={form.image_url}
+                    alt="Vehicle"
+                    style={{
+                      width: "100%",
+                      maxWidth: 340,
+                      height: 220,
+                      objectFit: "cover",
+                      borderRadius: 20,
+                      border: "1px solid #e2e8f0",
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
