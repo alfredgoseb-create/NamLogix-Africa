@@ -16,13 +16,13 @@ export default function HomePage() {
           <p style={badgeStyle}>NAMLOGIX AFRICA PLATFORM</p>
 
           <h1 style={titleStyle}>
-            Smart Logistics, Cargo, Transport & Trade Marketplace
+            Smart Logistics, Cargo, Transport, Warehouse & Trade Marketplace
           </h1>
 
           <p style={descStyle}>
             Connect cargo owners, transporters, warehouses, suppliers,
-            aviation services, and local transport bookings across Namibia and
-            Southern Africa.
+            inventory hubs, aviation services, and local transport bookings
+            across Namibia and Southern Africa.
           </p>
 
           <div style={buttonRowStyle}>
@@ -30,8 +30,12 @@ export default function HomePage() {
               📦 Post Cargo
             </Link>
 
-            <Link href="/bids" style={secondaryButtonStyle}>
-              💰 View Bids
+            <Link href="/transporters" style={secondaryButtonStyle}>
+              🚚 Find Transporters
+            </Link>
+
+            <Link href="/warehouse-network" style={whiteButtonStyle}>
+              🏬 Warehouses
             </Link>
 
             <Link href="/store" style={whiteButtonStyle}>
@@ -47,7 +51,6 @@ export default function HomePage() {
       <PlatformTrust />
       <BusinessMetrics />
       <RevenueModel />
-      
 
       <section style={containerStyle}>
         <PremiumStats
@@ -55,7 +58,7 @@ export default function HomePage() {
             {
               label: "Marketplace",
               value: "24/7",
-              text: "Cargo & transport availability",
+              text: "Cargo, trade & transport access",
             },
             {
               label: "Coverage",
@@ -64,13 +67,13 @@ export default function HomePage() {
             },
             {
               label: "Services",
-              value: "6+",
-              text: "Cargo, transport, aviation & trade",
+              value: "10+",
+              text: "Cargo, transport, warehouse & aviation",
             },
             {
               label: "Platform",
               value: "Smart",
-              text: "Modern logistics infrastructure",
+              text: "Modern trade infrastructure",
             },
           ]}
         />
@@ -89,14 +92,74 @@ export default function HomePage() {
           </PremiumCard>
 
           <PremiumCard>
-            <div style={iconStyle}>💰</div>
-            <h2 style={cardTitleStyle}>Transporter Bidding</h2>
+            <div style={iconStyle}>🚚</div>
+            <h2 style={cardTitleStyle}>Transporter Network</h2>
             <p style={cardTextStyle}>
-              Transporters can submit bids and cargo owners can compare offers
-              before assigning the shipment.
+              Customers can find trusted transporters, browse service areas, and
+              connect with available vehicles and drivers.
             </p>
-            <Link href="/bids" style={cardButtonStyle}>
-              View Bids
+            <Link href="/transporters" style={cardButtonStyle}>
+              Find Transporters
+            </Link>
+          </PremiumCard>
+
+          <PremiumCard>
+            <div style={iconStyle}>🏬</div>
+            <h2 style={cardTitleStyle}>Warehouse Network</h2>
+            <p style={cardTextStyle}>
+              Warehouses can list storage services, hold inventory, support
+              fulfillment, and connect stock to transport.
+            </p>
+            <Link href="/warehouse-network" style={cardButtonStyle}>
+              View Warehouses
+            </Link>
+          </PremiumCard>
+
+          <PremiumCard>
+            <div style={iconStyle}>📊</div>
+            <h2 style={cardTitleStyle}>Inventory Management</h2>
+            <p style={cardTextStyle}>
+              Suppliers and warehouses can manage stock, list products, track
+              orders, and prepare goods for dispatch.
+            </p>
+            <Link href="/inventory-management" style={cardButtonStyle}>
+              Manage Inventory
+            </Link>
+          </PremiumCard>
+
+          <PremiumCard>
+            <div style={iconStyle}>🏭</div>
+            <h2 style={cardTitleStyle}>Supplier Operations</h2>
+            <p style={cardTextStyle}>
+              Suppliers can register, list products, connect to warehouses, and
+              arrange delivery through the logistics network.
+            </p>
+            <Link href="/supplier-register" style={cardButtonStyle}>
+              Register Supplier
+            </Link>
+          </PremiumCard>
+
+          <PremiumCard>
+            <div style={iconStyle}>🛣️</div>
+            <h2 style={cardTitleStyle}>Route Planning</h2>
+            <p style={cardTextStyle}>
+              Plan transport routes, service areas, popular corridors, and
+              delivery movements across Namibia.
+            </p>
+            <Link href="/route-planner" style={cardButtonStyle}>
+              Open Route Planner
+            </Link>
+          </PremiumCard>
+
+          <PremiumCard>
+            <div style={iconStyle}>📍</div>
+            <h2 style={cardTitleStyle}>Live Tracking</h2>
+            <p style={cardTextStyle}>
+              Track active trips, cargo movement, transporter progress, and
+              customer delivery updates.
+            </p>
+            <Link href="/live-tracking" style={cardButtonStyle}>
+              Track Trips
             </Link>
           </PremiumCard>
 
@@ -111,18 +174,6 @@ export default function HomePage() {
               Explore Aviation
             </Link>
           </PremiumCard>
-
-          <PremiumCard>
-            <div style={iconStyle}>🏬</div>
-            <h2 style={cardTitleStyle}>Warehouse & Store</h2>
-            <p style={cardTextStyle}>
-              Warehouses and suppliers can list products, manage stock, and
-              sell inventory through the marketplace.
-            </p>
-            <Link href="/store" style={cardButtonStyle}>
-              Open Store
-            </Link>
-          </PremiumCard>
         </section>
 
         <section style={ctaStyle}>
@@ -131,14 +182,19 @@ export default function HomePage() {
           </h2>
 
           <p style={ctaTextStyle}>
-            NamLogix Africa combines logistics, transport, trade, aviation,
-            bidding, and marketplace systems into one scalable platform for
-            Namibia and the Southern African region.
+            NamLogix Africa combines logistics, transport, warehousing,
+            suppliers, inventory, trade, aviation, booking, tracking, and
+            marketplace systems into one scalable platform for Namibia and
+            Southern Africa.
           </p>
 
           <div style={buttonRowStyle}>
             <Link href="/register" style={primaryButtonStyle}>
               Create Account
+            </Link>
+
+            <Link href="/pricing" style={secondaryButtonStyle}>
+              View Pricing
             </Link>
 
             <Link href="/contact" style={whiteButtonStyle}>
@@ -167,7 +223,7 @@ const heroStyle = {
 };
 
 const heroOverlayStyle = {
-  maxWidth: 900,
+  maxWidth: 980,
   textAlign: "center" as const,
   color: "white",
 };
@@ -190,7 +246,7 @@ const descStyle = {
   fontSize: 18,
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
-  maxWidth: 760,
+  maxWidth: 820,
   margin: "0 auto",
 };
 
@@ -286,7 +342,7 @@ const ctaTitleStyle = {
 };
 
 const ctaTextStyle = {
-  maxWidth: 760,
+  maxWidth: 820,
   margin: "0 auto",
   color: "rgba(255,255,255,0.86)",
   lineHeight: 1.8,
