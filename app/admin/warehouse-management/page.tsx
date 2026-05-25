@@ -1,31 +1,52 @@
-import Link from "next/link";
+"use client";
 
-const warehouses = [
-  {
-    name: "Windhoek Storage Hub",
-    owner: "Demo Warehouse Partner",
-    location: "Windhoek",
-    products: "128",
-    status: "Pending Review",
-  },
-  {
-    name: "Walvis Bay Port Warehouse",
-    owner: "Coastal Freight Services",
-    location: "Walvis Bay",
-    products: "84",
-    status: "High Priority",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type Warehouse = {
+  id: string;
+  warehouse_name: string;
+  owner_name: string;
+  location: string;
+  contact_number: string;
+  capacity: string;
+  services: string;
+  description: string;
+  status: string;
+};
 
 export default function WarehouseManagementPage() {
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchWarehouses();
+  }, []);
+
+  async function fetchWarehouses() {
+    const { data, error } = await supabase
+      .from("warehouses")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setWarehouses(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>ADMIN CONTROL</p>
+
         <h1 style={titleStyle}>Warehouse Management</h1>
+
         <p style={descStyle}>
-          Review warehouse partners, inventory hubs, storage locations, product
-          listings, and approval status from one admin page.
+          Review warehouse partners, storage hubs, inventory facilities,
+          contact details, and approval status using live Supabase data.
         </p>
 
         <div style={buttonRowStyle}>
@@ -33,54 +54,73 @@ export default function WarehouseManagementPage() {
             Warehouse Network
           </Link>
 
-          <Link href="/warehouse-dashboard" style={secondaryButtonStyle}>
-            Warehouse Dashboard
+          <Link href="/warehouse-register" style={secondaryButtonStyle}>
+            Register Warehouse
           </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>WAREHOUSE DIRECTORY</p>
-          <h2 style={sectionTitleStyle}>Warehouse Partners Awaiting Review</h2>
+          <p style={sectionBadgeStyle}>LIVE WAREHOUSE DIRECTORY</p>
+
+          <h2 style={sectionTitleStyle}>Registered Warehouses</h2>
+
           <p style={sectionTextStyle}>
-            Later this page will connect to Supabase so admins can approve
-            warehouses, check storage details, review products, and verify
-            inventory operations.
+            Warehouse registrations now appear here from Supabase. Later admins
+            can approve, reject, verify, or suspend warehouse partners.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {warehouses.map((item) => (
-            <article key={item.name} style={cardStyle}>
-              <div style={statusStyle}>{item.status}</div>
+        {loading ? (
+          <div style={loadingStyle}>Loading warehouses...</div>
+        ) : warehouses.length === 0 ? (
+          <div style={emptyStyle}>No warehouses registered yet.</div>
+        ) : (
+          <div style={gridStyle}>
+            {warehouses.map((warehouse) => (
+              <article key={warehouse.id} style={cardStyle}>
+                <div style={statusStyle}>{warehouse.status || "pending"}</div>
 
-              <h3 style={cardTitleStyle}>{item.name}</h3>
+                <h3 style={cardTitleStyle}>{warehouse.warehouse_name}</h3>
 
-              <p style={cardTextStyle}>
-                <strong>Owner:</strong> {item.owner}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Owner:</strong> {warehouse.owner_name || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Location:</strong> {item.location}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Location:</strong> {warehouse.location || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Products:</strong> {item.products}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Phone:</strong> {warehouse.contact_number || "N/A"}
+                </p>
 
-              <div style={cardActionsStyle}>
-                <Link href="/warehouse-dashboard" style={darkButtonStyle}>
-                  Review
-                </Link>
+                <p style={cardTextStyle}>
+                  <strong>Capacity:</strong> {warehouse.capacity || "N/A"}
+                </p>
 
-                <Link href="/inventory-management" style={lightButtonStyle}>
-                  View Inventory
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <p style={cardTextStyle}>
+                  <strong>Services:</strong> {warehouse.services || "N/A"}
+                </p>
+
+                <p style={descriptionStyle}>
+                  {warehouse.description || "No description"}
+                </p>
+
+                <div style={cardActionsStyle}>
+                  <Link href="/warehouse-dashboard" style={darkButtonStyle}>
+                    Review Warehouse
+                  </Link>
+
+                  <Link href="/inventory-management" style={lightButtonStyle}>
+                    View Inventory
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -112,7 +152,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 820,
+  maxWidth: 850,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -146,7 +186,7 @@ const secondaryButtonStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 1100,
+  maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
 };
@@ -171,12 +211,28 @@ const sectionTitleStyle = {
 const sectionTextStyle = {
   color: "#64748b",
   lineHeight: 1.7,
-  maxWidth: 760,
+  maxWidth: 780,
+};
+
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -208,6 +264,12 @@ const cardTitleStyle = {
 const cardTextStyle = {
   color: "#475569",
   lineHeight: 1.7,
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 12,
 };
 
 const cardActionsStyle = {
