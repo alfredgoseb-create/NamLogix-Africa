@@ -1,30 +1,40 @@
-import Link from "next/link";
+"use client";
 
-const trackingItems = [
-  {
-    trackingId: "NLA-DEMO-2026-001",
-    customer: "Cargo Owner",
-    route: "Windhoek → Walvis Bay",
-    progress: "65%",
-    status: "On Route",
-  },
-  {
-    trackingId: "NLA-DEMO-2026-002",
-    customer: "Passenger Client",
-    route: "Hospital → Home",
-    progress: "25%",
-    status: "Departed",
-  },
-  {
-    trackingId: "NLA-DEMO-2026-003",
-    customer: "Warehouse Client",
-    route: "Warehouse → Customer",
-    progress: "10%",
-    status: "Preparing",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type TrackingUpdate = {
+  id: string;
+  tracking_number: string;
+  customer_name: string;
+  route: string;
+  progress: string;
+  status: string;
+  notes: string;
+};
 
 export default function AdminTrackingManagementPage() {
+  const [trackingItems, setTrackingItems] = useState<TrackingUpdate[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTracking();
+  }, []);
+
+  async function fetchTracking() {
+    const { data, error } = await supabase
+      .from("tracking_updates")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setTrackingItems(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
@@ -33,84 +43,83 @@ export default function AdminTrackingManagementPage() {
         <h1 style={titleStyle}>Tracking Management</h1>
 
         <p style={descStyle}>
-          Monitor customer tracking, live trips, cargo movement,
-          booking progress, and delivery updates from one admin page.
+          Monitor live tracking records, trip progress, customer deliveries,
+          cargo movement, and transporter updates from Supabase.
         </p>
 
         <div style={buttonRowStyle}>
-          <Link href="/live-tracking" style={primaryButtonStyle}>
-            Live Tracking
+          <Link href="/tracking-create" style={primaryButtonStyle}>
+            Create Tracking
           </Link>
 
-          <Link href="/customer-tracking" style={secondaryButtonStyle}>
-            Customer Tracking
+          <Link href="/live-tracking" style={secondaryButtonStyle}>
+            Live Tracking
           </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>TRACKING QUEUE</p>
+          <p style={sectionBadgeStyle}>LIVE TRACKING CONTROL</p>
 
-          <h2 style={sectionTitleStyle}>
-            Active Tracking Records
-          </h2>
+          <h2 style={sectionTitleStyle}>Tracking Records</h2>
 
           <p style={sectionTextStyle}>
-            Later this page will connect to Supabase so admins can
-            update trip progress, delivery status, transporter
-            check-ins, and customer notifications.
+            Tracking records created through the platform appear here. Later
+            admins can update progress, status, and delivery notes.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {trackingItems.map((item) => (
-            <article key={item.trackingId} style={cardStyle}>
-              <div style={statusStyle}>{item.status}</div>
+        {loading ? (
+          <div style={loadingStyle}>Loading tracking records...</div>
+        ) : trackingItems.length === 0 ? (
+          <div style={emptyStyle}>No tracking records found yet.</div>
+        ) : (
+          <div style={gridStyle}>
+            {trackingItems.map((item) => (
+              <article key={item.id} style={cardStyle}>
+                <div style={statusStyle}>{item.status || "preparing"}</div>
 
-              <h3 style={cardTitleStyle}>
-                {item.trackingId}
-              </h3>
+                <h3 style={cardTitleStyle}>
+                  {item.tracking_number || "Tracking Record"}
+                </h3>
 
-              <p style={cardTextStyle}>
-                <strong>Customer:</strong> {item.customer}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Customer:</strong> {item.customer_name || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Route:</strong> {item.route}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Route:</strong> {item.route || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Progress:</strong> {item.progress}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Progress:</strong> {item.progress || "0%"}
+                </p>
 
-              <div style={progressWrapStyle}>
-                <div
-                  style={{
-                    ...progressBarStyle,
-                    width: item.progress,
-                  }}
-                />
-              </div>
+                <div style={progressWrapStyle}>
+                  <div
+                    style={{
+                      ...progressBarStyle,
+                      width: item.progress || "0%",
+                    }}
+                  />
+                </div>
 
-              <div style={cardActionsStyle}>
-                <Link
-                  href="/live-tracking"
-                  style={darkButtonStyle}
-                >
-                  View Live Trip
-                </Link>
+                <p style={descriptionStyle}>{item.notes || "No notes"}</p>
 
-                <Link
-                  href="/customer-tracking"
-                  style={lightButtonStyle}
-                >
-                  Customer View
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <div style={cardActionsStyle}>
+                  <Link href="/tracking-create" style={darkButtonStyle}>
+                    Add Update
+                  </Link>
+
+                  <Link href="/customer-tracking" style={lightButtonStyle}>
+                    Customer View
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -142,7 +151,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 850,
+  maxWidth: 860,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -176,7 +185,7 @@ const secondaryButtonStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 1100,
+  maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
 };
@@ -204,10 +213,25 @@ const sectionTextStyle = {
   maxWidth: 780,
 };
 
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
+};
+
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns:
-    "repeat(auto-fit, minmax(280px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -254,6 +278,12 @@ const progressBarStyle = {
   height: "100%",
   background: "#f97316",
   borderRadius: 999,
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 14,
 };
 
 const cardActionsStyle = {
