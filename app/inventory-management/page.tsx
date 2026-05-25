@@ -1,35 +1,53 @@
-import Link from "next/link";
+"use client";
 
-const inventoryItems = [
-  {
-    product: "Cement Bags",
-    warehouse: "Windhoek Storage Hub",
-    stock: "250 units",
-    status: "In Stock",
-  },
-  {
-    product: "Retail Goods",
-    warehouse: "Walvis Bay Port Warehouse",
-    stock: "84 boxes",
-    status: "Ready for Dispatch",
-  },
-  {
-    product: "Building Materials",
-    warehouse: "Northern Trade Storage",
-    stock: "Low Stock",
-    status: "Restock Needed",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type InventoryItem = {
+  id: string;
+  product_name: string;
+  category: string;
+  warehouse_name: string;
+  supplier_name: string;
+  stock_quantity: string;
+  price: number | null;
+  status: string;
+  image_url: string | null;
+  description: string;
+};
 
 export default function InventoryManagementPage() {
+  const [items, setItems] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  async function fetchInventory() {
+    const { data, error } = await supabase
+      .from("inventory_items")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setItems(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>INVENTORY CONTROL</p>
+
         <h1 style={titleStyle}>Inventory Management</h1>
+
         <p style={descStyle}>
-          Track warehouse stock, product availability, dispatch readiness,
-          supplier goods, and marketplace inventory from one central system.
+          Track warehouse stock, product availability, supplier goods,
+          marketplace inventory, dispatch readiness, and delivery preparation.
         </p>
 
         <div style={buttonRowStyle}>
@@ -45,51 +63,68 @@ export default function InventoryManagementPage() {
 
       <section style={containerStyle}>
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>STOCK OVERVIEW</p>
-          <h2 style={sectionTitleStyle}>Warehouse Inventory Items</h2>
+          <p style={sectionBadgeStyle}>LIVE INVENTORY</p>
+
+          <h2 style={sectionTitleStyle}>Warehouse Stock Items</h2>
+
           <p style={sectionTextStyle}>
-            Later this page will connect to Supabase so warehouses can add,
-            edit, reduce, restock, and sell real products from their inventory.
+            Inventory records now load from Supabase. Later warehouses and
+            suppliers will add real products, images, prices, and stock levels.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {inventoryItems.map((item) => (
-            <article key={item.product} style={cardStyle}>
-              <div style={statusStyle}>{item.status}</div>
+        {loading ? (
+          <div style={loadingStyle}>Loading inventory...</div>
+        ) : items.length === 0 ? (
+          <div style={emptyStyle}>
+            No inventory items found yet. Add stock from Supabase first.
+          </div>
+        ) : (
+          <div style={gridStyle}>
+            {items.map((item) => (
+              <article key={item.id} style={cardStyle}>
+                <div style={statusStyle}>{item.status || "in_stock"}</div>
 
-              <h3 style={cardTitleStyle}>{item.product}</h3>
+                <h3 style={cardTitleStyle}>{item.product_name}</h3>
 
-              <p style={cardTextStyle}>
-                <strong>Warehouse:</strong> {item.warehouse}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Category:</strong> {item.category || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Stock:</strong> {item.stock}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Warehouse:</strong> {item.warehouse_name || "N/A"}
+                </p>
 
-              <div style={cardActionsStyle}>
-                <Link href="/store" style={darkButtonStyle}>
-                  View Product
-                </Link>
+                <p style={cardTextStyle}>
+                  <strong>Supplier:</strong> {item.supplier_name || "N/A"}
+                </p>
 
-                <Link href="/cargo-matching" style={lightButtonStyle}>
-                  Arrange Delivery
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <p style={cardTextStyle}>
+                  <strong>Stock:</strong> {item.stock_quantity || "N/A"}
+                </p>
 
-        <div style={noticeStyle}>
-          <h3 style={noticeTitleStyle}>What inventory means here</h3>
-          <p style={noticeTextStyle}>
-            Inventory means the products and stock already stored inside a
-            warehouse. NamLogix Africa can help warehouses list those products,
-            manage quantities, sell items online, and arrange transport after a
-            customer orders.
-          </p>
-        </div>
+                <p style={cardTextStyle}>
+                  <strong>Price:</strong>{" "}
+                  {item.price ? `N$ ${item.price}` : "Not set"}
+                </p>
+
+                <p style={descriptionStyle}>
+                  {item.description || "No description"}
+                </p>
+
+                <div style={cardActionsStyle}>
+                  <Link href="/store" style={darkButtonStyle}>
+                    View Store
+                  </Link>
+
+                  <Link href="/cargo-matching" style={lightButtonStyle}>
+                    Arrange Delivery
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -121,7 +156,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 850,
+  maxWidth: 860,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -155,7 +190,7 @@ const secondaryButtonStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 1100,
+  maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
 };
@@ -180,12 +215,28 @@ const sectionTitleStyle = {
 const sectionTextStyle = {
   color: "#64748b",
   lineHeight: 1.7,
-  maxWidth: 760,
+  maxWidth: 780,
+};
+
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -209,7 +260,7 @@ const statusStyle = {
 };
 
 const cardTitleStyle = {
-  fontSize: 25,
+  fontSize: 26,
   fontWeight: 900,
   color: "#0f172a",
 };
@@ -217,6 +268,12 @@ const cardTitleStyle = {
 const cardTextStyle = {
   color: "#475569",
   lineHeight: 1.7,
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 12,
 };
 
 const cardActionsStyle = {
@@ -242,25 +299,4 @@ const lightButtonStyle = {
   borderRadius: 14,
   fontWeight: 900,
   textDecoration: "none",
-};
-
-const noticeStyle = {
-  marginTop: 40,
-  background: "#eff6ff",
-  border: "1px solid #bfdbfe",
-  borderRadius: 28,
-  padding: 28,
-};
-
-const noticeTitleStyle = {
-  color: "#1d4ed8",
-  fontSize: 24,
-  fontWeight: 900,
-  margin: "0 0 8px",
-};
-
-const noticeTextStyle = {
-  color: "#1e3a8a",
-  lineHeight: 1.7,
-  margin: 0,
 };
