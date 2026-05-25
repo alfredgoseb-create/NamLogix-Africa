@@ -1,93 +1,135 @@
-import Link from "next/link";
+"use client";
 
-const bookings = [
-  {
-    customer: "Cargo Owner",
-    service: "Freight Transport",
-    route: "Windhoek → Walvis Bay",
-    transporter: "NamLogix Transport Partner",
-    status: "Awaiting Confirmation",
-  },
-  {
-    customer: "Passenger Client",
-    service: "Town Ride",
-    route: "Hospital → Home",
-    transporter: "Local Delivery Partner",
-    status: "Pending Assignment",
-  },
-  {
-    customer: "Warehouse Client",
-    service: "Product Delivery",
-    route: "Warehouse → Customer",
-    transporter: "Not Assigned",
-    status: "New Request",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type BookingRequest = {
+  id: string;
+  customer_name: string;
+  service_type: string;
+  pickup_location: string;
+  delivery_location: string;
+  preferred_date: string;
+  contact_number: string;
+  notes: string;
+  status: string;
+};
 
 export default function AdminBookingManagementPage() {
+  const [bookings, setBookings] = useState<BookingRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  async function fetchBookings() {
+    const { data, error } = await supabase
+      .from("booking_requests")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setBookings(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>ADMIN CONTROL</p>
+
         <h1 style={titleStyle}>Booking Management</h1>
+
         <p style={descStyle}>
-          Review cargo bookings, ride requests, warehouse deliveries, customer
-          requests, and transporter assignments.
+          Review live cargo bookings, ride requests, warehouse deliveries,
+          customer jobs, and transporter assignments from Supabase.
         </p>
 
         <div style={buttonRowStyle}>
-          <Link href="/booking-requests" style={primaryButtonStyle}>
-            Public Bookings
+          <Link href="/booking-create" style={primaryButtonStyle}>
+            Create Booking
           </Link>
 
-          <Link href="/cargo-matching" style={secondaryButtonStyle}>
-            Cargo Matching
+          <Link href="/booking-requests" style={secondaryButtonStyle}>
+            Public Bookings
           </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>BOOKING QUEUE</p>
-          <h2 style={sectionTitleStyle}>Bookings Requiring Admin Review</h2>
+          <p style={sectionBadgeStyle}>LIVE BOOKING QUEUE</p>
+
+          <h2 style={sectionTitleStyle}>Bookings Requiring Review</h2>
+
           <p style={sectionTextStyle}>
-            Later this page will connect to Supabase so admins can assign
-            transporters, confirm bookings, cancel requests, and update tracking
-            status.
+            Bookings submitted through the platform appear here. Later admins
+            can assign transporters, approve jobs, and update tracking status.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {bookings.map((item) => (
-            <article key={`${item.customer}-${item.route}`} style={cardStyle}>
-              <div style={statusStyle}>{item.status}</div>
+        {loading ? (
+          <div style={loadingStyle}>Loading bookings...</div>
+        ) : bookings.length === 0 ? (
+          <div style={emptyStyle}>No booking requests found yet.</div>
+        ) : (
+          <div style={gridStyle}>
+            {bookings.map((booking) => (
+              <article key={booking.id} style={cardStyle}>
+                <div style={statusStyle}>
+                  {booking.status || "new_request"}
+                </div>
 
-              <h3 style={cardTitleStyle}>{item.service}</h3>
+                <h3 style={cardTitleStyle}>
+                  {booking.service_type || "Service Request"}
+                </h3>
 
-              <p style={cardTextStyle}>
-                <strong>Customer:</strong> {item.customer}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Customer:</strong>{" "}
+                  {booking.customer_name || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Route:</strong> {item.route}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Pickup:</strong>{" "}
+                  {booking.pickup_location || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Transporter:</strong> {item.transporter}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Delivery:</strong>{" "}
+                  {booking.delivery_location || "N/A"}
+                </p>
 
-              <div style={cardActionsStyle}>
-                <Link href="/booking-requests" style={darkButtonStyle}>
-                  Review Booking
-                </Link>
+                <p style={cardTextStyle}>
+                  <strong>Date:</strong>{" "}
+                  {booking.preferred_date || "Flexible"}
+                </p>
 
-                <Link href="/live-tracking" style={lightButtonStyle}>
-                  Tracking
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <p style={cardTextStyle}>
+                  <strong>Contact:</strong>{" "}
+                  {booking.contact_number || "N/A"}
+                </p>
+
+                <p style={descriptionStyle}>
+                  {booking.notes || "No notes"}
+                </p>
+
+                <div style={cardActionsStyle}>
+                  <Link href="/cargo-matching" style={darkButtonStyle}>
+                    Match Transport
+                  </Link>
+
+                  <Link href="/live-tracking" style={lightButtonStyle}>
+                    Tracking
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -119,7 +161,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 840,
+  maxWidth: 850,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -153,7 +195,7 @@ const secondaryButtonStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 1100,
+  maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
 };
@@ -181,9 +223,25 @@ const sectionTextStyle = {
   maxWidth: 780,
 };
 
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
+};
+
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -215,6 +273,12 @@ const cardTitleStyle = {
 const cardTextStyle = {
   color: "#475569",
   lineHeight: 1.7,
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 12,
 };
 
 const cardActionsStyle = {
