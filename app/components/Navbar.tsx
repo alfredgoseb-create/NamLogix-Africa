@@ -23,6 +23,8 @@ const mainLinks = [
   { href: "/live-tracking", label: "Live Tracking" },
   { href: "/tracking-create", label: "Create Tracking" },
   { href: "/customer-tracking", label: "Track Booking" },
+   { href: "/customer-tracking", label: "Customer Tracking" },
+
   { href: "/warehouse-network", label: "Warehouses" },
   { href: "/warehouse-register", label: "Register Warehouse" },
   { href: "/warehouse-dashboard", label: "Warehouse Dashboard" },
@@ -53,7 +55,7 @@ const adminLinks = [
   { href: "/admin/supplier-management", label: "Suppliers" },
   { href: "/admin/booking-management", label: "Bookings" },
   { href: "/admin/tracking-management", label: "Tracking" },
-  { href: "/customer-tracking", label: "Customer Tracking" },
+ 
   { href: "/admin/settings", label: "Settings" },
 ];
 
