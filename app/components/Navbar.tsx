@@ -16,6 +16,7 @@ const mainLinks = [
   { href: "/vehicle-register", label: "Register Vehicle" },
   { href: "/vehicle-documents", label: "Documents" },
   { href: "/driver-profiles", label: "Drivers" },
+  { href: "/driver-register", label: "Register Driver" },
   { href: "/transporters", label: "Transporters" },
   { href: "/transport-company", label: "Company Profile" },
   { href: "/cargo-matching", label: "Cargo Match" },
