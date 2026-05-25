@@ -1,87 +1,137 @@
-import Link from "next/link";
+"use client";
 
-const drivers = [
-  {
-    name: "Demo Driver",
-    license: "Code CE",
-    experience: "8 years",
-    location: "Windhoek",
-    status: "Verified Soon",
-  },
-  {
-    name: "Regional Transport Driver",
-    license: "Code C1",
-    experience: "5 years",
-    location: "Walvis Bay",
-    status: "Pending Review",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type Driver = {
+  id: string;
+  full_name: string;
+  license_number: string;
+  experience_years: string;
+  phone: string;
+  status: string;
+  route_region: string;
+};
 
 export default function DriverProfilesPage() {
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDrivers();
+  }, []);
+
+  async function fetchDrivers() {
+    const { data, error } = await supabase
+      .from("drivers")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setDrivers(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
-        <p style={badgeStyle}>TRANSPORTER NETWORK</p>
-        <h1 style={titleStyle}>Driver Profiles</h1>
+        <p style={badgeStyle}>TRANSPORT OPERATIONS</p>
+
+        <h1 style={titleStyle}>Professional Driver Network</h1>
+
         <p style={descStyle}>
-          Build trust by displaying driver experience, license information,
-          service areas, and verification status.
+          Manage transport drivers, delivery teams, cargo operators,
+          logistics crews, and regional transport professionals across Namibia
+          and Southern Africa.
         </p>
 
-        <div style={buttonRowStyle}>
-          <Link href="/my-vehicles" style={primaryButtonStyle}>
-            My Vehicles
+        <div style={heroButtonsStyle}>
+          <Link href="/driver-register" style={primaryButtonStyle}>
+            Register Driver
           </Link>
 
-          <Link href="/vehicle-documents" style={secondaryButtonStyle}>
-            Vehicle Documents
+          <Link href="/transporters" style={secondaryButtonStyle}>
+            Transport Companies
           </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>DRIVER VERIFICATION</p>
-          <h2 style={sectionTitleStyle}>Registered Transport Drivers</h2>
+          <p style={sectionBadgeStyle}>DRIVER DIRECTORY</p>
+
+          <h2 style={sectionTitleStyle}>
+            Active Driver Profiles
+          </h2>
+
           <p style={sectionTextStyle}>
-            This page will later connect to Supabase so transporters can create
-            real driver profiles and upload license documents.
+            View transport professionals connected to the NamLogix Africa
+            logistics ecosystem.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {drivers.map((driver) => (
-            <article key={driver.name} style={cardStyle}>
-              <div style={avatarStyle}>👤</div>
+        {loading ? (
+          <div style={loadingStyle}>
+            Loading drivers...
+          </div>
+        ) : drivers.length === 0 ? (
+          <div style={emptyStyle}>
+            No drivers registered yet.
+          </div>
+        ) : (
+          <div style={gridStyle}>
+            {drivers.map((driver) => (
+              <article key={driver.id} style={cardStyle}>
+                <div style={statusStyle}>
+                  {driver.status || "active"}
+                </div>
 
-              <div style={statusStyle}>{driver.status}</div>
+                <h3 style={cardTitleStyle}>
+                  {driver.full_name}
+                </h3>
 
-              <h3 style={cardTitleStyle}>{driver.name}</h3>
+                <p style={cardTextStyle}>
+                  <strong>License:</strong>{" "}
+                  {driver.license_number || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>License:</strong> {driver.license}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Experience:</strong>{" "}
+                  {driver.experience_years || "0"} years
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Experience:</strong> {driver.experience}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Phone:</strong>{" "}
+                  {driver.phone || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Location:</strong> {driver.location}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Region:</strong>{" "}
+                  {driver.route_region || "Namibia"}
+                </p>
 
-              <div style={cardActionsStyle}>
-                <Link href="/vehicle-documents" style={darkButtonStyle}>
-                  Upload License
-                </Link>
+                <div style={cardActionsStyle}>
+                  <Link
+                    href="/live-tracking"
+                    style={darkButtonStyle}
+                  >
+                    Tracking
+                  </Link>
 
-                <Link href="/my-vehicles" style={lightButtonStyle}>
-                  View Fleet
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                  <Link
+                    href="/booking-requests"
+                    style={lightButtonStyle}
+                  >
+                    Assign Booking
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -113,14 +163,14 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 780,
+  maxWidth: 860,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
   fontSize: 18,
 };
 
-const buttonRowStyle = {
+const heroButtonsStyle = {
   display: "flex",
   gap: 14,
   justifyContent: "center",
@@ -147,7 +197,7 @@ const secondaryButtonStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 1100,
+  maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
 };
@@ -172,12 +222,29 @@ const sectionTitleStyle = {
 const sectionTextStyle = {
   color: "#64748b",
   lineHeight: 1.7,
-  maxWidth: 720,
+  maxWidth: 780,
+};
+
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gridTemplateColumns:
+    "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -186,33 +253,23 @@ const cardStyle = {
   borderRadius: 28,
   padding: 28,
   border: "1px solid #e5e7eb",
-  boxShadow: "0 12px 30px rgba(15,23,42,0.06)",
-};
-
-const avatarStyle = {
-  width: 70,
-  height: 70,
-  borderRadius: "50%",
-  display: "grid",
-  placeItems: "center",
-  fontSize: 34,
-  background: "#eff6ff",
-  marginBottom: 18,
+  boxShadow:
+    "0 12px 30px rgba(15,23,42,0.06)",
 };
 
 const statusStyle = {
   display: "inline-block",
-  background: "#fff7ed",
-  color: "#c2410c",
+  background: "#dcfce7",
+  color: "#166534",
   padding: "8px 12px",
   borderRadius: 999,
   fontWeight: 900,
   fontSize: 13,
-  marginBottom: 14,
+  marginBottom: 18,
 };
 
 const cardTitleStyle = {
-  fontSize: 25,
+  fontSize: 26,
   fontWeight: 900,
   color: "#0f172a",
 };
