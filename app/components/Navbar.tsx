@@ -11,7 +11,7 @@ const mainLinks = [
   { href: "/trip-offers", label: "Trips" },
   { href: "/create-trip", label: "Create Trip" },
   { href: "/booking-requests", label: "Bookings" },
-  { href: "/admin/tracking-management", label: "Tracking" },
+  
   { href: "/booking-create", label: "Create Booking" },
   { href: "/my-vehicles", label: "Vehicles" },
   { href: "/vehicle-register", label: "Register Vehicle" },
@@ -53,6 +53,7 @@ const adminLinks = [
     { href: "/admin/warehouse-management", label: "Warehouses" },
   { href: "/admin/supplier-management", label: "Suppliers" },
   { href: "/admin/booking-management", label: "Bookings" },
+  { href: "/admin/tracking-management", label: "Tracking" },
   { href: "/admin/settings", label: "Settings" },
 ];
 
