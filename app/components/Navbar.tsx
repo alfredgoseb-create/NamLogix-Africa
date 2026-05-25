@@ -21,6 +21,7 @@ const mainLinks = [
   { href: "/cargo-matching", label: "Cargo Match" },
   { href: "/fleet-dashboard", label: "Fleet Dashboard" },
   { href: "/live-tracking", label: "Live Tracking" },
+  { href: "/tracking-create", label: "Create Tracking" },
   { href: "/customer-tracking", label: "Track Booking" },
   { href: "/warehouse-network", label: "Warehouses" },
   { href: "/warehouse-register", label: "Register Warehouse" },
