@@ -1,31 +1,52 @@
-import Link from "next/link";
+"use client";
 
-const suppliers = [
-  {
-    name: "Namibia Building Supplies",
-    category: "Construction",
-    location: "Windhoek",
-    products: "36",
-    status: "Pending Review",
-  },
-  {
-    name: "Coastal Trade Supplier",
-    category: "Retail Goods",
-    location: "Walvis Bay",
-    products: "84",
-    status: "Active Demo",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type Supplier = {
+  id: string;
+  supplier_name: string;
+  contact_person: string;
+  location: string;
+  contact_number: string;
+  product_category: string;
+  warehouse_linked: string;
+  description: string;
+  status: string;
+};
 
 export default function SupplierManagementPage() {
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSuppliers();
+  }, []);
+
+  async function fetchSuppliers() {
+    const { data, error } = await supabase
+      .from("suppliers")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setSuppliers(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>ADMIN CONTROL</p>
+
         <h1 style={titleStyle}>Supplier Management</h1>
+
         <p style={descStyle}>
-          Review supplier accounts, product listings, warehouse stock,
-          categories, and marketplace readiness.
+          Review supplier accounts, product categories, warehouse links,
+          contact details, and marketplace readiness using live Supabase data.
         </p>
 
         <div style={buttonRowStyle}>
@@ -41,46 +62,68 @@ export default function SupplierManagementPage() {
 
       <section style={containerStyle}>
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>SUPPLIER DIRECTORY</p>
-          <h2 style={sectionTitleStyle}>Suppliers Awaiting Review</h2>
+          <p style={sectionBadgeStyle}>LIVE SUPPLIER DIRECTORY</p>
+
+          <h2 style={sectionTitleStyle}>Registered Suppliers</h2>
+
           <p style={sectionTextStyle}>
-            Later this page will connect to Supabase so admins can approve
-            suppliers, review products, verify businesses, and manage seller
-            visibility.
+            Supplier registrations now appear here from Supabase. Later admins
+            can approve, reject, verify, or suspend supplier accounts.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {suppliers.map((item) => (
-            <article key={item.name} style={cardStyle}>
-              <div style={statusStyle}>{item.status}</div>
+        {loading ? (
+          <div style={loadingStyle}>Loading suppliers...</div>
+        ) : suppliers.length === 0 ? (
+          <div style={emptyStyle}>No suppliers registered yet.</div>
+        ) : (
+          <div style={gridStyle}>
+            {suppliers.map((supplier) => (
+              <article key={supplier.id} style={cardStyle}>
+                <div style={statusStyle}>{supplier.status || "pending"}</div>
 
-              <h3 style={cardTitleStyle}>{item.name}</h3>
+                <h3 style={cardTitleStyle}>{supplier.supplier_name}</h3>
 
-              <p style={cardTextStyle}>
-                <strong>Category:</strong> {item.category}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Contact:</strong>{" "}
+                  {supplier.contact_person || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Location:</strong> {item.location}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Location:</strong> {supplier.location || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Products:</strong> {item.products}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Phone:</strong> {supplier.contact_number || "N/A"}
+                </p>
 
-              <div style={cardActionsStyle}>
-                <Link href="/supplier-dashboard" style={darkButtonStyle}>
-                  Review
-                </Link>
+                <p style={cardTextStyle}>
+                  <strong>Category:</strong>{" "}
+                  {supplier.product_category || "N/A"}
+                </p>
 
-                <Link href="/store" style={lightButtonStyle}>
-                  View Products
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <p style={cardTextStyle}>
+                  <strong>Warehouse:</strong>{" "}
+                  {supplier.warehouse_linked || "N/A"}
+                </p>
+
+                <p style={descriptionStyle}>
+                  {supplier.description || "No description"}
+                </p>
+
+                <div style={cardActionsStyle}>
+                  <Link href="/supplier-dashboard" style={darkButtonStyle}>
+                    Review Profile
+                  </Link>
+
+                  <Link href="/store" style={lightButtonStyle}>
+                    View Products
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -112,7 +155,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 820,
+  maxWidth: 850,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -146,7 +189,7 @@ const secondaryButtonStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 1100,
+  maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
 };
@@ -171,12 +214,28 @@ const sectionTitleStyle = {
 const sectionTextStyle = {
   color: "#64748b",
   lineHeight: 1.7,
-  maxWidth: 760,
+  maxWidth: 780,
+};
+
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -208,6 +267,12 @@ const cardTitleStyle = {
 const cardTextStyle = {
   color: "#475569",
   lineHeight: 1.7,
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 12,
 };
 
 const cardActionsStyle = {
