@@ -24,7 +24,6 @@ const mainLinks = [
   { href: "/warehouse-network", label: "Warehouses" },
   { href: "/warehouse-register", label: "Register Warehouse" },
   { href: "/warehouse-dashboard", label: "Warehouse Dashboard" },
-  { href: "/admin/warehouse-management", label: "Warehouses" },
   { href: "/inventory-management", label: "Inventory" },
   { href: "/supplier-dashboard", label: "Supplier Dashboard" },
   { href: "/supplier-register", label: "Register Supplier" },
@@ -47,6 +46,8 @@ const adminLinks = [
   { href: "/admin/shipments", label: "Shipments" },
   { href: "/admin/reports", label: "Reports" },
   { href: "/admin/analytics", label: "Analytics" },
+    { href: "/admin/warehouse-management", label: "Warehouses" },
+  { href: "/admin/supplier-management", label: "Suppliers" },
   { href: "/admin/settings", label: "Settings" },
 ];
 
