@@ -1,81 +1,144 @@
-import Link from "next/link";
+"use client";
 
-const trackingUpdates = [
-  {
-    title: "Booking Received",
-    time: "09:00",
-    description: "Your transport request was received by NamLogix Africa.",
-    status: "Completed",
-  },
-  {
-    title: "Transporter Assigned",
-    time: "10:30",
-    description: "A transporter has been matched to your booking.",
-    status: "Completed",
-  },
-  {
-    title: "Vehicle On Route",
-    time: "Now",
-    description: "The assigned vehicle is currently moving toward the destination.",
-    status: "Active",
-  },
-  {
-    title: "Delivery Confirmation",
-    time: "Pending",
-    description: "Final delivery confirmation will appear here.",
-    status: "Pending",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type TrackingUpdate = {
+  id: string;
+  tracking_number: string;
+  customer_name: string;
+  route: string;
+  progress: string;
+  status: string;
+  notes: string;
+};
 
 export default function CustomerTrackingPage() {
+  const [trackingItems, setTrackingItems] = useState<TrackingUpdate[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTracking();
+  }, []);
+
+  async function fetchTracking() {
+    const { data, error } = await supabase
+      .from("tracking_updates")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setTrackingItems(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>CUSTOMER TRACKING</p>
-        <h1 style={titleStyle}>Track Your Booking</h1>
+
+        <h1 style={titleStyle}>Track Your Delivery</h1>
+
         <p style={descStyle}>
-          Give customers a simple way to follow cargo, ride, warehouse delivery,
-          or transport bookings from request to final completion.
+          Customers can monitor cargo, warehouse deliveries,
+          logistics movements, and transporter progress in real time.
         </p>
 
         <div style={buttonRowStyle}>
-          <Link href="/booking-requests" style={primaryButtonStyle}>
-            Booking Requests
+          <Link href="/live-tracking" style={primaryButtonStyle}>
+            Live Tracking
           </Link>
 
-          <Link href="/live-tracking" style={secondaryButtonStyle}>
-            Live Tracking
+          <Link href="/booking-requests" style={secondaryButtonStyle}>
+            Booking Requests
           </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
-        <div style={trackingCardStyle}>
-          <p style={sectionBadgeStyle}>TRACKING ID</p>
-          <h2 style={sectionTitleStyle}>NLA-DEMO-2026-001</h2>
+        <div style={sectionHeaderStyle}>
+          <p style={sectionBadgeStyle}>LIVE DELIVERY STATUS</p>
+
+          <h2 style={sectionTitleStyle}>
+            Active Customer Deliveries
+          </h2>
+
           <p style={sectionTextStyle}>
-            This demo timeline shows how customers will see transport progress
-            after making a booking.
+            Customers can view delivery progress,
+            transporter updates, and trip movement here.
           </p>
+        </div>
 
-          <div style={timelineStyle}>
-            {trackingUpdates.map((item) => (
-              <article key={item.title} style={timelineItemStyle}>
-                <div style={dotStyle}></div>
+        {loading ? (
+          <div style={loadingStyle}>
+            Loading tracking data...
+          </div>
+        ) : trackingItems.length === 0 ? (
+          <div style={emptyStyle}>
+            No tracking records found yet.
+          </div>
+        ) : (
+          <div style={gridStyle}>
+            {trackingItems.map((item) => (
+              <article key={item.id} style={cardStyle}>
+                <div style={statusStyle}>
+                  {item.status || "preparing"}
+                </div>
 
-                <div style={timelineContentStyle}>
-                  <div style={timelineTopStyle}>
-                    <h3 style={timelineTitleStyle}>{item.title}</h3>
-                    <span style={statusStyle}>{item.status}</span>
-                  </div>
+                <h3 style={cardTitleStyle}>
+                  {item.tracking_number}
+                </h3>
 
-                  <p style={timeStyle}>{item.time}</p>
-                  <p style={timelineTextStyle}>{item.description}</p>
+                <p style={cardTextStyle}>
+                  <strong>Customer:</strong>{" "}
+                  {item.customer_name || "N/A"}
+                </p>
+
+                <p style={cardTextStyle}>
+                  <strong>Route:</strong>{" "}
+                  {item.route || "N/A"}
+                </p>
+
+                <p style={cardTextStyle}>
+                  <strong>Progress:</strong>{" "}
+                  {item.progress || "0%"}
+                </p>
+
+                <div style={progressWrapStyle}>
+                  <div
+                    style={{
+                      ...progressBarStyle,
+                      width: item.progress || "0%",
+                    }}
+                  />
+                </div>
+
+                <p style={descriptionStyle}>
+                  {item.notes || "No notes available."}
+                </p>
+
+                <div style={cardActionsStyle}>
+                  <Link
+                    href="/booking-requests"
+                    style={darkButtonStyle}
+                  >
+                    Booking Details
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    style={lightButtonStyle}
+                  >
+                    Support
+                  </Link>
                 </div>
               </article>
             ))}
           </div>
-        </div>
+        )}
       </section>
     </main>
   );
@@ -107,7 +170,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 820,
+  maxWidth: 860,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -141,24 +204,19 @@ const secondaryButtonStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 900,
+  maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
 };
 
-const trackingCardStyle = {
-  background: "white",
-  borderRadius: 30,
-  padding: 34,
-  border: "1px solid #e5e7eb",
-  boxShadow: "0 16px 40px rgba(15,23,42,0.08)",
+const sectionHeaderStyle = {
+  marginBottom: 30,
 };
 
 const sectionBadgeStyle = {
   color: "#f97316",
   fontWeight: 900,
   letterSpacing: 1,
-  margin: 0,
 };
 
 const sectionTitleStyle = {
@@ -171,67 +229,105 @@ const sectionTitleStyle = {
 const sectionTextStyle = {
   color: "#64748b",
   lineHeight: 1.7,
+  maxWidth: 780,
 };
 
-const timelineStyle = {
-  marginTop: 34,
-  display: "grid",
-  gap: 22,
-};
-
-const timelineItemStyle = {
-  display: "grid",
-  gridTemplateColumns: "24px 1fr",
-  gap: 16,
-};
-
-const dotStyle = {
-  width: 16,
-  height: 16,
-  borderRadius: "50%",
-  background: "#f97316",
-  marginTop: 8,
-};
-
-const timelineContentStyle = {
-  background: "#f8fafc",
-  border: "1px solid #e5e7eb",
-  borderRadius: 22,
-  padding: 22,
-};
-
-const timelineTopStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: 12,
-  flexWrap: "wrap" as const,
-};
-
-const timelineTitleStyle = {
-  color: "#0f172a",
-  fontSize: 21,
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
   fontWeight: 900,
-  margin: 0,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns:
+    "repeat(auto-fit, minmax(300px, 1fr))",
+  gap: 24,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 28,
+  padding: 28,
+  border: "1px solid #e5e7eb",
+  boxShadow:
+    "0 12px 30px rgba(15,23,42,0.06)",
 };
 
 const statusStyle = {
-  background: "#eff6ff",
-  color: "#1d4ed8",
-  padding: "7px 11px",
+  display: "inline-block",
+  background: "#dcfce7",
+  color: "#166534",
+  padding: "8px 12px",
   borderRadius: 999,
   fontWeight: 900,
-  fontSize: 12,
+  fontSize: 13,
+  marginBottom: 18,
 };
 
-const timeStyle = {
-  color: "#f97316",
+const cardTitleStyle = {
+  fontSize: 26,
   fontWeight: 900,
-  margin: "12px 0 6px",
+  color: "#0f172a",
 };
 
-const timelineTextStyle = {
+const cardTextStyle = {
+  color: "#475569",
+  lineHeight: 1.7,
+};
+
+const progressWrapStyle = {
+  width: "100%",
+  height: 12,
+  background: "#e5e7eb",
+  borderRadius: 999,
+  overflow: "hidden",
+  marginTop: 14,
+};
+
+const progressBarStyle = {
+  height: "100%",
+  background: "#f97316",
+  borderRadius: 999,
+};
+
+const descriptionStyle = {
   color: "#64748b",
   lineHeight: 1.7,
-  margin: 0,
+  marginTop: 14,
+};
+
+const cardActionsStyle = {
+  display: "flex",
+  gap: 10,
+  flexWrap: "wrap" as const,
+  marginTop: 22,
+};
+
+const darkButtonStyle = {
+  background: "#0f172a",
+  color: "white",
+  padding: "12px 15px",
+  borderRadius: 14,
+  fontWeight: 900,
+  textDecoration: "none",
+};
+
+const lightButtonStyle = {
+  background: "#eff6ff",
+  color: "#1d4ed8",
+  padding: "12px 15px",
+  borderRadius: 14,
+  fontWeight: 900,
+  textDecoration: "none",
 };
