@@ -48,6 +48,7 @@ const adminLinks = [
   { href: "/admin/analytics", label: "Analytics" },
     { href: "/admin/warehouse-management", label: "Warehouses" },
   { href: "/admin/supplier-management", label: "Suppliers" },
+  { href: "/admin/booking-management", label: "Bookings" },
   { href: "/admin/settings", label: "Settings" },
 ];
 
