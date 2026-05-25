@@ -1,6 +1,71 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function WarehouseRegisterPage() {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const [form, setForm] = useState({
+    warehouse_name: "",
+    owner_name: "",
+    location: "",
+    contact_number: "",
+    capacity: "",
+    services: "",
+    description: "",
+  });
+
+  function updateField(field: string, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
+
+  async function handleSubmit() {
+    setMessage("");
+
+    if (!form.warehouse_name || !form.location || !form.contact_number) {
+      setMessage("Please fill in warehouse name, location, and contact number.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase.from("warehouses").insert([
+      {
+        warehouse_name: form.warehouse_name,
+        owner_name: form.owner_name,
+        location: form.location,
+        contact_number: form.contact_number,
+        capacity: form.capacity,
+        services: form.services,
+        description: form.description,
+        status: "pending",
+      },
+    ]);
+
+    if (error) {
+      setMessage(error.message);
+    } else {
+      setMessage("Warehouse registered successfully. Pending admin review.");
+      setForm({
+        warehouse_name: "",
+        owner_name: "",
+        location: "",
+        contact_number: "",
+        capacity: "",
+        services: "",
+        description: "",
+      });
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
@@ -16,8 +81,8 @@ export default function WarehouseRegisterPage() {
             Warehouse Network
           </Link>
 
-          <Link href="/store" style={secondaryButtonStyle}>
-            View Store
+          <Link href="/warehouse-dashboard" style={secondaryButtonStyle}>
+            Warehouse Dashboard
           </Link>
         </div>
       </section>
@@ -27,32 +92,62 @@ export default function WarehouseRegisterPage() {
           <div style={gridStyle}>
             <label style={labelStyle}>
               Warehouse Name
-              <input style={inputStyle} placeholder="Example: Windhoek Storage Hub" />
+              <input
+                style={inputStyle}
+                value={form.warehouse_name}
+                onChange={(e) => updateField("warehouse_name", e.target.value)}
+                placeholder="Example: Windhoek Storage Hub"
+              />
             </label>
 
             <label style={labelStyle}>
               Owner / Company Name
-              <input style={inputStyle} placeholder="Company or owner name" />
+              <input
+                style={inputStyle}
+                value={form.owner_name}
+                onChange={(e) => updateField("owner_name", e.target.value)}
+                placeholder="Company or owner name"
+              />
             </label>
 
             <label style={labelStyle}>
               Location
-              <input style={inputStyle} placeholder="Windhoek, Walvis Bay, Oshakati..." />
+              <input
+                style={inputStyle}
+                value={form.location}
+                onChange={(e) => updateField("location", e.target.value)}
+                placeholder="Windhoek, Walvis Bay, Oshakati..."
+              />
             </label>
 
             <label style={labelStyle}>
               Contact Number
-              <input style={inputStyle} placeholder="+264..." />
+              <input
+                style={inputStyle}
+                value={form.contact_number}
+                onChange={(e) => updateField("contact_number", e.target.value)}
+                placeholder="+264..."
+              />
             </label>
 
             <label style={labelStyle}>
               Warehouse Capacity
-              <input style={inputStyle} placeholder="Small, medium, large, square meters..." />
+              <input
+                style={inputStyle}
+                value={form.capacity}
+                onChange={(e) => updateField("capacity", e.target.value)}
+                placeholder="Small, medium, large, square meters..."
+              />
             </label>
 
             <label style={labelStyle}>
               Services Offered
-              <input style={inputStyle} placeholder="Storage, dispatch, cold storage, fulfillment..." />
+              <input
+                style={inputStyle}
+                value={form.services}
+                onChange={(e) => updateField("services", e.target.value)}
+                placeholder="Storage, dispatch, cold storage, fulfillment..."
+              />
             </label>
           </div>
 
@@ -60,21 +155,21 @@ export default function WarehouseRegisterPage() {
             Description
             <textarea
               style={textareaStyle}
+              value={form.description}
+              onChange={(e) => updateField("description", e.target.value)}
               placeholder="Describe the warehouse, products, storage type, handling services, and trade support."
             />
           </label>
 
-          <div style={noticeStyle}>
-            <h3 style={noticeTitleStyle}>Next upgrade</h3>
-            <p style={noticeTextStyle}>
-              Later we will connect this form to Supabase so warehouse owners
-              can create real profiles, upload photos, list products, and manage
-              inventory from their dashboard.
-            </p>
-          </div>
+          {message && <div style={messageStyle}>{message}</div>}
 
-          <button type="button" style={submitButtonStyle}>
-            Register Warehouse
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading}
+            style={submitButtonStyle}
+          >
+            {loading ? "Saving..." : "Register Warehouse"}
           </button>
         </form>
       </section>
@@ -186,26 +281,14 @@ const textareaStyle = {
   fontSize: 15,
 };
 
-const noticeStyle = {
+const messageStyle = {
   background: "#eff6ff",
   border: "1px solid #bfdbfe",
-  borderRadius: 24,
-  padding: 22,
-  marginTop: 10,
-  marginBottom: 22,
-};
-
-const noticeTitleStyle = {
   color: "#1d4ed8",
-  fontSize: 22,
+  padding: 16,
+  borderRadius: 16,
   fontWeight: 900,
-  margin: "0 0 8px",
-};
-
-const noticeTextStyle = {
-  color: "#1e3a8a",
-  lineHeight: 1.7,
-  margin: 0,
+  marginBottom: 20,
 };
 
 const submitButtonStyle = {
