@@ -1,70 +1,97 @@
 import Link from "next/link";
 
+const documents = [
+  {
+    title: "Vehicle Registration Certificate",
+    status: "Required",
+    description: "Proof that the vehicle is legally registered.",
+  },
+  {
+    title: "Roadworthy Certificate",
+    status: "Required",
+    description: "Confirms that the vehicle is safe to operate.",
+  },
+  {
+    title: "Driver License",
+    status: "Required",
+    description: "Valid driver license for the vehicle operator.",
+  },
+  {
+    title: "Insurance Document",
+    status: "Recommended",
+    description: "Insurance cover for cargo, passengers, or transport risk.",
+  },
+];
+
 export default function VehicleDocumentsPage() {
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
-        <p style={badgeStyle}>VEHICLE VERIFICATION</p>
-        <h1 style={titleStyle}>Upload Vehicle Documents</h1>
+        <p style={badgeStyle}>FLEET COMPLIANCE</p>
+        <h1 style={titleStyle}>Vehicle Documents</h1>
         <p style={descStyle}>
-          Upload vehicle papers, driver documents, insurance, and inspection
-          files for admin approval.
+          Upload and manage important vehicle documents for approval,
+          verification, safety, and trust on NamLogix Africa.
         </p>
+
+        <div style={buttonRowStyle}>
+          <Link href="/my-vehicles" style={primaryButtonStyle}>
+            View My Vehicles
+          </Link>
+
+          <Link href="/vehicle-register" style={secondaryButtonStyle}>
+            Register Vehicle
+          </Link>
+        </div>
       </section>
 
       <section style={containerStyle}>
-        <form style={formStyle}>
-          <div style={gridStyle}>
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Vehicle Registration Number</label>
-              <input style={inputStyle} placeholder="Example: N 12345 W" />
-            </div>
-
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Document Type</label>
-              <select style={inputStyle}>
-                <option>Select document type</option>
-                <option>Vehicle Registration Paper</option>
-                <option>Roadworthy Certificate</option>
-                <option>Insurance Document</option>
-                <option>Driver License</option>
-                <option>Permit</option>
-                <option>Other Document</option>
-              </select>
-            </div>
-
-            <div style={fullFieldStyle}>
-              <label style={labelStyle}>Upload Document</label>
-              <input type="file" style={inputStyle} />
-            </div>
-
-            <div style={fullFieldStyle}>
-              <label style={labelStyle}>Notes</label>
-              <textarea
-                style={textareaStyle}
-                placeholder="Add notes for admin review..."
-              />
-            </div>
+        <div style={sectionHeaderStyle}>
+          <div>
+            <p style={sectionBadgeStyle}>DOCUMENT CHECKLIST</p>
+            <h2 style={sectionTitleStyle}>Required Transport Documents</h2>
+            <p style={sectionTextStyle}>
+              These documents help admins approve transporters and build trust
+              between cargo owners, passengers, and vehicle operators.
+            </p>
           </div>
+        </div>
 
-          <div style={buttonRowStyle}>
-            <button type="submit" style={primaryButtonStyle}>
-              Submit Documents
-            </button>
+        <div style={gridStyle}>
+          {documents.map((doc) => (
+            <article key={doc.title} style={cardStyle}>
+              <div style={statusStyle}>{doc.status}</div>
 
-            <Link href="/my-vehicles" style={secondaryButtonStyle}>
-              Back to My Vehicles
-            </Link>
-          </div>
-        </form>
+              <h3 style={cardTitleStyle}>{doc.title}</h3>
+
+              <p style={cardTextStyle}>{doc.description}</p>
+
+              <div style={uploadBoxStyle}>
+                <p style={uploadIconStyle}>📄</p>
+                <p style={uploadTextStyle}>Upload feature coming soon</p>
+              </div>
+
+              <button style={uploadButtonStyle}>Upload Document</button>
+            </article>
+          ))}
+        </div>
+
+        <div style={noticeStyle}>
+          <h3 style={noticeTitleStyle}>Next upgrade</h3>
+          <p style={noticeTextStyle}>
+            Later we will connect this page to Supabase Storage so drivers can
+            upload real PDFs, images, registration papers, insurance documents,
+            and licenses.
+          </p>
+        </div>
       </section>
     </main>
   );
 }
 
 const pageStyle = {
-  background: "#f8fafc",
   minHeight: "100vh",
+  background: "#f8fafc",
 };
 
 const heroStyle = {
@@ -84,68 +111,21 @@ const badgeStyle = {
 const titleStyle = {
   fontSize: 54,
   fontWeight: 900,
+  margin: "10px 0 14px",
 };
 
 const descStyle = {
-  maxWidth: 760,
+  maxWidth: 780,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
   fontSize: 18,
 };
 
-const containerStyle = {
-  maxWidth: 1000,
-  margin: "0 auto",
-  padding: "60px 24px",
-};
-
-const formStyle = {
-  background: "white",
-  borderRadius: 28,
-  padding: 34,
-  boxShadow: "0 12px 35px rgba(15,23,42,0.08)",
-  border: "1px solid #e5e7eb",
-};
-
-const gridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-  gap: 22,
-};
-
-const fieldStyle = {
-  display: "grid",
-  gap: 8,
-};
-
-const fullFieldStyle = {
-  display: "grid",
-  gap: 8,
-  gridColumn: "1 / -1",
-};
-
-const labelStyle = {
-  fontWeight: 900,
-  color: "#0f172a",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "14px 16px",
-  borderRadius: 14,
-  border: "1px solid #cbd5e1",
-  fontSize: 15,
-};
-
-const textareaStyle = {
-  ...inputStyle,
-  minHeight: 130,
-};
-
 const buttonRowStyle = {
   display: "flex",
   gap: 14,
+  justifyContent: "center",
   flexWrap: "wrap" as const,
   marginTop: 30,
 };
@@ -153,18 +133,136 @@ const buttonRowStyle = {
 const primaryButtonStyle = {
   background: "#f97316",
   color: "white",
+  padding: "14px 18px",
+  borderRadius: 14,
+  fontWeight: 900,
+  textDecoration: "none",
+};
+
+const secondaryButtonStyle = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "14px 18px",
+  borderRadius: 14,
+  fontWeight: 900,
+  textDecoration: "none",
+};
+
+const containerStyle = {
+  maxWidth: 1200,
+  margin: "0 auto",
+  padding: "60px 24px",
+};
+
+const sectionHeaderStyle = {
+  marginBottom: 30,
+};
+
+const sectionBadgeStyle = {
+  color: "#f97316",
+  fontWeight: 900,
+  letterSpacing: 1,
+  margin: 0,
+};
+
+const sectionTitleStyle = {
+  fontSize: 34,
+  fontWeight: 900,
+  color: "#0f172a",
+  margin: "8px 0",
+};
+
+const sectionTextStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  maxWidth: 720,
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gap: 24,
+};
+
+const cardStyle = {
+  background: "white",
+  borderRadius: 26,
+  padding: 26,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.06)",
+};
+
+const statusStyle = {
+  display: "inline-block",
+  background: "#eff6ff",
+  color: "#1d4ed8",
+  padding: "8px 12px",
+  borderRadius: 999,
+  fontWeight: 900,
+  fontSize: 13,
+  marginBottom: 16,
+};
+
+const cardTitleStyle = {
+  fontSize: 24,
+  fontWeight: 900,
+  color: "#0f172a",
+  margin: "0 0 10px",
+};
+
+const cardTextStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+};
+
+const uploadBoxStyle = {
+  marginTop: 20,
+  border: "2px dashed #cbd5e1",
+  borderRadius: 20,
+  padding: 24,
+  textAlign: "center" as const,
+  background: "#f8fafc",
+};
+
+const uploadIconStyle = {
+  fontSize: 36,
+  margin: 0,
+};
+
+const uploadTextStyle = {
+  color: "#64748b",
+  fontWeight: 800,
+};
+
+const uploadButtonStyle = {
+  width: "100%",
+  marginTop: 18,
+  background: "#0f172a",
+  color: "white",
   border: "none",
-  padding: "15px 22px",
-  borderRadius: 16,
+  padding: "13px 16px",
+  borderRadius: 14,
   fontWeight: 900,
   cursor: "pointer",
 };
 
-const secondaryButtonStyle = {
-  background: "#eff6ff",
-  color: "#1d4ed8",
-  padding: "15px 22px",
-  borderRadius: 16,
+const noticeStyle = {
+  marginTop: 40,
+  background: "#fff7ed",
+  border: "1px solid #fed7aa",
+  borderRadius: 26,
+  padding: 28,
+};
+
+const noticeTitleStyle = {
+  color: "#9a3412",
+  fontSize: 24,
   fontWeight: 900,
-  textDecoration: "none",
+  margin: "0 0 8px",
+};
+
+const noticeTextStyle = {
+  color: "#7c2d12",
+  lineHeight: 1.7,
+  margin: 0,
 };
