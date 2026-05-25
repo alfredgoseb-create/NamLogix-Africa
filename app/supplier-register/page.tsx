@@ -1,11 +1,79 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function SupplierRegisterPage() {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const [form, setForm] = useState({
+    supplier_name: "",
+    contact_person: "",
+    location: "",
+    contact_number: "",
+    product_category: "",
+    warehouse_linked: "",
+    description: "",
+  });
+
+  function updateField(field: string, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
+
+  async function handleSubmit() {
+    setMessage("");
+
+    if (!form.supplier_name || !form.location || !form.contact_number) {
+      setMessage("Please fill in supplier name, location, and contact number.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase.from("suppliers").insert([
+      {
+        supplier_name: form.supplier_name,
+        contact_person: form.contact_person,
+        location: form.location,
+        contact_number: form.contact_number,
+        product_category: form.product_category,
+        warehouse_linked: form.warehouse_linked,
+        description: form.description,
+        status: "pending",
+      },
+    ]);
+
+    if (error) {
+      setMessage(error.message);
+    } else {
+      setMessage("Supplier registered successfully. Pending admin review.");
+
+      setForm({
+        supplier_name: "",
+        contact_person: "",
+        location: "",
+        contact_number: "",
+        product_category: "",
+        warehouse_linked: "",
+        description: "",
+      });
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>SUPPLIER PARTNER</p>
+
         <h1 style={titleStyle}>Register as a Supplier</h1>
+
         <p style={descStyle}>
           Suppliers can join NamLogix Africa to list products, connect with
           warehouses, manage inventory, and arrange delivery through trusted
@@ -28,32 +96,62 @@ export default function SupplierRegisterPage() {
           <div style={gridStyle}>
             <label style={labelStyle}>
               Supplier / Company Name
-              <input style={inputStyle} placeholder="Example: Namibia Building Supplies" />
+              <input
+                style={inputStyle}
+                value={form.supplier_name}
+                onChange={(e) => updateField("supplier_name", e.target.value)}
+                placeholder="Example: Namibia Building Supplies"
+              />
             </label>
 
             <label style={labelStyle}>
               Contact Person
-              <input style={inputStyle} placeholder="Full name" />
+              <input
+                style={inputStyle}
+                value={form.contact_person}
+                onChange={(e) => updateField("contact_person", e.target.value)}
+                placeholder="Full name"
+              />
             </label>
 
             <label style={labelStyle}>
               Location
-              <input style={inputStyle} placeholder="Windhoek, Walvis Bay, Okahandja..." />
+              <input
+                style={inputStyle}
+                value={form.location}
+                onChange={(e) => updateField("location", e.target.value)}
+                placeholder="Windhoek, Walvis Bay, Okahandja..."
+              />
             </label>
 
             <label style={labelStyle}>
               Contact Number
-              <input style={inputStyle} placeholder="+264..." />
+              <input
+                style={inputStyle}
+                value={form.contact_number}
+                onChange={(e) => updateField("contact_number", e.target.value)}
+                placeholder="+264..."
+              />
             </label>
 
             <label style={labelStyle}>
               Product Category
-              <input style={inputStyle} placeholder="Construction, retail, farming, hardware..." />
+              <input
+                style={inputStyle}
+                value={form.product_category}
+                onChange={(e) => updateField("product_category", e.target.value)}
+                placeholder="Construction, retail, farming, hardware..."
+              />
             </label>
 
             <label style={labelStyle}>
               Warehouse Linked
-              <input style={inputStyle} placeholder="Which warehouse holds your stock?" />
+              <input
+                style={inputStyle}
+                value={form.warehouse_linked}
+                onChange={(e) => updateField("warehouse_linked", e.target.value)}
+                placeholder="Which warehouse holds your stock?"
+              />
             </label>
           </div>
 
@@ -61,21 +159,21 @@ export default function SupplierRegisterPage() {
             Supplier Description
             <textarea
               style={textareaStyle}
+              value={form.description}
+              onChange={(e) => updateField("description", e.target.value)}
               placeholder="Describe your products, supply capacity, delivery needs, and stock availability."
             />
           </label>
 
-          <div style={noticeStyle}>
-            <h3 style={noticeTitleStyle}>Next upgrade</h3>
-            <p style={noticeTextStyle}>
-              Later we will connect this form to Supabase so suppliers can
-              create real profiles, upload product images, manage prices, and
-              link inventory to warehouses.
-            </p>
-          </div>
+          {message && <div style={messageStyle}>{message}</div>}
 
-          <button type="button" style={submitButtonStyle}>
-            Register Supplier
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading}
+            style={submitButtonStyle}
+          >
+            {loading ? "Saving..." : "Register Supplier"}
           </button>
         </form>
       </section>
@@ -187,26 +285,14 @@ const textareaStyle = {
   fontSize: 15,
 };
 
-const noticeStyle = {
+const messageStyle = {
   background: "#eff6ff",
   border: "1px solid #bfdbfe",
-  borderRadius: 24,
-  padding: 22,
-  marginTop: 10,
-  marginBottom: 22,
-};
-
-const noticeTitleStyle = {
   color: "#1d4ed8",
-  fontSize: 22,
+  padding: 16,
+  borderRadius: 16,
   fontWeight: 900,
-  margin: "0 0 8px",
-};
-
-const noticeTextStyle = {
-  color: "#1e3a8a",
-  lineHeight: 1.7,
-  margin: 0,
+  marginBottom: 20,
 };
 
 const submitButtonStyle = {

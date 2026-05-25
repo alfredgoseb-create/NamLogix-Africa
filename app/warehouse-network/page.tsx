@@ -1,111 +1,147 @@
-import Link from "next/link";
+"use client";
 
-const warehouses = [
-  {
-    name: "Windhoek Storage Hub",
-    location: "Windhoek",
-    services: "General storage, inventory holding, product dispatch",
-    capacity: "Medium warehouse",
-    status: "Demo Partner",
-  },
-  {
-    name: "Walvis Bay Port Warehouse",
-    location: "Walvis Bay",
-    services: "Port cargo, import/export storage, freight handling",
-    capacity: "Large warehouse",
-    status: "High Value Route",
-  },
-  {
-    name: "Northern Trade Storage",
-    location: "Oshakati",
-    services: "Regional stock holding, supplier goods, rural distribution",
-    capacity: "Growing Hub",
-    status: "Future Expansion",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type Warehouse = {
+  id: string;
+  warehouse_name: string;
+  owner_name: string;
+  location: string;
+  capacity: string;
+  services: string;
+  description: string;
+  status: string;
+};
 
 export default function WarehouseNetworkPage() {
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchWarehouses();
+  }, []);
+
+  async function fetchWarehouses() {
+    const { data, error } = await supabase
+      .from("warehouses")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setWarehouses(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
-        <p style={badgeStyle}>WAREHOUSE INFRASTRUCTURE</p>
+        <p style={badgeStyle}>WAREHOUSE NETWORK</p>
 
-        <h1 style={titleStyle}>Warehouse Network</h1>
+        <h1 style={titleStyle}>
+          Storage & Distribution Infrastructure
+        </h1>
 
         <p style={descStyle}>
-          Connect warehouses, suppliers, storage providers, inventory hubs, and
-          fulfillment centers into one NamLogix Africa trade infrastructure
-          system.
+          Discover warehouse partners, storage hubs,
+          fulfillment centers, and inventory facilities
+          across Namibia and Southern Africa.
         </p>
 
         <div style={buttonRowStyle}>
-          <Link href="/store" style={primaryButtonStyle}>
-            View Store
+          <Link href="/warehouse-register" style={primaryButtonStyle}>
+            Register Warehouse
           </Link>
 
-          <Link href="/inventory" style={secondaryButtonStyle}>
-            Inventory Dashboard
+          <Link href="/inventory-management" style={secondaryButtonStyle}>
+            Inventory Management
           </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>STORAGE & FULFILLMENT</p>
+          <p style={sectionBadgeStyle}>LIVE DATABASE</p>
 
-          <h2 style={sectionTitleStyle}>Available Warehouse Partners</h2>
+          <h2 style={sectionTitleStyle}>
+            Registered Warehouses
+          </h2>
 
           <p style={sectionTextStyle}>
-            Later this page can connect to Supabase so warehouse owners can list
-            available space, services, storage prices, products, and inventory
-            availability.
+            Warehouses registered through the platform
+            automatically appear here using Supabase live data.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {warehouses.map((warehouse) => (
-            <article key={warehouse.name} style={cardStyle}>
-              <div style={iconStyle}>🏬</div>
+        {loading ? (
+          <div style={loadingStyle}>
+            Loading warehouses...
+          </div>
+        ) : warehouses.length === 0 ? (
+          <div style={emptyStyle}>
+            No warehouses registered yet.
+          </div>
+        ) : (
+          <div style={gridStyle}>
+            {warehouses.map((warehouse) => (
+              <article
+                key={warehouse.id}
+                style={cardStyle}
+              >
+                <div style={statusStyle}>
+                  {warehouse.status || "pending"}
+                </div>
 
-              <div style={statusStyle}>{warehouse.status}</div>
+                <h3 style={cardTitleStyle}>
+                  {warehouse.warehouse_name}
+                </h3>
 
-              <h3 style={cardTitleStyle}>{warehouse.name}</h3>
+                <p style={cardTextStyle}>
+                  <strong>Owner:</strong>{" "}
+                  {warehouse.owner_name || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Location:</strong> {warehouse.location}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Location:</strong>{" "}
+                  {warehouse.location || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Services:</strong> {warehouse.services}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Capacity:</strong>{" "}
+                  {warehouse.capacity || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Capacity:</strong> {warehouse.capacity}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Services:</strong>{" "}
+                  {warehouse.services || "N/A"}
+                </p>
 
-              <div style={cardActionsStyle}>
-                <Link href="/store" style={darkButtonStyle}>
-                  View Products
-                </Link>
+                <p style={descriptionStyle}>
+                  {warehouse.description || "No description"}
+                </p>
 
-                <Link href="/contact" style={lightButtonStyle}>
-                  Contact Warehouse
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <div style={cardActionsStyle}>
+                  <Link
+                    href="/inventory-management"
+                    style={darkButtonStyle}
+                  >
+                    View Inventory
+                  </Link>
 
-        <div style={noticeStyle}>
-          <h3 style={noticeTitleStyle}>Why this page matters</h3>
-
-          <p style={noticeTextStyle}>
-            This makes NamLogix Africa more than a transport site. It becomes a
-            real trade infrastructure platform where goods can be stored,
-            listed, sold, dispatched, and transported through one connected
-            system.
-          </p>
-        </div>
+                  <Link
+                    href="/contact"
+                    style={lightButtonStyle}
+                  >
+                    Contact
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -137,7 +173,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 880,
+  maxWidth: 850,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -196,12 +232,29 @@ const sectionTitleStyle = {
 const sectionTextStyle = {
   color: "#64748b",
   lineHeight: 1.7,
-  maxWidth: 800,
+  maxWidth: 760,
+};
+
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
+  gridTemplateColumns:
+    "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -210,41 +263,36 @@ const cardStyle = {
   borderRadius: 28,
   padding: 28,
   border: "1px solid #e5e7eb",
-  boxShadow: "0 12px 30px rgba(15,23,42,0.06)",
-};
-
-const iconStyle = {
-  width: 72,
-  height: 72,
-  borderRadius: 22,
-  display: "grid",
-  placeItems: "center",
-  fontSize: 36,
-  background: "#eff6ff",
-  marginBottom: 18,
+  boxShadow:
+    "0 12px 30px rgba(15,23,42,0.06)",
 };
 
 const statusStyle = {
   display: "inline-block",
-  background: "#fff7ed",
-  color: "#c2410c",
+  background: "#dcfce7",
+  color: "#166534",
   padding: "8px 12px",
   borderRadius: 999,
   fontWeight: 900,
   fontSize: 13,
-  marginBottom: 16,
+  marginBottom: 18,
 };
 
 const cardTitleStyle = {
-  fontSize: 25,
+  fontSize: 26,
   fontWeight: 900,
   color: "#0f172a",
-  margin: "0 0 12px",
 };
 
 const cardTextStyle = {
   color: "#475569",
   lineHeight: 1.7,
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 12,
 };
 
 const cardActionsStyle = {
@@ -270,25 +318,4 @@ const lightButtonStyle = {
   borderRadius: 14,
   fontWeight: 900,
   textDecoration: "none",
-};
-
-const noticeStyle = {
-  marginTop: 40,
-  background: "#eff6ff",
-  border: "1px solid #bfdbfe",
-  borderRadius: 28,
-  padding: 28,
-};
-
-const noticeTitleStyle = {
-  color: "#1d4ed8",
-  fontSize: 24,
-  fontWeight: 900,
-  margin: "0 0 8px",
-};
-
-const noticeTextStyle = {
-  color: "#1e3a8a",
-  lineHeight: 1.7,
-  margin: 0,
 };
