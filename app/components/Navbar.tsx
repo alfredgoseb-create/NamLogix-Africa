@@ -11,6 +11,7 @@ const mainLinks = [
   { href: "/trip-offers", label: "Trips" },
   { href: "/create-trip", label: "Create Trip" },
   { href: "/booking-requests", label: "Bookings" },
+  { href: "/booking-create", label: "Create Booking" },
   { href: "/my-vehicles", label: "Vehicles" },
   { href: "/vehicle-register", label: "Register Vehicle" },
   { href: "/vehicle-documents", label: "Documents" },
