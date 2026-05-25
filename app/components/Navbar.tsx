@@ -25,6 +25,7 @@ const mainLinks = [
   { href: "/warehouse-register", label: "Register Warehouse" },
   { href: "/warehouse-dashboard", label: "Warehouse Dashboard" },
   { href: "/inventory-management", label: "Inventory" },
+  { href: "/inventory-add", label: "Add Inventory" },
   { href: "/supplier-dashboard", label: "Supplier Dashboard" },
   { href: "/supplier-register", label: "Register Supplier" },
   { href: "/store", label: "Store" },
