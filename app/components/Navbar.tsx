@@ -6,34 +6,58 @@ import { supabase } from "@/lib/supabaseClient";
 
 const mainLinks = [
   { href: "/", label: "Home" },
+
   { href: "/cargo-requests", label: "Cargo" },
   { href: "/request-cargo", label: "Post Cargo" },
-  { href: "/bids", label: "Bids" },
+
   { href: "/trip-offers", label: "Trips" },
   { href: "/create-trip", label: "Create Trip" },
+
+  { href: "/booking-requests", label: "Bookings" },
+
+  { href: "/my-vehicles", label: "Vehicles" },
   { href: "/vehicle-register", label: "Register Vehicle" },
-  { href: "/my-vehicles", label: "My Vehicles" },
   { href: "/vehicle-documents", label: "Documents" },
-  { href: "/companies", label: "Companies" },
-  { href: "/company-profile", label: "Company Profile" },
+
+  { href: "/driver-profiles", label: "Drivers" },
+
+  { href: "/transport-company", label: "Transporters" },
+
+  { href: "/cargo-matching", label: "Cargo Match" },
+
+  { href: "/fleet-dashboard", label: "Fleet Dashboard" },
+
+  { href: "/live-tracking", label: "Live Tracking" },
+
+  { href: "/customer-tracking", label: "Track Booking" },
+
   { href: "/store", label: "Store" },
+
   { href: "/aviation", label: "Aviation" },
+
   { href: "/contact", label: "Contact" },
 ];
 
 const adminLinks = [
   { href: "/admin/dashboard", label: "Dashboard" },
+
+  { href: "/admin/vehicle-approvals", label: "Vehicle Approvals" },
+
+  {
+    href: "/admin/transporter-management",
+    label: "Transporters",
+  },
+
   { href: "/admin/users", label: "Users" },
+
   { href: "/admin/orders", label: "Orders" },
+
   { href: "/admin/shipments", label: "Shipments" },
-  { href: "/admin/vehicles", label: "Vehicles" },
-  { href: "/admin/companies", label: "Companies Admin" },
-  { href: "/admin/documents", label: "Documents Admin" },
-  { href: "/admin/uploads", label: "Uploads" },
-  { href: "/admin/notifications", label: "Notifications" },
-  { href: "/admin/support", label: "Support" },
+
   { href: "/admin/reports", label: "Reports" },
+
   { href: "/admin/analytics", label: "Analytics" },
+
   { href: "/admin/settings", label: "Settings" },
 ];
 
@@ -65,18 +89,28 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <div className="admin-dropdown" style={adminDropdownStyle}>
-            <Link href="/admin/dashboard" style={adminButtonStyle}>
+          <div
+            style={adminDropdownStyle}
+            onMouseEnter={() => setAdminOpen(true)}
+            onMouseLeave={() => setAdminOpen(false)}
+          >
+            <button style={adminButtonStyle}>
               Admin ▾
-            </Link>
+            </button>
 
-            <div className="admin-dropdown-menu" style={adminMenuStyle}>
-              {adminLinks.map((link) => (
-                <Link key={link.href} href={link.href} style={adminMenuLinkStyle}>
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+            {adminOpen && (
+              <div style={adminMenuStyle}>
+                {adminLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={adminMenuLinkStyle}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -90,7 +124,6 @@ export default function Navbar() {
           </button>
 
           <button
-            className="mobile-menu-button"
             onClick={() => setOpen(!open)}
             style={mobileButtonStyle}
           >
@@ -142,7 +175,7 @@ export default function Navbar() {
 const headerStyle = {
   position: "sticky" as const,
   top: 0,
-  zIndex: 50,
+  zIndex: 100,
   background: "rgba(255,255,255,0.96)",
   backdropFilter: "blur(14px)",
   borderBottom: "1px solid #e5e7eb",
@@ -184,47 +217,45 @@ const linkStyle = {
 
 const adminDropdownStyle = {
   position: "relative" as const,
-  display: "inline-block",
 };
 
 const adminButtonStyle = {
   background: "#0f172a",
   color: "white",
-  textDecoration: "none",
-  fontWeight: 900,
+  border: "none",
   padding: "9px 12px",
   borderRadius: 12,
-  fontSize: 13,
+  fontWeight: 900,
+  cursor: "pointer",
 };
 
 const adminMenuStyle = {
-  display: "none",
   position: "absolute" as const,
   right: 0,
-  top: "100%",
-  minWidth: 220,
+  top: "110%",
+  minWidth: 240,
   background: "white",
   border: "1px solid #e5e7eb",
   borderRadius: 16,
   padding: 10,
+  display: "grid",
+  gap: 6,
   boxShadow: "0 18px 40px rgba(15,23,42,0.16)",
 };
 
 const adminMenuLinkStyle = {
-  display: "block",
   color: "#334155",
   textDecoration: "none",
   fontWeight: 800,
   padding: "10px 12px",
   borderRadius: 12,
-  fontSize: 13,
+  background: "#f8fafc",
 };
 
 const rightSectionStyle = {
   display: "flex",
   alignItems: "center",
   gap: 10,
-  flexShrink: 0,
 };
 
 const loginStyle = {
