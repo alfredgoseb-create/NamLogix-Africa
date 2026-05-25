@@ -2,298 +2,193 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { uploadFileToBucket } from "@/lib/uploadFile";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function VehicleRegisterPage() {
-  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const [form, setForm] = useState({
-    owner_name: "",
+    vehicle_name: "",
     vehicle_type: "",
-    vehicle_make: "",
-    vehicle_model: "",
     registration_number: "",
-    load_capacity: "",
-    route: "",
+    capacity: "",
+    route_area: "",
+    owner_name: "",
     contact_number: "",
-    description: "",
-    image_url: "",
+    status: "pending",
   });
 
-  async function handleImageUpload(
-    e: React.ChangeEvent<HTMLInputElement>
-  ) {
-    const file = e.target.files?.[0];
+  function updateField(field: string, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
 
-    if (!file) return;
+  async function handleSubmit() {
+    setMessage("");
 
-    setUploading(true);
-
-    const result = await uploadFileToBucket(
-      "vehicle-images",
-      "vehicles",
-      file
-    );
-
-    setUploading(false);
-
-    if (result.error) {
-      alert(result.error);
+    if (!form.vehicle_name || !form.registration_number || !form.contact_number) {
+      setMessage("Please fill in vehicle name, registration number, and contact number.");
       return;
     }
 
-    setForm({
-      ...form,
-      image_url: result.url || "",
-    });
+    setLoading(true);
+
+    const { error } = await supabase.from("vehicles").insert([
+      {
+        vehicle_name: form.vehicle_name,
+        vehicle_type: form.vehicle_type,
+        registration_number: form.registration_number,
+        capacity: form.capacity,
+        route_area: form.route_area,
+        owner_name: form.owner_name,
+        contact_number: form.contact_number,
+        status: form.status,
+      },
+    ]);
+
+    if (error) {
+      setMessage(error.message);
+    } else {
+      setMessage("Vehicle registered successfully. Pending admin review.");
+      setForm({
+        vehicle_name: "",
+        vehicle_type: "",
+        registration_number: "",
+        capacity: "",
+        route_area: "",
+        owner_name: "",
+        contact_number: "",
+        status: "pending",
+      });
+    }
+
+    setLoading(false);
   }
-
-  async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-
-  const { error } = await supabase
-    .from("vehicles")
-    .insert([form]);
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  alert("Vehicle registered successfully!");
-
-  setForm({
-    owner_name: "",
-    vehicle_type: "",
-    vehicle_make: "",
-    vehicle_model: "",
-    registration_number: "",
-    load_capacity: "",
-    route: "",
-    contact_number: "",
-    description: "",
-    image_url: "",
-  });
-}
 
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
-        <p style={badgeStyle}>TRANSPORTER VEHICLE REGISTRATION</p>
-
-        <h1 style={titleStyle}>Register Your Vehicle</h1>
-
+        <p style={badgeStyle}>VEHICLE REGISTRATION</p>
+        <h1 style={titleStyle}>Register a Vehicle</h1>
         <p style={descStyle}>
-          Add your truck, bakkie, bus, taxi, trailer, or delivery vehicle so it
-          can be used for cargo, passenger transport, and logistics jobs on
-          NamLogix Africa.
+          Add trucks, bakkies, delivery vehicles, passenger vehicles, and cargo
+          transport units to the NamLogix Africa fleet network.
         </p>
+
+        <div style={buttonRowStyle}>
+          <Link href="/my-vehicles" style={primaryButtonStyle}>
+            My Vehicles
+          </Link>
+
+          <Link href="/admin/vehicle-approvals" style={secondaryButtonStyle}>
+            Vehicle Approvals
+          </Link>
+        </div>
       </section>
 
       <section style={containerStyle}>
-        <form style={formStyle} onSubmit={handleSubmit}>
+        <form style={formStyle}>
           <div style={gridStyle}>
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Vehicle Owner Name</label>
-
+            <label style={labelStyle}>
+              Vehicle Name
               <input
                 style={inputStyle}
-                placeholder="Enter owner name"
-                value={form.owner_name}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    owner_name: e.target.value,
-                  })
-                }
+                value={form.vehicle_name}
+                onChange={(e) => updateField("vehicle_name", e.target.value)}
+                placeholder="Example: Toyota Hilux"
               />
-            </div>
+            </label>
 
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Vehicle Type</label>
-
-              <select
+            <label style={labelStyle}>
+              Vehicle Type
+              <input
                 style={inputStyle}
                 value={form.vehicle_type}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    vehicle_type: e.target.value,
-                  })
-                }
-              >
-                <option value="">Select vehicle type</option>
-                <option>Truck</option>
-                <option>Bakkie</option>
-                <option>Taxi</option>
-                <option>Bus</option>
-                <option>Trailer</option>
-                <option>Delivery Van</option>
-              </select>
-            </div>
-
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Vehicle Make</label>
-
-              <input
-                style={inputStyle}
-                placeholder="Toyota, Nissan, MAN..."
-                value={form.vehicle_make}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    vehicle_make: e.target.value,
-                  })
-                }
+                onChange={(e) => updateField("vehicle_type", e.target.value)}
+                placeholder="Truck, bakkie, van, bus..."
               />
-            </div>
+            </label>
 
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Vehicle Model</label>
-
+            <label style={labelStyle}>
+              Registration Number
               <input
                 style={inputStyle}
-                placeholder="Enter model"
-                value={form.vehicle_model}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    vehicle_model: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Registration Number</label>
-
-              <input
-                style={inputStyle}
-                placeholder="N 12345 W"
                 value={form.registration_number}
                 onChange={(e) =>
-                  setForm({
-                    ...form,
-                    registration_number: e.target.value,
-                  })
+                  updateField("registration_number", e.target.value)
                 }
+                placeholder="N 12345 W"
               />
-            </div>
+            </label>
 
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Load Capacity</label>
-
+            <label style={labelStyle}>
+              Capacity
               <input
                 style={inputStyle}
-                placeholder="Example: 3 tons / 15 seats"
-                value={form.load_capacity}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    load_capacity: e.target.value,
-                  })
-                }
+                value={form.capacity}
+                onChange={(e) => updateField("capacity", e.target.value)}
+                placeholder="1 ton, 10 tons, 7 passengers..."
               />
-            </div>
+            </label>
 
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Operating Route</label>
-
+            <label style={labelStyle}>
+              Route / Service Area
               <input
                 style={inputStyle}
-                placeholder="Windhoek to Walvis Bay"
-                value={form.route}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    route: e.target.value,
-                  })
-                }
+                value={form.route_area}
+                onChange={(e) => updateField("route_area", e.target.value)}
+                placeholder="Windhoek, Walvis Bay, Trans Kalahari..."
               />
-            </div>
+            </label>
 
-            <div style={fieldStyle}>
-              <label style={labelStyle}>Contact Number</label>
-
+            <label style={labelStyle}>
+              Owner / Company Name
               <input
                 style={inputStyle}
-                placeholder="+264..."
+                value={form.owner_name}
+                onChange={(e) => updateField("owner_name", e.target.value)}
+                placeholder="Owner or company"
+              />
+            </label>
+
+            <label style={labelStyle}>
+              Contact Number
+              <input
+                style={inputStyle}
                 value={form.contact_number}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    contact_number: e.target.value,
-                  })
-                }
+                onChange={(e) => updateField("contact_number", e.target.value)}
+                placeholder="+264..."
               />
-            </div>
+            </label>
 
-            <div style={fullFieldStyle}>
-              <label style={labelStyle}>Vehicle Description</label>
-
-              <textarea
-                style={textareaStyle}
-                placeholder="Describe the vehicle condition, services, cargo type, or passenger capacity..."
-                value={form.description}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    description: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div style={fullFieldStyle}>
-              <label style={labelStyle}>Vehicle Photo Upload</label>
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
+            <label style={labelStyle}>
+              Status
+              <select
                 style={inputStyle}
-              />
-
-              {uploading && (
-                <p
-                  style={{
-                    color: "#f97316",
-                    fontWeight: 800,
-                  }}
-                >
-                  Uploading image...
-                </p>
-              )}
-
-              {form.image_url && (
-                <div style={{ marginTop: 14 }}>
-                  <img
-                    src={form.image_url}
-                    alt="Vehicle"
-                    style={{
-                      width: "100%",
-                      maxWidth: 340,
-                      height: 220,
-                      objectFit: "cover",
-                      borderRadius: 20,
-                      border: "1px solid #e2e8f0",
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+                value={form.status}
+                onChange={(e) => updateField("status", e.target.value)}
+              >
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="approved">Approved</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </label>
           </div>
 
-          <div style={buttonRowStyle}>
-            <button type="submit" style={primaryButtonStyle}>
-              Register Vehicle
-            </button>
+          {message && <div style={messageStyle}>{message}</div>}
 
-            <Link href="/" style={secondaryButtonStyle}>
-              Back Home
-            </Link>
-          </div>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading}
+            style={submitButtonStyle}
+          >
+            {loading ? "Saving..." : "Register Vehicle"}
+          </button>
         </form>
       </section>
     </main>
@@ -301,8 +196,8 @@ export default function VehicleRegisterPage() {
 }
 
 const pageStyle = {
-  background: "#f8fafc",
   minHeight: "100vh",
+  background: "#f8fafc",
 };
 
 const heroStyle = {
@@ -322,50 +217,69 @@ const badgeStyle = {
 const titleStyle = {
   fontSize: 54,
   fontWeight: 900,
+  margin: "10px 0 14px",
 };
 
 const descStyle = {
-  maxWidth: 760,
+  maxWidth: 850,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
   fontSize: 18,
 };
 
+const buttonRowStyle = {
+  display: "flex",
+  gap: 14,
+  justifyContent: "center",
+  flexWrap: "wrap" as const,
+  marginTop: 30,
+};
+
+const primaryButtonStyle = {
+  background: "#f97316",
+  color: "white",
+  padding: "14px 18px",
+  borderRadius: 14,
+  fontWeight: 900,
+  textDecoration: "none",
+};
+
+const secondaryButtonStyle = {
+  background: "white",
+  color: "#1d4ed8",
+  padding: "14px 18px",
+  borderRadius: 14,
+  fontWeight: 900,
+  textDecoration: "none",
+};
+
 const containerStyle = {
-  maxWidth: 1100,
+  maxWidth: 1000,
   margin: "0 auto",
   padding: "60px 24px",
 };
 
 const formStyle = {
   background: "white",
-  borderRadius: 28,
-  padding: 34,
-  boxShadow: "0 12px 35px rgba(15,23,42,0.08)",
+  borderRadius: 30,
+  padding: 30,
   border: "1px solid #e5e7eb",
+  boxShadow: "0 14px 35px rgba(15,23,42,0.07)",
 };
 
 const gridStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-  gap: 22,
-};
-
-const fieldStyle = {
-  display: "grid",
-  gap: 8,
-};
-
-const fullFieldStyle = {
-  display: "grid",
-  gap: 8,
-  gridColumn: "1 / -1",
+  gap: 20,
 };
 
 const labelStyle = {
-  fontWeight: 900,
+  display: "grid",
+  gap: 8,
   color: "#0f172a",
+  fontWeight: 900,
+  marginBottom: 20,
 };
 
 const inputStyle = {
@@ -376,33 +290,22 @@ const inputStyle = {
   fontSize: 15,
 };
 
-const textareaStyle = {
-  ...inputStyle,
-  minHeight: 140,
+const messageStyle = {
+  background: "#eff6ff",
+  border: "1px solid #bfdbfe",
+  color: "#1d4ed8",
+  padding: 16,
+  borderRadius: 16,
+  fontWeight: 900,
+  marginBottom: 20,
 };
 
-const buttonRowStyle = {
-  display: "flex",
-  gap: 14,
-  flexWrap: "wrap" as const,
-  marginTop: 30,
-};
-
-const primaryButtonStyle = {
+const submitButtonStyle = {
   background: "#f97316",
   color: "white",
   border: "none",
-  padding: "15px 22px",
-  borderRadius: 16,
+  padding: "14px 18px",
+  borderRadius: 14,
   fontWeight: 900,
   cursor: "pointer",
-};
-
-const secondaryButtonStyle = {
-  background: "#eff6ff",
-  color: "#1d4ed8",
-  padding: "15px 22px",
-  borderRadius: 16,
-  fontWeight: 900,
-  textDecoration: "none",
 };
