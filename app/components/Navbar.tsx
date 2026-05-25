@@ -6,58 +6,46 @@ import { supabase } from "@/lib/supabaseClient";
 
 const mainLinks = [
   { href: "/", label: "Home" },
-
   { href: "/cargo-requests", label: "Cargo" },
   { href: "/request-cargo", label: "Post Cargo" },
-
   { href: "/trip-offers", label: "Trips" },
   { href: "/create-trip", label: "Create Trip" },
-
   { href: "/booking-requests", label: "Bookings" },
-
   { href: "/my-vehicles", label: "Vehicles" },
   { href: "/vehicle-register", label: "Register Vehicle" },
   { href: "/vehicle-documents", label: "Documents" },
-
   { href: "/driver-profiles", label: "Drivers" },
-
-  { href: "/transport-company", label: "Transporters" },
-
+  { href: "/transporters", label: "Transporters" },
+  { href: "/transport-company", label: "Company Profile" },
   { href: "/cargo-matching", label: "Cargo Match" },
-
   { href: "/fleet-dashboard", label: "Fleet Dashboard" },
-
   { href: "/live-tracking", label: "Live Tracking" },
-
   { href: "/customer-tracking", label: "Track Booking" },
-
+  { href: "/warehouse-network", label: "Warehouses" },
+  { href: "/warehouse-register", label: "Register Warehouse" },
+  { href: "/warehouse-dashboard", label: "Warehouse Dashboard" },
+  { href: "/inventory-management", label: "Inventory" },
+  { href: "/supplier-dashboard", label: "Supplier Dashboard" },
+  { href: "/supplier-register", label: "Register Supplier" },
   { href: "/store", label: "Store" },
-
+  { href: "/service-areas", label: "Service Areas" },
+  { href: "/route-planner", label: "Route Planner" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/about", label: "About" },
   { href: "/aviation", label: "Aviation" },
-
   { href: "/contact", label: "Contact" },
 ];
 
 const adminLinks = [
   { href: "/admin/dashboard", label: "Dashboard" },
-
   { href: "/admin/vehicle-approvals", label: "Vehicle Approvals" },
-
-  {
-    href: "/admin/transporter-management",
-    label: "Transporters",
-  },
-
+  { href: "/admin/transporter-management", label: "Transporters" },
   { href: "/admin/users", label: "Users" },
-
   { href: "/admin/orders", label: "Orders" },
-
   { href: "/admin/shipments", label: "Shipments" },
-
   { href: "/admin/reports", label: "Reports" },
-
   { href: "/admin/analytics", label: "Analytics" },
-
   { href: "/admin/settings", label: "Settings" },
 ];
 
@@ -94,9 +82,7 @@ export default function Navbar() {
             onMouseEnter={() => setAdminOpen(true)}
             onMouseLeave={() => setAdminOpen(false)}
           >
-            <button style={adminButtonStyle}>
-              Admin ▾
-            </button>
+            <button style={adminButtonStyle}>Admin ▾</button>
 
             {adminOpen && (
               <div style={adminMenuStyle}>
@@ -123,10 +109,7 @@ export default function Navbar() {
             Logout
           </button>
 
-          <button
-            onClick={() => setOpen(!open)}
-            style={mobileButtonStyle}
-          >
+          <button onClick={() => setOpen(!open)} style={mobileButtonStyle}>
             {open ? "✕" : "☰"}
           </button>
         </div>
