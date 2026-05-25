@@ -1,93 +1,127 @@
-import Link from "next/link";
+"use client";
 
-const inventory = [
-  {
-    product: "Cement Bags",
-    warehouse: "Windhoek Storage Hub",
-    supplier: "Namibia Building Supplies",
-    stock: "250 units",
-    status: "In Stock",
-  },
-  {
-    product: "Retail Goods",
-    warehouse: "Walvis Bay Port Warehouse",
-    supplier: "Coastal Trade Supplier",
-    stock: "84 boxes",
-    status: "Ready for Dispatch",
-  },
-  {
-    product: "Building Materials",
-    warehouse: "Northern Trade Storage",
-    supplier: "Regional Hardware Supplier",
-    stock: "Low Stock",
-    status: "Needs Review",
-  },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+type InventoryItem = {
+  id: string;
+  product_name: string;
+  category: string;
+  warehouse_name: string;
+  supplier_name: string;
+  stock_quantity: string;
+  price: number | null;
+  status: string;
+  description: string;
+};
 
 export default function AdminInventoryManagementPage() {
+  const [items, setItems] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  async function fetchInventory() {
+    const { data, error } = await supabase
+      .from("inventory_items")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setItems(data);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>ADMIN CONTROL</p>
+
         <h1 style={titleStyle}>Inventory Management</h1>
+
         <p style={descStyle}>
-          Review product stock, warehouse inventory, supplier goods, dispatch
-          readiness, and stock movement across NamLogix Africa.
+          Review live product stock, warehouse inventory, supplier goods,
+          dispatch readiness, pricing, and stock movement.
         </p>
 
         <div style={buttonRowStyle}>
-          <Link href="/inventory-management" style={primaryButtonStyle}>
-            Public Inventory
+          <Link href="/inventory-add" style={primaryButtonStyle}>
+            Add Inventory
           </Link>
 
-          <Link href="/warehouse-dashboard" style={secondaryButtonStyle}>
-            Warehouse Dashboard
+          <Link href="/inventory-management" style={secondaryButtonStyle}>
+            Public Inventory
           </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>STOCK CONTROL</p>
-          <h2 style={sectionTitleStyle}>Inventory Requiring Admin Review</h2>
+          <p style={sectionBadgeStyle}>LIVE STOCK CONTROL</p>
+
+          <h2 style={sectionTitleStyle}>Inventory Items</h2>
+
           <p style={sectionTextStyle}>
-            Later this page will connect to Supabase so admins can monitor
-            stock levels, approve product listings, audit warehouses, and track
-            inventory movement.
+            Inventory items added through the platform now appear here from
+            Supabase.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {inventory.map((item) => (
-            <article key={item.product} style={cardStyle}>
-              <div style={statusStyle}>{item.status}</div>
+        {loading ? (
+          <div style={loadingStyle}>Loading inventory...</div>
+        ) : items.length === 0 ? (
+          <div style={emptyStyle}>No inventory items found yet.</div>
+        ) : (
+          <div style={gridStyle}>
+            {items.map((item) => (
+              <article key={item.id} style={cardStyle}>
+                <div style={statusStyle}>{item.status || "in_stock"}</div>
 
-              <h3 style={cardTitleStyle}>{item.product}</h3>
+                <h3 style={cardTitleStyle}>{item.product_name}</h3>
 
-              <p style={cardTextStyle}>
-                <strong>Warehouse:</strong> {item.warehouse}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Category:</strong> {item.category || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Supplier:</strong> {item.supplier}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Warehouse:</strong> {item.warehouse_name || "N/A"}
+                </p>
 
-              <p style={cardTextStyle}>
-                <strong>Stock:</strong> {item.stock}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Supplier:</strong> {item.supplier_name || "N/A"}
+                </p>
 
-              <div style={cardActionsStyle}>
-                <Link href="/inventory-management" style={darkButtonStyle}>
-                  Review Stock
-                </Link>
+                <p style={cardTextStyle}>
+                  <strong>Stock:</strong> {item.stock_quantity || "N/A"}
+                </p>
 
-                <Link href="/store" style={lightButtonStyle}>
-                  View Product
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <p style={cardTextStyle}>
+                  <strong>Price:</strong>{" "}
+                  {item.price ? `N$ ${item.price}` : "Not set"}
+                </p>
+
+                <p style={descriptionStyle}>
+                  {item.description || "No description"}
+                </p>
+
+                <div style={cardActionsStyle}>
+                  <Link href="/inventory-add" style={darkButtonStyle}>
+                    Add More Stock
+                  </Link>
+
+                  <Link href="/store" style={lightButtonStyle}>
+                    View Store
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -119,7 +153,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 840,
+  maxWidth: 850,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -153,7 +187,7 @@ const secondaryButtonStyle = {
 };
 
 const containerStyle = {
-  maxWidth: 1100,
+  maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
 };
@@ -181,9 +215,25 @@ const sectionTextStyle = {
   maxWidth: 780,
 };
 
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
+};
+
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -215,6 +265,12 @@ const cardTitleStyle = {
 const cardTextStyle = {
   color: "#475569",
   lineHeight: 1.7,
+};
+
+const descriptionStyle = {
+  color: "#64748b",
+  lineHeight: 1.7,
+  marginTop: 12,
 };
 
 const cardActionsStyle = {
