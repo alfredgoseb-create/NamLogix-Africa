@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { uploadFileToBucket } from "@/lib/uploadFile";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function VehicleRegisterPage() {
   const [uploading, setUploading] = useState(false);
@@ -49,12 +50,32 @@ export default function VehicleRegisterPage() {
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  e.preventDefault();
 
-    console.log(form);
+  const { error } = await supabase
+    .from("vehicles")
+    .insert([form]);
 
-    alert("Vehicle registered successfully!");
+  if (error) {
+    alert(error.message);
+    return;
   }
+
+  alert("Vehicle registered successfully!");
+
+  setForm({
+    owner_name: "",
+    vehicle_type: "",
+    vehicle_make: "",
+    vehicle_model: "",
+    registration_number: "",
+    load_capacity: "",
+    route: "",
+    contact_number: "",
+    description: "",
+    image_url: "",
+  });
+}
 
   return (
     <main style={pageStyle}>
