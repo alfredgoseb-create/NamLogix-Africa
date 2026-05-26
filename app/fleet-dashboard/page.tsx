@@ -1,95 +1,151 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
-const metrics = [
-  { label: "Registered Vehicles", value: "24", text: "Fleet assets" },
-  { label: "Available Drivers", value: "12", text: "Ready operators" },
-  { label: "Active Routes", value: "8", text: "Transport corridors" },
-  { label: "Pending Documents", value: "5", text: "Need review" },
-];
-
-const activities = [
-  {
-    title: "MAN Truck assigned to cargo request",
-    route: "Windhoek → Walvis Bay",
-    status: "In Progress",
-  },
-  {
-    title: "Toyota Hilux awaiting document approval",
-    route: "Okahandja → Swakopmund",
-    status: "Pending",
-  },
-  {
-    title: "Driver profile needs license upload",
-    route: "Windhoek Local",
-    status: "Action Required",
-  },
-];
+type Vehicle = {
+  id: string;
+  vehicle_name: string;
+  vehicle_type: string;
+  registration_number: string;
+  capacity: string;
+  route_area: string;
+  owner_name: string;
+  contact_number: string;
+  status: string;
+};
 
 export default function FleetDashboardPage() {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchVehicles();
+  }, []);
+
+  async function fetchVehicles() {
+    const { data, error } = await supabase
+      .from("vehicles")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setVehicles(data);
+    }
+
+    setLoading(false);
+  }
+
+  const approved = vehicles.filter((item) => item.status === "approved").length;
+  const pending = vehicles.filter((item) => item.status === "pending").length;
+  const suspended = vehicles.filter((item) => item.status === "suspended").length;
+
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
         <p style={badgeStyle}>FLEET OPERATIONS</p>
         <h1 style={titleStyle}>Fleet Dashboard</h1>
         <p style={descStyle}>
-          Monitor vehicles, drivers, documents, routes, bookings, and cargo
-          assignments from one professional operations dashboard.
+          Monitor vehicles, fleet readiness, approval status, owners, routes,
+          and available transport capacity from live Supabase data.
         </p>
 
         <div style={buttonRowStyle}>
-          <Link href="/my-vehicles" style={primaryButtonStyle}>
-            My Vehicles
+          <Link href="/vehicle-register" style={primaryButtonStyle}>
+            Register Vehicle
           </Link>
 
-          <Link href="/booking-requests" style={secondaryButtonStyle}>
-            Booking Requests
+          <Link href="/admin/vehicle-approvals" style={secondaryButtonStyle}>
+            Vehicle Approvals
           </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         <div style={statsGridStyle}>
-          {metrics.map((item) => (
-            <article key={item.label} style={statCardStyle}>
-              <p style={statLabelStyle}>{item.label}</p>
-              <h2 style={statValueStyle}>{item.value}</h2>
-              <p style={statTextStyle}>{item.text}</p>
-            </article>
-          ))}
+          <article style={statCardStyle}>
+            <p style={statLabelStyle}>Total Vehicles</p>
+            <h2 style={statValueStyle}>{vehicles.length}</h2>
+            <p style={statTextStyle}>Registered fleet units</p>
+          </article>
+
+          <article style={statCardStyle}>
+            <p style={statLabelStyle}>Approved</p>
+            <h2 style={statValueStyle}>{approved}</h2>
+            <p style={statTextStyle}>Ready for operations</p>
+          </article>
+
+          <article style={statCardStyle}>
+            <p style={statLabelStyle}>Pending</p>
+            <h2 style={statValueStyle}>{pending}</h2>
+            <p style={statTextStyle}>Awaiting admin review</p>
+          </article>
+
+          <article style={statCardStyle}>
+            <p style={statLabelStyle}>Suspended</p>
+            <h2 style={statValueStyle}>{suspended}</h2>
+            <p style={statTextStyle}>Temporarily inactive</p>
+          </article>
         </div>
 
         <div style={sectionHeaderStyle}>
-          <p style={sectionBadgeStyle}>OPERATIONS ACTIVITY</p>
-          <h2 style={sectionTitleStyle}>Recent Fleet Activity</h2>
+          <p style={sectionBadgeStyle}>LIVE FLEET LIST</p>
+          <h2 style={sectionTitleStyle}>Vehicle Operations Overview</h2>
           <p style={sectionTextStyle}>
-            This section will later show real-time updates from Supabase:
-            approvals, assigned trips, cargo matches, and driver actions.
+            This dashboard uses the same vehicles table as registration and
+            admin approvals.
           </p>
         </div>
 
-        <div style={gridStyle}>
-          {activities.map((item) => (
-            <article key={item.title} style={cardStyle}>
-              <div style={statusStyle}>{item.status}</div>
+        {loading ? (
+          <div style={loadingStyle}>Loading fleet...</div>
+        ) : vehicles.length === 0 ? (
+          <div style={emptyStyle}>No vehicles registered yet.</div>
+        ) : (
+          <div style={gridStyle}>
+            {vehicles.map((vehicle) => (
+              <article key={vehicle.id} style={cardStyle}>
+                <div style={statusStyle}>{vehicle.status || "pending"}</div>
 
-              <h3 style={cardTitleStyle}>{item.title}</h3>
+                <h3 style={cardTitleStyle}>
+                  {vehicle.vehicle_name || "Unnamed Vehicle"}
+                </h3>
 
-              <p style={cardTextStyle}>
-                <strong>Route:</strong> {item.route}
-              </p>
+                <p style={cardTextStyle}>
+                  <strong>Type:</strong> {vehicle.vehicle_type || "N/A"}
+                </p>
 
-              <div style={cardActionsStyle}>
-                <Link href="/cargo-matching" style={darkButtonStyle}>
-                  View Match
-                </Link>
+                <p style={cardTextStyle}>
+                  <strong>Registration:</strong>{" "}
+                  {vehicle.registration_number || "N/A"}
+                </p>
 
-                <Link href="/vehicle-documents" style={lightButtonStyle}>
-                  Documents
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <p style={cardTextStyle}>
+                  <strong>Capacity:</strong> {vehicle.capacity || "N/A"}
+                </p>
+
+                <p style={cardTextStyle}>
+                  <strong>Route:</strong> {vehicle.route_area || "N/A"}
+                </p>
+
+                <p style={cardTextStyle}>
+                  <strong>Owner:</strong> {vehicle.owner_name || "N/A"}
+                </p>
+
+                <div style={cardActionsStyle}>
+                  <Link href="/live-tracking" style={darkButtonStyle}>
+                    Tracking
+                  </Link>
+
+                  <Link href="/booking-requests" style={lightButtonStyle}>
+                    Assign Booking
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -121,7 +177,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 780,
+  maxWidth: 850,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -194,7 +250,7 @@ const statTextStyle = {
 };
 
 const sectionHeaderStyle = {
-  marginBottom: 28,
+  marginBottom: 30,
 };
 
 const sectionBadgeStyle = {
@@ -213,12 +269,28 @@ const sectionTitleStyle = {
 const sectionTextStyle = {
   color: "#64748b",
   lineHeight: 1.7,
-  maxWidth: 760,
+  maxWidth: 780,
+};
+
+const loadingStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  fontWeight: 900,
+};
+
+const emptyStyle = {
+  background: "white",
+  padding: 40,
+  borderRadius: 24,
+  textAlign: "center" as const,
+  color: "#64748b",
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 24,
 };
 
@@ -242,10 +314,9 @@ const statusStyle = {
 };
 
 const cardTitleStyle = {
-  fontSize: 24,
+  fontSize: 26,
   fontWeight: 900,
   color: "#0f172a",
-  lineHeight: 1.3,
 };
 
 const cardTextStyle = {
