@@ -8,36 +8,20 @@ const mainLinks = [
   { href: "/", label: "Home" },
   { href: "/cargo-requests", label: "Cargo" },
   { href: "/request-cargo", label: "Post Cargo" },
-  { href: "/trip-offers", label: "Trips" },
-  { href: "/create-trip", label: "Create Trip" },
-  { href: "/booking-requests", label: "Bookings" },
-  { href: "/booking-create", label: "Create Booking" },
+  { href: "/booking-create", label: "Bookings" },
   { href: "/my-vehicles", label: "Vehicles" },
   { href: "/vehicle-register", label: "Register Vehicle" },
-  { href: "/vehicle-documents", label: "Documents" },
   { href: "/driver-profiles", label: "Drivers" },
   { href: "/driver-register", label: "Register Driver" },
   { href: "/transporters", label: "Transporters" },
-  { href: "/transport-company", label: "Company Profile" },
-  { href: "/cargo-matching", label: "Cargo Match" },
-  { href: "/fleet-dashboard", label: "Fleet Dashboard" },
-  { href: "/live-tracking", label: "Live Tracking" },
-  { href: "/tracking-create", label: "Create Tracking" },
-  { href: "/customer-tracking", label: "Customer Tracking" },
+  { href: "/fleet-dashboard", label: "Fleet" },
+  { href: "/live-tracking", label: "Tracking" },
   { href: "/warehouse-network", label: "Warehouses" },
-  { href: "/warehouse-register", label: "Register Warehouse" },
-  { href: "/warehouse-dashboard", label: "Warehouse Dashboard" },
   { href: "/inventory-management", label: "Inventory" },
-  { href: "/inventory-add", label: "Add Inventory" },
-  { href: "/supplier-dashboard", label: "Supplier Dashboard" },
-  { href: "/supplier-register", label: "Register Supplier" },
+  { href: "/supplier-dashboard", label: "Suppliers" },
   { href: "/store", label: "Store" },
-  { href: "/service-areas", label: "Service Areas" },
-  { href: "/route-planner", label: "Route Planner" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/how-it-works", label: "How It Works" },
   { href: "/about", label: "About" },
-  { href: "/aviation", label: "Aviation" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -47,21 +31,21 @@ const adminLinks = [
   { href: "/admin/vehicle-approvals", label: "Vehicle Approvals" },
   { href: "/admin/vehicle-documents", label: "Vehicle Docs" },
   { href: "/admin/transporter-management", label: "Transporters" },
+  { href: "/admin/warehouse-management", label: "Warehouses" },
+  { href: "/admin/supplier-management", label: "Suppliers" },
+  { href: "/admin/inventory-management", label: "Inventory" },
+  { href: "/admin/booking-management", label: "Bookings" },
+  { href: "/admin/tracking-management", label: "Tracking" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/shipments", label: "Shipments" },
   { href: "/admin/reports", label: "Reports" },
   { href: "/admin/analytics", label: "Analytics" },
-    { href: "/admin/warehouse-management", label: "Warehouses" },
-  { href: "/admin/supplier-management", label: "Suppliers" },
-  { href: "/admin/booking-management", label: "Bookings" },
-  { href: "/admin/tracking-management", label: "Tracking" },
- 
   { href: "/admin/settings", label: "Settings" },
 ];
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
 
   async function handleLogout() {
@@ -69,39 +53,39 @@ export default function Navbar() {
     window.location.href = "/login";
   }
 
-  function closeMobileMenu() {
-    setOpen(false);
-    setAdminOpen(false);
-  }
-
   return (
     <header style={headerStyle}>
-      <nav style={navStyle}>
+      <div style={containerStyle}>
         <Link href="/" style={logoStyle}>
           NamLogix Africa
         </Link>
 
-        <div className="desktop-nav-links" style={desktopLinksStyle}>
+        <div style={desktopNavStyle}>
           {mainLinks.map((link) => (
-            <Link key={link.href} href={link.href} style={linkStyle}>
+            <Link
+              key={`main-${link.href}`}
+              href={link.href}
+              style={linkStyle}
+            >
               {link.label}
             </Link>
           ))}
 
-          <div
-            style={adminDropdownStyle}
-            onMouseEnter={() => setAdminOpen(true)}
-            onMouseLeave={() => setAdminOpen(false)}
-          >
-            <button style={adminButtonStyle}>Admin ▾</button>
+          <div style={adminWrapperStyle}>
+            <button
+              onClick={() => setAdminOpen(!adminOpen)}
+              style={adminButtonStyle}
+            >
+              Admin ▾
+            </button>
 
             {adminOpen && (
-              <div style={adminMenuStyle}>
+              <div style={adminDropdownStyle}>
                 {adminLinks.map((link) => (
                   <Link
-                    key={link.href}
+                    key={`admin-${link.href}`}
                     href={link.href}
-                    style={adminMenuLinkStyle}
+                    style={dropdownLinkStyle}
                   >
                     {link.label}
                   </Link>
@@ -109,57 +93,51 @@ export default function Navbar() {
               </div>
             )}
           </div>
-        </div>
 
-        <div style={rightSectionStyle}>
-          <Link href="/login" style={loginStyle}>
-            Login
-          </Link>
-
-          <button onClick={handleLogout} style={logoutStyle}>
+          <button onClick={handleLogout} style={logoutButtonStyle}>
             Logout
           </button>
-
-          <button onClick={() => setOpen(!open)} style={mobileButtonStyle}>
-            {open ? "✕" : "☰"}
-          </button>
         </div>
-      </nav>
 
-      {open && (
+        <button
+          style={mobileButtonStyle}
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          ☰
+        </button>
+      </div>
+
+      {mobileOpen && (
         <div style={mobileMenuStyle}>
           {mainLinks.map((link) => (
             <Link
-              key={link.href}
+              key={`mobile-${link.href}`}
               href={link.href}
               style={mobileLinkStyle}
-              onClick={closeMobileMenu}
+              onClick={() => setMobileOpen(false)}
             >
               {link.label}
             </Link>
           ))}
 
-          <button
-            onClick={() => setAdminOpen(!adminOpen)}
-            style={mobileAdminButtonStyle}
-          >
-            Admin Menu {adminOpen ? "▲" : "▼"}
-          </button>
+          <div style={mobileAdminTitleStyle}>Admin Menu</div>
 
-          {adminOpen && (
-            <div style={mobileAdminMenuStyle}>
-              {adminLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  style={mobileAdminLinkStyle}
-                  onClick={closeMobileMenu}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          )}
+          <div style={mobileAdminScrollStyle}>
+            {adminLinks.map((link) => (
+              <Link
+                key={`mobile-admin-${link.href}`}
+                href={link.href}
+                style={mobileLinkStyle}
+                onClick={() => setMobileOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <button onClick={handleLogout} style={mobileLogoutStyle}>
+            Logout
+          </button>
         </div>
       )}
     </header>
@@ -169,165 +147,133 @@ export default function Navbar() {
 const headerStyle = {
   position: "sticky" as const,
   top: 0,
-  zIndex: 100,
-  background: "rgba(255,255,255,0.96)",
-  backdropFilter: "blur(14px)",
-  borderBottom: "1px solid #e5e7eb",
+  zIndex: 999,
+  background: "#0f172a",
+  borderBottom: "1px solid rgba(255,255,255,0.08)",
 };
 
-const navStyle = {
-  maxWidth: 1500,
+const containerStyle = {
+  maxWidth: 1400,
   margin: "0 auto",
-  padding: "14px 18px",
+  padding: "14px 20px",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: 14,
+  gap: 20,
 };
 
 const logoStyle = {
-  fontSize: 22,
+  color: "white",
+  fontSize: 24,
   fontWeight: 900,
-  color: "#0f172a",
   textDecoration: "none",
   whiteSpace: "nowrap" as const,
 };
 
-const desktopLinksStyle = {
+const desktopNavStyle = {
   display: "flex",
   alignItems: "center",
-  gap: 6,
+  gap: 14,
   flexWrap: "wrap" as const,
 };
 
 const linkStyle = {
-  color: "#334155",
+  color: "rgba(255,255,255,0.88)",
   textDecoration: "none",
-  fontWeight: 800,
-  padding: "9px 10px",
-  borderRadius: 12,
-  fontSize: 13,
+  fontWeight: 700,
+  fontSize: 14,
 };
 
-const adminDropdownStyle = {
+const adminWrapperStyle = {
   position: "relative" as const,
 };
 
 const adminButtonStyle = {
-  background: "#0f172a",
-  color: "white",
-  border: "none",
-  padding: "9px 12px",
-  borderRadius: 12,
-  fontWeight: 900,
-  cursor: "pointer",
-};
-
-const adminMenuStyle = {
-  position: "absolute" as const,
-  right: 0,
-  top: "110%",
-  minWidth: 240,
-  background: "white",
-  border: "1px solid #e5e7eb",
-  borderRadius: 16,
-  padding: 10,
-  display: "grid",
-  gap: 6,
-  boxShadow: "0 18px 40px rgba(15,23,42,0.16)",
-};
-
-const adminMenuLinkStyle = {
-  color: "#334155",
-  textDecoration: "none",
-  fontWeight: 800,
-  padding: "10px 12px",
-  borderRadius: 12,
-  background: "#f8fafc",
-};
-
-const rightSectionStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-};
-
-const loginStyle = {
-  color: "#1d4ed8",
-  fontWeight: 900,
-  textDecoration: "none",
-  background: "#eff6ff",
-  padding: "9px 12px",
-  borderRadius: 12,
-  fontSize: 13,
-};
-
-const logoutStyle = {
-  background: "#ef4444",
-  color: "white",
-  border: "none",
-  padding: "9px 12px",
-  borderRadius: 12,
-  fontWeight: 900,
-  cursor: "pointer",
-  fontSize: 13,
-};
-
-const mobileButtonStyle = {
-  display: "none",
-  background: "#1d4ed8",
+  background: "#1e293b",
   color: "white",
   border: "none",
   padding: "10px 14px",
   borderRadius: 12,
-  fontWeight: 900,
   cursor: "pointer",
+  fontWeight: 800,
+};
+
+const adminDropdownStyle = {
+  position: "absolute" as const,
+  top: 52,
+  right: 0,
+  width: 260,
+  maxHeight: 420,
+  overflowY: "auto" as const,
+  background: "white",
+  borderRadius: 18,
+  boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+  padding: 12,
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: 6,
+};
+
+const dropdownLinkStyle = {
+  padding: "12px 14px",
+  borderRadius: 12,
+  textDecoration: "none",
+  color: "#0f172a",
+  fontWeight: 700,
+  background: "#f8fafc",
+};
+
+const logoutButtonStyle = {
+  background: "#f97316",
+  color: "white",
+  border: "none",
+  padding: "10px 14px",
+  borderRadius: 12,
+  cursor: "pointer",
+  fontWeight: 800,
+};
+
+const mobileButtonStyle = {
+  display: "none",
 };
 
 const mobileMenuStyle = {
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: 10,
   padding: 20,
-  display: "grid",
-  gap: 12,
-  borderTop: "1px solid #e5e7eb",
-  background: "white",
+  background: "#111827",
 };
 
 const mobileLinkStyle = {
-  color: "#334155",
+  color: "white",
   textDecoration: "none",
-  fontWeight: 800,
-  background: "#f8fafc",
   padding: "12px 14px",
+  background: "#1e293b",
   borderRadius: 12,
-  border: "1px solid #e2e8f0",
+  fontWeight: 700,
 };
 
-const mobileAdminButtonStyle = {
-  background: "#0f172a",
+const mobileAdminTitleStyle = {
+  color: "#f97316",
+  fontWeight: 900,
+  marginTop: 10,
+};
+
+const mobileAdminScrollStyle = {
+  maxHeight: 300,
+  overflowY: "auto" as const,
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: 8,
+};
+
+const mobileLogoutStyle = {
+  background: "#f97316",
   color: "white",
   border: "none",
-  padding: "12px 14px",
+  padding: "14px",
   borderRadius: 12,
   fontWeight: 900,
   cursor: "pointer",
-  textAlign: "left" as const,
-};
-
-const mobileAdminMenuStyle = {
-  display: "grid",
-  gap: 10,
-  padding: 12,
-  background: "#f8fafc",
-  borderRadius: 14,
-  border: "1px solid #e2e8f0",
-};
-
-const mobileAdminLinkStyle = {
-  color: "#334155",
-  textDecoration: "none",
-  fontWeight: 800,
-  background: "white",
-  padding: "11px 13px",
-  borderRadius: 12,
-  border: "1px solid #e2e8f0",
 };
