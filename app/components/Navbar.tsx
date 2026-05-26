@@ -45,6 +45,7 @@ const adminLinks = [
   { href: "/admin/dashboard", label: "Dashboard" },
   { href: "/admin/drivers", label: "Drivers" },
   { href: "/admin/vehicle-approvals", label: "Vehicle Approvals" },
+  { href: "/admin/vehicle-documents", label: "Vehicle Docs" },
   { href: "/admin/transporter-management", label: "Transporters" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/orders", label: "Orders" },
