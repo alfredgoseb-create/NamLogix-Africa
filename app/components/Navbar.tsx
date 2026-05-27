@@ -27,20 +27,32 @@ const mainLinks = [
 
 const adminLinks = [
   { href: "/admin/dashboard", label: "Dashboard" },
+  { href: "/admin/analytics", label: "Analytics" },
+  { href: "/admin/users", label: "Users" },
   { href: "/admin/drivers", label: "Drivers" },
+  { href: "/admin/vehicles", label: "Vehicles" },
   { href: "/admin/vehicle-approvals", label: "Vehicle Approvals" },
   { href: "/admin/vehicle-documents", label: "Vehicle Docs" },
   { href: "/admin/transporter-management", label: "Transporters" },
   { href: "/admin/warehouse-management", label: "Warehouses" },
   { href: "/admin/supplier-management", label: "Suppliers" },
   { href: "/admin/inventory-management", label: "Inventory" },
-  { href: "/admin/booking-management", label: "Bookings" },
-  { href: "/admin/tracking-management", label: "Tracking" },
-  { href: "/admin/users", label: "Users" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/shipments", label: "Shipments" },
   { href: "/admin/reports", label: "Reports" },
-  { href: "/admin/analytics", label: "Analytics" },
+  { href: "/admin/booking-management", label: "Bookings" },
+  { href: "/admin/tracking-management", label: "Tracking" },
+  { href: "/admin/trips", label: "Trips" },
+  { href: "/admin/trip-bookings", label: "Trip Bookings" },
+  { href: "/admin/cargo-requests", label: "Cargo Requests" },
+  { href: "/admin/inquiries", label: "Inquiries" },
+  { href: "/admin/companies", label: "Companies" },
+  { href: "/admin/documents", label: "Documents" },
+  { href: "/admin/customs-documents", label: "Customs Docs" },
+  { href: "/admin/stock-locations", label: "Stock Locations" },
+  { href: "/admin/stock-transactions", label: "Stock Transactions" },
+  { href: "/admin/barcode-scanner", label: "Barcode Scanner" },
+  { href: "/admin/support", label: "Support" },
   { href: "/admin/settings", label: "Settings" },
 ];
 
@@ -63,7 +75,7 @@ export default function Navbar() {
         <div style={desktopNavStyle}>
           {mainLinks.map((link) => (
             <Link
-              key={`main-${link.href}`}
+              key={link.href}
               href={link.href}
               style={linkStyle}
             >
@@ -83,7 +95,7 @@ export default function Navbar() {
               <div style={adminDropdownStyle}>
                 {adminLinks.map((link) => (
                   <Link
-                    key={`admin-${link.href}`}
+                    key={link.href}
                     href={link.href}
                     style={dropdownLinkStyle}
                   >
@@ -120,12 +132,14 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <div style={mobileAdminTitleStyle}>Admin Menu</div>
+          <div style={mobileAdminTitleStyle}>
+            Admin Menu
+          </div>
 
           <div style={mobileAdminScrollStyle}>
             {adminLinks.map((link) => (
               <Link
-                key={`mobile-admin-${link.href}`}
+                key={`admin-mobile-${link.href}`}
                 href={link.href}
                 style={mobileLinkStyle}
                 onClick={() => setMobileOpen(false)}
@@ -202,7 +216,7 @@ const adminDropdownStyle = {
   position: "absolute" as const,
   top: 52,
   right: 0,
-  width: 260,
+  width: 280,
   maxHeight: 420,
   overflowY: "auto" as const,
   background: "white",
@@ -234,7 +248,13 @@ const logoutButtonStyle = {
 };
 
 const mobileButtonStyle = {
-  display: "none",
+  background: "#1e293b",
+  color: "white",
+  border: "none",
+  padding: "10px 14px",
+  borderRadius: 12,
+  cursor: "pointer",
+  fontWeight: 900,
 };
 
 const mobileMenuStyle = {
