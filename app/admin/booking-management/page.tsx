@@ -45,10 +45,47 @@ export default function AdminBookingManagementPage() {
   async function updateBookingStatus(id: string, status: string) {
     setUpdatingId(id);
 
+    const booking = bookings.find((b) => b.id === id);
+
     const { error } = await supabase
       .from("booking_requests")
       .update({ status })
       .eq("id", id);
+
+    if (!error && status === "approved" && booking) {
+      const { data: existingTracking } = await supabase
+        .from("shipment_tracking")
+        .select("id")
+        .eq("booking_id", booking.id)
+        .maybeSingle();
+
+      if (!existingTracking) {
+        const trackingCode = `NLX-${Date.now()}`;
+
+        const { error: trackingError } = await supabase
+          .from("shipment_tracking")
+          .insert([
+            {
+              booking_id: booking.id,
+              tracking_code: trackingCode,
+              status: "pending_pickup",
+              current_location: booking.pickup_location,
+              destination: booking.delivery_location,
+              progress: 10,
+              customer_name: booking.customer_name,
+              service_type: booking.service_type,
+              contact_number: booking.contact_number,
+            },
+          ]);
+
+        if (trackingError) {
+          alert(
+            "Booking approved but failed to create tracking: " +
+              trackingError.message
+          );
+        }
+      }
+    }
 
     setUpdatingId("");
 

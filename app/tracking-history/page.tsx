@@ -1,26 +1,24 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-type Shipment = {
+type TrackingHistory = {
   id: string;
   tracking_code: string;
   status: string;
-  current_location: string;
-  destination: string;
-  progress: number;
+  location: string;
+  notes: string;
   created_at: string;
 };
 
-export default function LiveTrackingPage() {
+export default function TrackingHistoryPage() {
   const [trackingCode, setTrackingCode] = useState("");
-  const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [history, setHistory] = useState<TrackingHistory[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  async function searchShipment() {
+  async function searchTrackingHistory() {
     if (!trackingCode.trim()) {
       alert("Please enter a tracking code.");
       return;
@@ -28,18 +26,18 @@ export default function LiveTrackingPage() {
 
     setLoading(true);
     setSearched(true);
-    setShipment(null);
 
     const { data, error } = await supabase
-      .from("shipment_tracking")
+      .from("tracking_history")
       .select("*")
       .eq("tracking_code", trackingCode.trim())
-      .single();
+      .order("created_at", { ascending: true });
 
     if (error) {
-      setShipment(null);
+      alert(error.message);
+      setHistory([]);
     } else {
-      setShipment(data);
+      setHistory(data || []);
     }
 
     setLoading(false);
@@ -48,77 +46,71 @@ export default function LiveTrackingPage() {
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
-        <p style={badgeStyle}>LIVE TRACKING</p>
-        <h1 style={titleStyle}>Track Your NamLogix Shipment</h1>
+        <p style={badgeStyle}>SHIPMENT TIMELINE</p>
+
+        <h1 style={titleStyle}>Tracking History</h1>
 
         <p style={descStyle}>
-          Enter your tracking code to view shipment status, current location,
-          destination, and delivery progress.
+          View the complete shipment journey from pickup to delivery.
         </p>
 
         <div style={searchBoxStyle}>
           <input
             value={trackingCode}
             onChange={(e) => setTrackingCode(e.target.value)}
-            placeholder="Example: NLX-123456789"
+            placeholder="Enter tracking code"
             style={inputStyle}
           />
 
-          <button onClick={searchShipment} style={buttonStyle}>
-            {loading ? "Searching..." : "Track Shipment"}
+          <button
+            onClick={searchTrackingHistory}
+            style={buttonStyle}
+          >
+            {loading ? "Searching..." : "View Timeline"}
           </button>
-        </div>
-
-        <div style={buttonRowStyle}>
-          <Link href="/booking-create" style={secondaryButtonStyle}>
-            Create Booking
-          </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         {loading ? (
-          <div style={messageStyle}>Searching shipment...</div>
-        ) : shipment ? (
-          <article style={cardStyle}>
-            <p style={codeStyle}>{shipment.tracking_code}</p>
+          <div style={messageStyle}>Loading timeline...</div>
+        ) : history.length > 0 ? (
+          <div style={timelineStyle}>
+            {history.map((item, index) => (
+              <div key={item.id} style={timelineItemStyle}>
+                <div style={timelineDotStyle} />
 
-            <h2 style={cardTitleStyle}>
-              {shipment.current_location || "Pickup"} →{" "}
-              {shipment.destination || "Destination"}
-            </h2>
+                {index !== history.length - 1 && (
+                  <div style={timelineLineStyle} />
+                )}
 
-            <p style={textStyle}>
-              <strong>Status:</strong> {shipment.status || "pending"}
-            </p>
+                <div style={timelineCardStyle}>
+                  <p style={statusStyle}>{item.status}</p>
 
-            <p style={textStyle}>
-              <strong>Progress:</strong> {shipment.progress || 0}%
-            </p>
+                  <h2 style={locationStyle}>
+                    {item.location || "Unknown Location"}
+                  </h2>
 
-            <div style={progressOuterStyle}>
-              <div
-                style={{
-                  ...progressInnerStyle,
-                  width: `${shipment.progress || 0}%`,
-                }}
-              />
-            </div>
+                  <p style={notesStyle}>
+                    {item.notes || "No notes"}
+                  </p>
 
-            <p style={smallTextStyle}>
-              Created:{" "}
-              {shipment.created_at
-                ? new Date(shipment.created_at).toLocaleString()
-                : "N/A"}
-            </p>
-          </article>
+                  <p style={dateStyle}>
+                    {item.created_at
+                      ? new Date(item.created_at).toLocaleString()
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : searched ? (
           <div style={messageStyle}>
-            No shipment found. Please check your tracking code.
+            No tracking history found.
           </div>
         ) : (
           <div style={messageStyle}>
-            Enter your NamLogix tracking code above.
+            Enter your tracking code to view shipment history.
           </div>
         )}
       </section>
@@ -152,7 +144,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 850,
+  maxWidth: 800,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -160,7 +152,7 @@ const descStyle = {
 };
 
 const searchBoxStyle = {
-  maxWidth: 780,
+  maxWidth: 760,
   margin: "34px auto 0",
   display: "flex",
   gap: 12,
@@ -188,22 +180,8 @@ const buttonStyle = {
   cursor: "pointer",
 };
 
-const buttonRowStyle = {
-  marginTop: 20,
-};
-
-const secondaryButtonStyle = {
-  display: "inline-block",
-  background: "white",
-  color: "#1d4ed8",
-  padding: "14px 18px",
-  borderRadius: 14,
-  fontWeight: 900,
-  textDecoration: "none",
-};
-
 const containerStyle = {
-  maxWidth: 900,
+  maxWidth: 1000,
   margin: "0 auto",
   padding: "60px 24px",
 };
@@ -217,15 +195,45 @@ const messageStyle = {
   fontWeight: 800,
 };
 
-const cardStyle = {
+const timelineStyle = {
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: 24,
+};
+
+const timelineItemStyle = {
+  position: "relative" as const,
+  paddingLeft: 50,
+};
+
+const timelineDotStyle = {
+  position: "absolute" as const,
+  left: 0,
+  top: 12,
+  width: 18,
+  height: 18,
+  borderRadius: "50%",
+  background: "#f97316",
+};
+
+const timelineLineStyle = {
+  position: "absolute" as const,
+  left: 8,
+  top: 30,
+  width: 2,
+  height: "100%",
+  background: "#cbd5e1",
+};
+
+const timelineCardStyle = {
   background: "white",
-  borderRadius: 28,
-  padding: 32,
+  borderRadius: 24,
+  padding: 24,
   border: "1px solid #e5e7eb",
   boxShadow: "0 12px 30px rgba(15,23,42,0.06)",
 };
 
-const codeStyle = {
+const statusStyle = {
   display: "inline-block",
   background: "#eff6ff",
   color: "#1d4ed8",
@@ -235,35 +243,21 @@ const codeStyle = {
   fontSize: 13,
 };
 
-const cardTitleStyle = {
-  fontSize: 28,
+const locationStyle = {
+  fontSize: 24,
   fontWeight: 900,
   color: "#0f172a",
-  marginTop: 18,
-};
-
-const textStyle = {
-  color: "#475569",
-  lineHeight: 1.7,
-};
-
-const smallTextStyle = {
-  color: "#94a3b8",
-  fontSize: 13,
   marginTop: 16,
 };
 
-const progressOuterStyle = {
-  width: "100%",
-  height: 14,
-  background: "#e5e7eb",
-  borderRadius: 999,
-  overflow: "hidden",
-  marginTop: 14,
+const notesStyle = {
+  color: "#475569",
+  lineHeight: 1.7,
+  marginTop: 12,
 };
 
-const progressInnerStyle = {
-  height: "100%",
-  background: "#f97316",
-  borderRadius: 999,
+const dateStyle = {
+  color: "#94a3b8",
+  fontSize: 13,
+  marginTop: 16,
 };

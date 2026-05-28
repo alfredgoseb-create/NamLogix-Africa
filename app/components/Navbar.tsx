@@ -16,6 +16,10 @@ const mainLinks = [
   { href: "/transporters", label: "Transporters" },
   { href: "/fleet-dashboard", label: "Fleet" },
   { href: "/live-tracking", label: "Tracking" },
+  { href: "/track-shipment", label: "Track Shipment" },
+  { href: "/tracking-history", label: "Tracking History" },
+  { href: "/delivery-status", label: "Delivery Status" },
+  { href: "/shipment-receipt", label: "Shipment Receipt" },
   { href: "/warehouse-network", label: "Warehouses" },
   { href: "/inventory-management", label: "Inventory" },
   { href: "/supplier-dashboard", label: "Suppliers" },
@@ -42,6 +46,9 @@ const adminLinks = [
   { href: "/admin/reports", label: "Reports" },
   { href: "/admin/booking-management", label: "Bookings" },
   { href: "/admin/tracking-management", label: "Tracking" },
+  { href: "/admin/shipment-tracking", label: "Shipment Tracking" },
+ { href: "/admin/shipment-assignments", label: "Shipment Assignments" },
+ { href: "/admin/delivery-proofs", label: "Delivery Proofs" },
   { href: "/admin/trips", label: "Trips" },
   { href: "/admin/trip-bookings", label: "Trip Bookings" },
   { href: "/admin/cargo-requests", label: "Cargo Requests" },
@@ -52,6 +59,7 @@ const adminLinks = [
   { href: "/admin/stock-locations", label: "Stock Locations" },
   { href: "/admin/stock-transactions", label: "Stock Transactions" },
   { href: "/admin/barcode-scanner", label: "Barcode Scanner" },
+  { href: "/admin/shipment-invoices", label: "Shipment Invoices" },
   { href: "/admin/support", label: "Support" },
   { href: "/admin/settings", label: "Settings" },
 ];
@@ -74,11 +82,7 @@ export default function Navbar() {
 
         <div style={desktopNavStyle}>
           {mainLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              style={linkStyle}
-            >
+            <Link key={link.href} href={link.href} style={linkStyle}>
               {link.label}
             </Link>
           ))}
@@ -98,6 +102,7 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     style={dropdownLinkStyle}
+                    onClick={() => setAdminOpen(false)}
                   >
                     {link.label}
                   </Link>
@@ -132,9 +137,7 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <div style={mobileAdminTitleStyle}>
-            Admin Menu
-          </div>
+          <div style={mobileAdminTitleStyle}>Admin Menu</div>
 
           <div style={mobileAdminScrollStyle}>
             {adminLinks.map((link) => (

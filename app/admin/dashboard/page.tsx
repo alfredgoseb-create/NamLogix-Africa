@@ -19,14 +19,31 @@ export default async function AdminDashboardPage() {
 
   const { data: bids } = await supabase.from("bids").select("id");
 
+  const { data: shipments } = await supabase
+    .from("shipment_tracking")
+    .select("id, status");
+
+  const { data: deliveryProofs } = await supabase
+    .from("delivery_proofs")
+    .select("id");
+
+  const driverAssignedCount =
+    shipments?.filter((item) => item.status === "driver_assigned").length || 0;
+
+  const inTransitCount =
+    shipments?.filter((item) => item.status === "in_transit").length || 0;
+
+  const deliveredCount =
+    shipments?.filter((item) => item.status === "delivered").length || 0;
+
   return (
     <PremiumPageShell
       badge="NAMLOGIX ADMIN"
       title="Admin Dashboard"
-      description="Manage cargo requests, transporter bids, trip offers, bookings, customer inquiries, transport activity, and marketplace operations from one control center."
+      description="Manage cargo requests, transporter bids, trip offers, bookings, customer inquiries, shipment tracking, driver dispatch, and delivery proof records from one control center."
       actions={[
         { label: "Cargo Requests", href: "/cargo-requests", variant: "blue" },
-        { label: "Bids", href: "/bids", variant: "orange" },
+        { label: "Tracking", href: "/admin/tracking-management", variant: "orange" },
         { label: "Home", href: "/", variant: "white" },
       ]}
     >
@@ -53,6 +70,31 @@ export default async function AdminDashboardPage() {
             text: "Customer trip bookings",
           },
           {
+            label: "Shipments",
+            value: shipments?.length || 0,
+            text: "Shipment tracking records",
+          },
+          {
+            label: "Driver Assigned",
+            value: driverAssignedCount,
+            text: "Shipments with drivers",
+          },
+          {
+            label: "In Transit",
+            value: inTransitCount,
+            text: "Shipments currently moving",
+          },
+          {
+            label: "Delivered",
+            value: deliveredCount,
+            text: "Completed deliveries",
+          },
+          {
+            label: "Delivery Proofs",
+            value: deliveryProofs?.length || 0,
+            text: "Saved proof records",
+          },
+          {
             label: "Inquiries",
             value: inquiries?.length || 0,
             text: "Support and customer leads",
@@ -70,6 +112,42 @@ export default async function AdminDashboardPage() {
           </p>
           <Link href="/cargo-requests" style={buttonStyle}>
             Manage Cargo
+          </Link>
+        </PremiumCard>
+
+        <PremiumCard>
+          <div style={iconStyle}>🚚</div>
+          <h2 style={cardTitleStyle}>Shipment Tracking</h2>
+          <p style={cardTextStyle}>
+            Monitor active shipments, progress stages, pickup status, transit
+            status, and completed deliveries.
+          </p>
+          <Link href="/admin/tracking-management" style={buttonStyle}>
+            Manage Tracking
+          </Link>
+        </PremiumCard>
+
+        <PremiumCard>
+          <div style={iconStyle}>👨‍✈️</div>
+          <h2 style={cardTitleStyle}>Driver Dispatch</h2>
+          <p style={cardTextStyle}>
+            View assigned drivers, vehicles, tracking codes, and shipment
+            dispatch records.
+          </p>
+          <Link href="/admin/shipment-assignments" style={buttonStyle}>
+            View Assignments
+          </Link>
+        </PremiumCard>
+
+        <PremiumCard>
+          <div style={iconStyle}>✅</div>
+          <h2 style={cardTitleStyle}>Delivery Proofs</h2>
+          <p style={cardTextStyle}>
+            Review completed deliveries, receiver details, delivery notes, and
+            proof of delivery records.
+          </p>
+          <Link href="/admin/delivery-proofs" style={buttonStyle}>
+            View Proofs
           </Link>
         </PremiumCard>
 
@@ -104,7 +182,7 @@ export default async function AdminDashboardPage() {
             Review customer booking requests, passenger details, and trip
             messages.
           </p>
-          <Link href="/admin/bookings" style={buttonStyle}>
+          <Link href="/admin/booking-management" style={buttonStyle}>
             View Bookings
           </Link>
         </PremiumCard>

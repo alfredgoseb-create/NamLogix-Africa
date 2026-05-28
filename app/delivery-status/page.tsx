@@ -1,26 +1,23 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-type Shipment = {
-  id: string;
+type DeliveryProof = {
   tracking_code: string;
-  status: string;
-  current_location: string;
-  destination: string;
-  progress: number;
-  created_at: string;
+  receiver_name: string;
+  receiver_phone: string;
+  delivery_notes: string;
+  delivered_at: string;
 };
 
-export default function LiveTrackingPage() {
+export default function DeliveryStatusPage() {
   const [trackingCode, setTrackingCode] = useState("");
-  const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [proof, setProof] = useState<DeliveryProof | null>(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  async function searchShipment() {
+  async function searchDeliveryStatus() {
     if (!trackingCode.trim()) {
       alert("Please enter a tracking code.");
       return;
@@ -28,18 +25,17 @@ export default function LiveTrackingPage() {
 
     setLoading(true);
     setSearched(true);
-    setShipment(null);
 
     const { data, error } = await supabase
-      .from("shipment_tracking")
+      .from("delivery_proofs")
       .select("*")
       .eq("tracking_code", trackingCode.trim())
       .single();
 
     if (error) {
-      setShipment(null);
+      setProof(null);
     } else {
-      setShipment(data);
+      setProof(data);
     }
 
     setLoading(false);
@@ -48,77 +44,76 @@ export default function LiveTrackingPage() {
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
-        <p style={badgeStyle}>LIVE TRACKING</p>
-        <h1 style={titleStyle}>Track Your NamLogix Shipment</h1>
+        <p style={badgeStyle}>DELIVERY CONFIRMATION</p>
+
+        <h1 style={titleStyle}>Check Delivery Status</h1>
 
         <p style={descStyle}>
-          Enter your tracking code to view shipment status, current location,
-          destination, and delivery progress.
+          Customers can confirm whether a shipment was delivered successfully.
         </p>
 
         <div style={searchBoxStyle}>
           <input
             value={trackingCode}
             onChange={(e) => setTrackingCode(e.target.value)}
-            placeholder="Example: NLX-123456789"
+            placeholder="Enter tracking code"
             style={inputStyle}
           />
 
-          <button onClick={searchShipment} style={buttonStyle}>
-            {loading ? "Searching..." : "Track Shipment"}
+          <button
+            onClick={searchDeliveryStatus}
+            style={buttonStyle}
+          >
+            {loading ? "Searching..." : "Check Delivery"}
           </button>
-        </div>
-
-        <div style={buttonRowStyle}>
-          <Link href="/booking-create" style={secondaryButtonStyle}>
-            Create Booking
-          </Link>
         </div>
       </section>
 
       <section style={containerStyle}>
         {loading ? (
-          <div style={messageStyle}>Searching shipment...</div>
-        ) : shipment ? (
+          <div style={messageStyle}>Loading delivery status...</div>
+        ) : proof ? (
           <article style={cardStyle}>
-            <p style={codeStyle}>{shipment.tracking_code}</p>
+            <p style={successBadgeStyle}>DELIVERED</p>
 
             <h2 style={cardTitleStyle}>
-              {shipment.current_location || "Pickup"} →{" "}
-              {shipment.destination || "Destination"}
+              Shipment Successfully Delivered
             </h2>
 
             <p style={textStyle}>
-              <strong>Status:</strong> {shipment.status || "pending"}
+              <strong>Tracking Code:</strong>{" "}
+              {proof.tracking_code}
             </p>
 
             <p style={textStyle}>
-              <strong>Progress:</strong> {shipment.progress || 0}%
+              <strong>Receiver:</strong>{" "}
+              {proof.receiver_name || "N/A"}
             </p>
 
-            <div style={progressOuterStyle}>
-              <div
-                style={{
-                  ...progressInnerStyle,
-                  width: `${shipment.progress || 0}%`,
-                }}
-              />
-            </div>
+            <p style={textStyle}>
+              <strong>Receiver Phone:</strong>{" "}
+              {proof.receiver_phone || "N/A"}
+            </p>
+
+            <p style={textStyle}>
+              <strong>Delivery Notes:</strong>{" "}
+              {proof.delivery_notes || "No notes"}
+            </p>
 
             <p style={smallTextStyle}>
-              Created:{" "}
-              {shipment.created_at
-                ? new Date(shipment.created_at).toLocaleString()
+              Delivered At:{" "}
+              {proof.delivered_at
+                ? new Date(proof.delivered_at).toLocaleString()
                 : "N/A"}
             </p>
           </article>
         ) : searched ? (
           <div style={messageStyle}>
-            No shipment found. Please check your tracking code.
+            No delivery confirmation found yet.
           </div>
         ) : (
           <div style={messageStyle}>
-            Enter your NamLogix tracking code above.
+            Enter your tracking code above.
           </div>
         )}
       </section>
@@ -152,7 +147,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 850,
+  maxWidth: 800,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -160,7 +155,7 @@ const descStyle = {
 };
 
 const searchBoxStyle = {
-  maxWidth: 780,
+  maxWidth: 760,
   margin: "34px auto 0",
   display: "flex",
   gap: 12,
@@ -179,27 +174,13 @@ const inputStyle = {
 };
 
 const buttonStyle = {
-  background: "#f97316",
+  background: "#16a34a",
   color: "white",
   border: "none",
   padding: "16px 20px",
   borderRadius: 14,
   fontWeight: 900,
   cursor: "pointer",
-};
-
-const buttonRowStyle = {
-  marginTop: 20,
-};
-
-const secondaryButtonStyle = {
-  display: "inline-block",
-  background: "white",
-  color: "#1d4ed8",
-  padding: "14px 18px",
-  borderRadius: 14,
-  fontWeight: 900,
-  textDecoration: "none",
 };
 
 const containerStyle = {
@@ -225,10 +206,10 @@ const cardStyle = {
   boxShadow: "0 12px 30px rgba(15,23,42,0.06)",
 };
 
-const codeStyle = {
+const successBadgeStyle = {
   display: "inline-block",
-  background: "#eff6ff",
-  color: "#1d4ed8",
+  background: "#dcfce7",
+  color: "#166534",
   padding: "8px 12px",
   borderRadius: 999,
   fontWeight: 900,
@@ -236,7 +217,7 @@ const codeStyle = {
 };
 
 const cardTitleStyle = {
-  fontSize: 28,
+  fontSize: 30,
   fontWeight: 900,
   color: "#0f172a",
   marginTop: 18,
@@ -244,26 +225,12 @@ const cardTitleStyle = {
 
 const textStyle = {
   color: "#475569",
-  lineHeight: 1.7,
+  lineHeight: 1.8,
+  marginTop: 10,
 };
 
 const smallTextStyle = {
   color: "#94a3b8",
   fontSize: 13,
-  marginTop: 16,
-};
-
-const progressOuterStyle = {
-  width: "100%",
-  height: 14,
-  background: "#e5e7eb",
-  borderRadius: 999,
-  overflow: "hidden",
-  marginTop: 14,
-};
-
-const progressInnerStyle = {
-  height: "100%",
-  background: "#f97316",
-  borderRadius: 999,
+  marginTop: 18,
 };

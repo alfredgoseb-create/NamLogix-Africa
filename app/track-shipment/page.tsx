@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-type Shipment = {
+type ShipmentTracking = {
   id: string;
+  booking_id: string;
   tracking_code: string;
   status: string;
   current_location: string;
@@ -14,15 +14,15 @@ type Shipment = {
   created_at: string;
 };
 
-export default function LiveTrackingPage() {
+export default function TrackShipmentPage() {
   const [trackingCode, setTrackingCode] = useState("");
-  const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [shipment, setShipment] = useState<ShipmentTracking | null>(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
   async function searchShipment() {
     if (!trackingCode.trim()) {
-      alert("Please enter a tracking code.");
+      alert("Please enter your tracking code.");
       return;
     }
 
@@ -48,31 +48,24 @@ export default function LiveTrackingPage() {
   return (
     <main style={pageStyle}>
       <section style={heroStyle}>
-        <p style={badgeStyle}>LIVE TRACKING</p>
-        <h1 style={titleStyle}>Track Your NamLogix Shipment</h1>
-
+        <p style={badgeStyle}>NAMLOGIX TRACKING</p>
+        <h1 style={titleStyle}>Track Your Shipment</h1>
         <p style={descStyle}>
-          Enter your tracking code to view shipment status, current location,
-          destination, and delivery progress.
+          Enter your NamLogix Africa tracking code to check shipment progress,
+          current location, and delivery status.
         </p>
 
         <div style={searchBoxStyle}>
           <input
             value={trackingCode}
             onChange={(e) => setTrackingCode(e.target.value)}
-            placeholder="Example: NLX-123456789"
+            placeholder="Enter tracking code e.g. NLX-123456789"
             style={inputStyle}
           />
 
           <button onClick={searchShipment} style={buttonStyle}>
             {loading ? "Searching..." : "Track Shipment"}
           </button>
-        </div>
-
-        <div style={buttonRowStyle}>
-          <Link href="/booking-create" style={secondaryButtonStyle}>
-            Create Booking
-          </Link>
         </div>
       </section>
 
@@ -84,7 +77,7 @@ export default function LiveTrackingPage() {
             <p style={codeStyle}>{shipment.tracking_code}</p>
 
             <h2 style={cardTitleStyle}>
-              {shipment.current_location || "Pickup"} →{" "}
+              {shipment.current_location || "Pickup location"} →{" "}
               {shipment.destination || "Destination"}
             </h2>
 
@@ -114,11 +107,11 @@ export default function LiveTrackingPage() {
           </article>
         ) : searched ? (
           <div style={messageStyle}>
-            No shipment found. Please check your tracking code.
+            No shipment found with that tracking code.
           </div>
         ) : (
           <div style={messageStyle}>
-            Enter your NamLogix tracking code above.
+            Enter your tracking code above to begin.
           </div>
         )}
       </section>
@@ -152,7 +145,7 @@ const titleStyle = {
 };
 
 const descStyle = {
-  maxWidth: 850,
+  maxWidth: 800,
   margin: "0 auto",
   lineHeight: 1.8,
   color: "rgba(255,255,255,0.86)",
@@ -160,12 +153,12 @@ const descStyle = {
 };
 
 const searchBoxStyle = {
-  maxWidth: 780,
+  maxWidth: 760,
   margin: "34px auto 0",
   display: "flex",
   gap: 12,
-  justifyContent: "center",
   flexWrap: "wrap" as const,
+  justifyContent: "center",
 };
 
 const inputStyle = {
@@ -186,20 +179,6 @@ const buttonStyle = {
   borderRadius: 14,
   fontWeight: 900,
   cursor: "pointer",
-};
-
-const buttonRowStyle = {
-  marginTop: 20,
-};
-
-const secondaryButtonStyle = {
-  display: "inline-block",
-  background: "white",
-  color: "#1d4ed8",
-  padding: "14px 18px",
-  borderRadius: 14,
-  fontWeight: 900,
-  textDecoration: "none",
 };
 
 const containerStyle = {
