@@ -19,22 +19,53 @@ type BookingRequest = {
 export default function AdminBookingManagementPage() {
   const [bookings, setBookings] = useState<BookingRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState("");
 
   useEffect(() => {
     fetchBookings();
   }, []);
 
   async function fetchBookings() {
+    setLoading(true);
+
     const { data, error } = await supabase
       .from("booking_requests")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      setBookings(data);
+    if (error) {
+      alert("Failed to load bookings: " + error.message);
+    } else {
+      setBookings(data || []);
     }
 
     setLoading(false);
+  }
+
+  async function updateBookingStatus(id: string, status: string) {
+    setUpdatingId(id);
+
+    const { error } = await supabase
+      .from("booking_requests")
+      .update({ status })
+      .eq("id", id);
+
+    setUpdatingId("");
+
+    if (error) {
+      alert("Failed to update booking: " + error.message);
+      return;
+    }
+
+    fetchBookings();
+  }
+
+  function getStatusStyle(status: string) {
+    if (status === "approved") return approvedStatusStyle;
+    if (status === "assigned") return assignedStatusStyle;
+    if (status === "completed") return completedStatusStyle;
+    if (status === "cancelled") return cancelledStatusStyle;
+    return statusStyle;
   }
 
   return (
@@ -57,18 +88,66 @@ export default function AdminBookingManagementPage() {
           <Link href="/booking-requests" style={secondaryButtonStyle}>
             Public Bookings
           </Link>
+
+          <button onClick={fetchBookings} style={whiteButtonStyle}>
+            Refresh
+          </button>
         </div>
       </section>
 
       <section style={containerStyle}>
+        <div style={statsGridStyle}>
+          <article style={statCardStyle}>
+            <p style={statLabelStyle}>Total</p>
+            <h2 style={statValueStyle}>{bookings.length}</h2>
+            <p style={statTextStyle}>Booking requests</p>
+          </article>
+
+          <article style={statCardStyle}>
+            <p style={statLabelStyle}>New</p>
+            <h2 style={statValueStyle}>
+              {
+                bookings.filter(
+                  (booking) =>
+                    !booking.status || booking.status === "new_request"
+                ).length
+              }
+            </h2>
+            <p style={statTextStyle}>Awaiting review</p>
+          </article>
+
+          <article style={statCardStyle}>
+            <p style={statLabelStyle}>Approved</p>
+            <h2 style={statValueStyle}>
+              {
+                bookings.filter((booking) => booking.status === "approved")
+                  .length
+              }
+            </h2>
+            <p style={statTextStyle}>Ready for assignment</p>
+          </article>
+
+          <article style={statCardStyle}>
+            <p style={statLabelStyle}>Completed</p>
+            <h2 style={statValueStyle}>
+              {
+                bookings.filter((booking) => booking.status === "completed")
+                  .length
+              }
+            </h2>
+            <p style={statTextStyle}>Finished jobs</p>
+          </article>
+        </div>
+
         <div style={sectionHeaderStyle}>
           <p style={sectionBadgeStyle}>LIVE BOOKING QUEUE</p>
 
           <h2 style={sectionTitleStyle}>Bookings Requiring Review</h2>
 
           <p style={sectionTextStyle}>
-            Bookings submitted through the platform appear here. Later admins
-            can assign transporters, approve jobs, and update tracking status.
+            Bookings submitted through the platform appear here. Admins can
+            approve, assign, complete, cancel, match transport, and open
+            tracking.
           </p>
         </div>
 
@@ -80,7 +159,7 @@ export default function AdminBookingManagementPage() {
           <div style={gridStyle}>
             {bookings.map((booking) => (
               <article key={booking.id} style={cardStyle}>
-                <div style={statusStyle}>
+                <div style={getStatusStyle(booking.status || "new_request")}>
                   {booking.status || "new_request"}
                 </div>
 
@@ -113,9 +192,49 @@ export default function AdminBookingManagementPage() {
                   {booking.contact_number || "N/A"}
                 </p>
 
-                <p style={descriptionStyle}>
-                  {booking.notes || "No notes"}
-                </p>
+                <p style={descriptionStyle}>{booking.notes || "No notes"}</p>
+
+                <div style={statusButtonRowStyle}>
+                  <button
+                    onClick={() =>
+                      updateBookingStatus(booking.id, "approved")
+                    }
+                    disabled={updatingId === booking.id}
+                    style={approveButtonStyle}
+                  >
+                    Approve
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      updateBookingStatus(booking.id, "assigned")
+                    }
+                    disabled={updatingId === booking.id}
+                    style={assignButtonStyle}
+                  >
+                    Assign
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      updateBookingStatus(booking.id, "completed")
+                    }
+                    disabled={updatingId === booking.id}
+                    style={completeButtonStyle}
+                  >
+                    Complete
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      updateBookingStatus(booking.id, "cancelled")
+                    }
+                    disabled={updatingId === booking.id}
+                    style={cancelButtonStyle}
+                  >
+                    Cancel
+                  </button>
+                </div>
 
                 <div style={cardActionsStyle}>
                   <Link href="/cargo-matching" style={darkButtonStyle}>
@@ -194,10 +313,53 @@ const secondaryButtonStyle = {
   textDecoration: "none",
 };
 
+const whiteButtonStyle = {
+  background: "white",
+  color: "#0f172a",
+  border: "none",
+  padding: "14px 18px",
+  borderRadius: 14,
+  fontWeight: 900,
+  cursor: "pointer",
+};
+
 const containerStyle = {
   maxWidth: 1200,
   margin: "0 auto",
   padding: "60px 24px",
+};
+
+const statsGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: 20,
+  marginBottom: 42,
+};
+
+const statCardStyle = {
+  background: "white",
+  borderRadius: 24,
+  padding: 24,
+  border: "1px solid #e5e7eb",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.06)",
+};
+
+const statLabelStyle = {
+  color: "#64748b",
+  fontWeight: 900,
+  margin: 0,
+};
+
+const statValueStyle = {
+  fontSize: 36,
+  fontWeight: 900,
+  color: "#0f172a",
+  margin: "8px 0",
+};
+
+const statTextStyle = {
+  color: "#64748b",
+  margin: 0,
 };
 
 const sectionHeaderStyle = {
@@ -220,7 +382,7 @@ const sectionTitleStyle = {
 const sectionTextStyle = {
   color: "#64748b",
   lineHeight: 1.7,
-  maxWidth: 780,
+  maxWidth: 820,
 };
 
 const loadingStyle = {
@@ -241,7 +403,7 @@ const emptyStyle = {
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))",
   gap: 24,
 };
 
@@ -264,6 +426,30 @@ const statusStyle = {
   marginBottom: 18,
 };
 
+const approvedStatusStyle = {
+  ...statusStyle,
+  background: "#dcfce7",
+  color: "#166534",
+};
+
+const assignedStatusStyle = {
+  ...statusStyle,
+  background: "#dbeafe",
+  color: "#1d4ed8",
+};
+
+const completedStatusStyle = {
+  ...statusStyle,
+  background: "#ede9fe",
+  color: "#6d28d9",
+};
+
+const cancelledStatusStyle = {
+  ...statusStyle,
+  background: "#fee2e2",
+  color: "#b91c1c",
+};
+
 const cardTitleStyle = {
   fontSize: 26,
   fontWeight: 900,
@@ -281,11 +467,43 @@ const descriptionStyle = {
   marginTop: 12,
 };
 
-const cardActionsStyle = {
+const statusButtonRowStyle = {
   display: "flex",
   gap: 10,
   flexWrap: "wrap" as const,
   marginTop: 22,
+};
+
+const approveButtonStyle = {
+  background: "#16a34a",
+  color: "white",
+  border: "none",
+  padding: "11px 14px",
+  borderRadius: 12,
+  fontWeight: 900,
+  cursor: "pointer",
+};
+
+const assignButtonStyle = {
+  ...approveButtonStyle,
+  background: "#1d4ed8",
+};
+
+const completeButtonStyle = {
+  ...approveButtonStyle,
+  background: "#7c3aed",
+};
+
+const cancelButtonStyle = {
+  ...approveButtonStyle,
+  background: "#dc2626",
+};
+
+const cardActionsStyle = {
+  display: "flex",
+  gap: 10,
+  flexWrap: "wrap" as const,
+  marginTop: 18,
 };
 
 const darkButtonStyle = {
